@@ -1,0 +1,6 @@
+{
+  "name": "Abandoned // Not Forgotten",
+  "description": "Interactive space archaeology archive exploring NASA's discarded equipment and scientific legacy on the Moon and Mars for the 2026 NASA Space Apps Challenge.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

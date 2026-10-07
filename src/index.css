@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-hud: 'Chakra Petch', 'Space Grotesk', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #05070B;
+    color: #F5F7FA;
+  }
+}
+
+.font-hud {
+  font-family: var(--font-hud);
+}
+
+.font-mono-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Atmospheric Space Gradients & Textures */
+.space-radial-glow {
+  background: radial-gradient(circle at 50% 30%, rgba(98, 217, 255, 0.08) 0%, rgba(184, 92, 56, 0.04) 40%, rgba(5, 7, 11, 0) 70%);
+}
+
+.mars-radial-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(184, 92, 56, 0.15) 0%, rgba(184, 92, 56, 0.03) 50%, transparent 75%);
+}
+
+.moon-radial-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(217, 221, 227, 0.12) 0%, rgba(217, 221, 227, 0.02) 50%, transparent 75%);
+}
+
+.subtle-scanlines {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 4px;
+}
+
+/* Custom Scrollbar for Archaeology Archive */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #05070B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(98, 217, 255, 0.35);
+}

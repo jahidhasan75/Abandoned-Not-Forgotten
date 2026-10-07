@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Fix: Ensure window.fetch has both a getter and setter to prevent
+      // "Cannot set property fetch of #<Window> which has only a getter"
+      // when running inside iframe environments, extension wrappers, or proxy contexts.
+      (function() {
+        try {
+          var _origFetch = typeof window.fetch === 'function' ? window.fetch.bind(window) : undefined;
+          Object.defineProperty(window, 'fetch', {
+            get: function() {
+              return _origFetch;
+            },
+            set: function(val) {
+              _origFetch = val;
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          try {
+            var _protoFetch = typeof Window.prototype.fetch === 'function' ? Window.prototype.fetch : undefined;
+            Object.defineProperty(Window.prototype, 'fetch', {
+              get: function() {
+                return _protoFetch;
+              },
+              set: function(val) {
+                _protoFetch = val;
+              },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (err) {}
+        }
+      })();
+    </script>
+    <title>ABANDONED // NOT FORGOTTEN — NASA Space Apps 2026 Archive</title>
+    <meta name="description" content="Interactive space archaeology archive exploring NASA's discarded equipment and scientific legacy on the Moon and Mars for the 2026 NASA Space Apps Challenge." />
+    <meta property="og:title" content="ABANDONED // NOT FORGOTTEN — NASA Space Apps 2026 Archive" />
+    <meta property="og:description" content="Every machine left a footprint. Every footprint tells a story. Explore abandoned hardware on the Moon and Mars." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#05070B] text-[#F5F7FA] antialiased selection:bg-[#B85C38] selection:text-white overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
