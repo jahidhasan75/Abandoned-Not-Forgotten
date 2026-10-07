@@ -3,6 +3,7 @@ import { Destination } from '../types/mission';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { spaceAudio } from '../utils/audio';
 import { Globe, ArrowRight, Radio } from 'lucide-react';
+import { ASSET_IMAGES } from '../assets/images';
 
 interface PlanetSelectorProps {
   activePlanet: Destination;
@@ -93,7 +94,7 @@ export const PlanetSelector: React.FC<PlanetSelectorProps> = ({
             {/* Background Texture & Image */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <img
-                src="/src/assets/images/moon_lunar_lander_site_1790849322452.jpg"
+                src={ASSET_IMAGES.moonLander}
                 alt="Moon lunar landscape with Apollo descent stage"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover object-center opacity-40 group-hover:opacity-55 group-hover:scale-105 transition-all duration-700"
@@ -162,7 +163,7 @@ export const PlanetSelector: React.FC<PlanetSelectorProps> = ({
             {/* Background Texture & Image */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <img
-                src="/src/assets/images/mars_opportunity_memorial_1790849335415.jpg"
+                src={ASSET_IMAGES.marsOpportunity}
                 alt="Mars planetary dunes with rover memorial"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover object-center opacity-40 group-hover:opacity-55 group-hover:scale-105 transition-all duration-700"

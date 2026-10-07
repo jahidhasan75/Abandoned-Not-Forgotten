@@ -1,4 +1,5 @@
 import { MissionArtifact, ConstellationNode, ConstellationLink, QuizQuestion } from '../types/mission';
+import { ASSET_IMAGES } from '../assets/images';
 
 export const MISSIONS_DATA: MissionArtifact[] = [
   // MARS MISSIONS
@@ -30,7 +31,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     engineeringFeat: 'Pioneered the rocker-bogie suspension system that later carried Spirit, Opportunity, Curiosity, and Perseverance.',
     daysActive: 83,
     distanceTraveled: 'approx. 100 meters',
-    image: '/src/assets/images/hero_space_archaeology_1790849307401.jpg',
+    image: ASSET_IMAGES.hero,
     imageCaption: 'Illustrative archaeology archive visualization of a micro-rover at Ares Vallis',
     whyLeftBehind: 'Pathfinder was designed as a one-way technology demonstration. Earth-return would require an ascent rocket 20 times the mass of the entire payload.',
     subsystems: [
@@ -76,7 +77,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     engineeringFeat: 'Drove 45.16 kilometers on another world powered solely by solar panels periodically cleaned by Martian dust devils.',
     daysActive: 5111,
     distanceTraveled: '45.16 km (marathon record)',
-    image: '/src/assets/images/mars_opportunity_memorial_1790849335415.jpg',
+    image: ASSET_IMAGES.marsOpportunity,
     imageCaption: 'Illustrative rendering of Opportunity resting at the rim of Endeavour Crater',
     whyLeftBehind: 'Martian escape velocity is 5.03 km/s. Mars sample return requires dedicated ascent stages; Opportunity had no return propulsion.',
     subsystems: [
@@ -122,7 +123,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     engineeringFeat: 'Operated for more than 20 times its planned design lifetime despite mechanical wear and catastrophic terrain entrapment.',
     daysActive: 2210,
     distanceTraveled: '7.73 km',
-    image: '/src/assets/images/rover_years_later_1790849363552.jpg',
+    image: ASSET_IMAGES.roverYearsLater,
     imageCaption: 'Illustrative space archaeology rendering of Spirit on the Martian plains',
     whyLeftBehind: 'Exploration rovers carry no launch propellant; they remain as monuments to human ingenuity at their final science coordinates.',
     subsystems: [
@@ -165,7 +166,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     engineeringFeat: 'Used pulsed descent thrusters to land gently on arctic terrain without creating deep landing trenches.',
     daysActive: 161,
-    image: '/src/assets/images/rover_mission_day_one_1790849350841.jpg',
+    image: ASSET_IMAGES.roverDayOne,
     imageCaption: 'Illustrative rendering of polar lander with deployed robotic arm',
     whyLeftBehind: 'Stationary landers have no propulsion to lift off; northern Martian winter encapsulates the craft in frozen CO2.',
     subsystems: [
@@ -204,7 +205,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     engineeringFeat: 'First mission to deploy an autonomous robotic grapple to lift instruments off a lander deck and set them onto an alien surface.',
     daysActive: 1440,
-    image: '/src/assets/images/hero_space_archaeology_1790849307401.jpg',
+    image: ASSET_IMAGES.hero,
     imageCaption: 'Illustrative rendering of InSight listening to planetary seismic pulses',
     whyLeftBehind: 'Geophysical observatories are built to permanently monitor tectonic and thermal activity until environmental wear stops them.',
     subsystems: [
@@ -244,7 +245,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     engineeringFeat: 'Powered by two Radioisotope Thermoelectric Generators (RTGs) which provided steady warmth and electricity in sub-zero cold.',
     daysActive: 2307,
-    image: '/src/assets/images/rover_years_later_1790849363552.jpg',
+    image: ASSET_IMAGES.roverYearsLater,
     imageCaption: 'Illustrative archaeology rendering of Viking 1 Lander on Chryse Planitia',
     whyLeftBehind: 'Viking 1 was a static science outpost with no ascent stage; it laid the foundation for every subsequent Mars rover.',
     subsystems: [
@@ -285,7 +286,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     engineeringFeat: 'Throttleable descent rocket engine capable of throttling between 10% and 60% thrust to allow manual piloting around craters and boulder fields.',
     daysActive: 1,
-    image: '/src/assets/images/moon_lunar_lander_site_1790849322452.jpg',
+    image: ASSET_IMAGES.moonLander,
     imageCaption: 'Illustrative space archaeology rendering of Apollo Lunar Module Descent Stage on the Moon',
     whyLeftBehind: 'Staging physics. Every kilogram lifted off the lunar surface requires exponentially more fuel; leaving the descent stage behind cut the ascent weight by half.',
     subsystems: [
@@ -330,7 +331,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     engineeringFeat: 'Folded like origami into a tiny 0.9 m³ triangle on the side of the Lunar Module, deploying automatically with cables and pulleys.',
     daysActive: 3,
     distanceTraveled: '27.76 km',
-    image: '/src/assets/images/hero_space_archaeology_1790849307401.jpg',
+    image: ASSET_IMAGES.hero,
     imageCaption: 'Illustrative rendering of the Lunar Roving Vehicle resting at Taurus-Littrow/Hadley',
     whyLeftBehind: 'The LRV weighed 210 kg on Earth (35 kg in Moon gravity); lifting it back into lunar orbit was impossible with Apollo mass budgets.',
     subsystems: [
@@ -374,7 +375,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     engineeringFeat: 'Nuclear thermoelectric power generators withstood lunar day/night temperature swings of 300°C for nearly a decade.',
     daysActive: 2870,
-    image: '/src/assets/images/moon_lunar_lander_site_1790849322452.jpg',
+    image: ASSET_IMAGES.moonLander,
     imageCaption: 'Illustrative rendering of ALSEP central transmitter and seismometers',
     whyLeftBehind: 'Designed specifically as long-term stationary monitoring stations to observe the Moon continuously over years.',
     subsystems: [
@@ -414,7 +415,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     engineeringFeat: 'Executed closed-loop radar-guided retro-rocket landing inside a lunar crater.',
     daysActive: 14,
-    image: '/src/assets/images/rover_mission_day_one_1790849350841.jpg',
+    image: ASSET_IMAGES.roverDayOne,
     imageCaption: 'Illustrative rendering of Surveyor 3 resting inside Surveyor Crater',
     whyLeftBehind: 'Precursor missions were expendable scouts designed to prepare the path for the Apollo landings.',
     subsystems: [

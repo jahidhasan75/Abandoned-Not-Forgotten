@@ -3,6 +3,7 @@ import { Destination, MissionArtifact } from '../types/mission';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { spaceAudio } from '../utils/audio';
 import { MapPin, Crosshair, X, ExternalLink, Calendar, Map as MapIcon, ChevronRight } from 'lucide-react';
+import { ASSET_IMAGES } from '../assets/images';
 
 interface ArchaeologyMapProps {
   activePlanet: Destination;
@@ -100,8 +101,8 @@ export const ArchaeologyMap: React.FC<ArchaeologyMapProps> = ({
               <img
                 src={
                   activePlanet === 'MOON'
-                    ? '/src/assets/images/moon_lunar_lander_site_1790849322452.jpg'
-                    : '/src/assets/images/mars_opportunity_memorial_1790849335415.jpg'
+                    ? ASSET_IMAGES.moonLander
+                    : ASSET_IMAGES.marsOpportunity
                 }
                 alt={`${activePlanet} surface map background`}
                 referrerPolicy="no-referrer"

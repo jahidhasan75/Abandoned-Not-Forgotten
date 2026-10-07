@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Compass, MapPin, ArrowDown } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
+import { ASSET_IMAGES } from '../assets/images';
 
 interface HeroProps {
   onStartExploring: () => void;
@@ -75,7 +76,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
       {/* Atmospheric Cinematic Backdrop with Image */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
-          src="/src/assets/images/hero_space_archaeology_1790849307401.jpg"
+          src={ASSET_IMAGES.hero}
           alt="Space archaeology landscape of planetary exploration on Mars and the Moon"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center opacity-30 scale-105 transition-transform duration-1000 ease-out"

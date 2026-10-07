@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Sliders, Sparkles, Clock } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
+import { ASSET_IMAGES } from '../assets/images';
 
 export const BeforeAfterSlider: React.FC = () => {
   const [sliderPosition, setSliderPosition] = useState<number>(50); // percentage 0 to 100
@@ -70,7 +71,7 @@ export const BeforeAfterSlider: React.FC = () => {
           {/* Base Layer: YEARS LATER (Right side / background) */}
           <div className="absolute inset-0">
             <img
-              src="/src/assets/images/rover_years_later_1790849363552.jpg"
+              src={ASSET_IMAGES.roverYearsLater}
               alt="Weathered robotic Mars rover years later covered in dust"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover pointer-events-none"
@@ -103,7 +104,7 @@ export const BeforeAfterSlider: React.FC = () => {
               }}
             >
               <img
-                src="/src/assets/images/rover_mission_day_one_1790849350841.jpg"
+                src={ASSET_IMAGES.roverDayOne}
                 alt="Pristine robotic explorer on landing day"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover pointer-events-none"
