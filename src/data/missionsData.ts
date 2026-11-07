@@ -500,8 +500,8 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -23.42,
     },
     role: 'Pre-Apollo lunar scout and robotic soil sampler',
-    hook: "Two and a half years after it landed, Apollo 12 touched down 160 metres away. The astronauts walked over and took parts of it home: the first visit to an old spacecraft on another world.",
-    story: 'Surveyor 3 landed on the Moon in April 1967 to prove the lunar surface was firm enough for human astronauts. Two and a half years later, Apollo 12 executed a pinpoint landing only 160 meters away. Pete Conrad and Alan Bean walked over to Surveyor 3, inspected its weathered parts, and clipped off its TV camera and mechanical scoop to bring back to Earth: the first time people went back to an earlier spacecraft on another world.',
+    hook: "Two and a half years after it landed, Apollo 12 touched down 180 metres away. The astronauts walked over and took parts of it home: the first visit to an old spacecraft on another world.",
+    story: 'Surveyor 3 landed on the Moon in April 1967 to prove the lunar surface was firm enough for human astronauts. Two and a half years later, Apollo 12 executed a pinpoint landing only 180 meters away. Pete Conrad and Alan Bean walked over to Surveyor 3, inspected its weathered parts, and clipped off its TV camera and mechanical scoop to bring back to Earth: the first time people went back to an earlier spacecraft on another world.',
     scienceContribution: [
       'Proved lunar regolith could support the weight of heavy manned landers',
       'Conducted first mechanical digging and bearing-strength tests',

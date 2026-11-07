@@ -292,8 +292,8 @@ Data and credibility
     progress bar records each answer, and a perfect round gets a short confetti burst (off with reduced
     motion). Young Explorers keeps every tab mounted, so a round in progress survives a tab switch
     until the page is reloaded. The archive table shows 6 rows until "Show all" (a search shows all matches).
-17. Check against the Apollo 12 mission report: the English Surveyor 3 story, hook and quiz say Apollo 12
-    landed 160 m away, the Bangla story says 180 m.
+17. (fixed) Surveyor 3: Apollo 12 landed within about 180 m of it (NSSDCA 1967-035A); story, hook and quiz
+    now say 180 m in both languages.
 13. Removed in v0.7.0: the AI-generated images (replaced by NASA photos), four unsourced sections (Hardware
     Anatomy, Why Leave It Behind, Did You Know, What Did It Teach Us), AI Studio leftovers, and several
     unverifiable claims and quotes.

@@ -1,4 +1,4 @@
-# Submission kit — ABANDONED // NOT FORGOTTEN
+# Submission kit — EXOARCHIVE
 
 Drafts for the videos and the NASA project page. Challenge: **Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars** (https://www.spaceappschallenge.org/2026/challenges/nasas-discarded-equipment-storytelling/). Replace every **[TODO]** before submitting, and
 match the wording to the official Project Submission Guide published on 13 November 2026.
@@ -34,61 +34,106 @@ readable; turn on English subtitles.
 
 ---
 
-## 3. Project page fields (drafts)
+## 3. Project page (ready to paste)
 
-### High-Level Summary
-EXOARCHIVE is an interactive, bilingual (English and Bangla) museum of the hardware
-NASA left on the Moon and Mars. Visitors fly between 3D globes built from real NASA mosaics, open
-each object to see its last photograph, catalogued coordinates, the date contact ended and links to
-the NASA records behind every fact, and watch live data from the rovers that are still working. It
-is built for students and teachers, runs as a static site, and works offline.
-Video: [TODO 240-second video link] · Code: [TODO public GitHub link]
+Field names follow past Space Apps project pages; check them against the Project Submission Guide
+(13 November 2026) and paste each block into the matching field. Only the team captain can submit,
+from the team's own Space Apps account.
 
-### Project Details
-**Why.** The story of humanity's first artifacts on other worlds is spread across technical
-catalogues, mission reports and image archives that few people read, and almost none of it is in
-Bangla.
+### Project name
+EXOARCHIVE: Abandoned, not forgotten
 
-**What.** 20 objects (descent stages, rovers, landers, jettisoned heat shield and backshell, a rocket-stage
-impact crater, the Ingenuity helicopter, a still-active laser retroreflector, a lost lander) on interactive 3D globes and a year-filtered map; a dossier for each with sources; a live
-"Still Talking" band; a quiz and mission builder for classrooms; a full Bangla mode.
+### Challenge
+Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars
+https://www.spaceappschallenge.org/2026/challenges/nasas-discarded-equipment-storytelling/
 
-**How.** React + TypeScript + Three.js, static and offline-first. Planet textures are stitched from
-NASA Trek and GIBS tiles by a script; object data is curated from NSSDCA, PDS and NTRS and exported
-as GeoJSON; live values come from JPL Horizons and the mars.nasa.gov raw-image feeds with a cache
-and committed offline fixtures; all derived numbers come from unit-tested functions.
+### High-level summary (short)
+EXOARCHIVE is an interactive, bilingual (English and Bangla) museum of the hardware NASA left on the
+Moon and Mars, made for school students and their teachers. Visitors fly from Earth to the Moon and
+Mars on 3D globes built from real NASA mosaics, open each of 20 objects to read its story, see its
+last photograph and the same site from orbit, and follow every fact to its NASA record. Rovers that
+are still working "talk" through live NASA data, and a signal sent to any machine shows, with
+today's distance, whether it could still answer. Games, a lesson plan and a printable worksheet turn
+the archive into a ready-made class. The site is static, open source and works offline.
 
-**Community and features.** [TODO: who tested it, e.g. classmates or a teacher, and what changed].
-Highlights: Earth → Moon → Mars flight, then-and-now orbital photos, source badges on every live
-number, one-click Bangla, a landing-site guessing game on NASA basemaps, and a "send a signal"
-activity timed with today's JPL Horizons distance.
+### Link to the project
+- Code: https://github.com/jahidhasan75/Abandoned-Not-Forgotten
+- Live site: [TODO team: deployed URL, if any; otherwise say it runs from the repository with `bun run dev`]
+- Demo video (240 s): [TODO team: video link]
+- 30-second video: [TODO team: video link]
 
-**Tools.** React 19, Vite, TypeScript, Tailwind CSS, Three.js, lucide-react, Bun, Python/Pillow
-(texture and image processing). [TODO: design tools, video tools].
+### Detailed project description
+**The problem.** Since the 1960s NASA has left rovers, landers, descent stages, instruments and
+discarded parts on the Moon and Mars. Their stories sit in technical catalogues, mission reports and
+image archives that few school students read, and almost none of it is in Bangla. Students mostly hear
+about missions that are active today.
+
+**What EXOARCHIVE does.**
+- **20 objects, each with a dossier:** what it is, why it was sent, why it stayed, what it discovered,
+  its last photograph, its catalogued coordinates and the NASA records behind every fact. Five
+  dossiers add "then and now" photos of the same site from orbit (LRO).
+- **Stories, not lists:** a one-line hook on every card; "One machine, one journey" tells Sojourner,
+  Opportunity, InSight and Ingenuity stage by stage, with a light that follows the reader down the
+  timeline; a science constellation links 17 machines to what they taught us.
+- **Where they are:** 3D globes and a year-filtered map on NASA Trek and GIBS mosaics (the challenge's
+  "clickable ghost rovers"), and a 3D timeline of the missions.
+- **Still talking:** today's sol and newest raw image from Curiosity and Perseverance, and today's
+  Earth–Moon and Earth–Mars distance from JPL Horizons. Every live number is labelled live, cached or
+  offline copy.
+- **Five states:** active, silent, inactive, lost and historic, with the objects in each.
+- **For students:** a 50-question quiz (five per round; questions do not come back for several rounds), a match-the-machine game,
+  "Where did it land?" (find each object on the NASA basemap, scored by great-circle distance), "Send a
+  signal" (a light-speed message timed with today's distance, answered by a reply, a laser echo or
+  silence) and build-a-mission.
+- **For teachers:** a 45-minute lesson plan with learning goals, a printable worksheet with answer key,
+  and a link to every dossier that can be shared with a class.
+- **For everyone:** English and Bangla throughout, light and dark themes checked for contrast, keyboard
+  use, reduced motion respected, and an offline mode for classrooms with weak internet.
+
+**How it works.** React 19, TypeScript and Vite, with Three.js for the globes and timeline and
+Tailwind CSS. It is a static site with no server: live NASA calls run in the browser with a cache and
+committed offline copies, and `?offline=1` forces the offline copy. Planet textures are stitched from
+Trek and GIBS tiles by a script; object data is curated from NSSDCA, PDS and NTRS and exported as
+GeoJSON (`public/data/objects.geojson`). Every derived number (signal time, days since contact,
+surface distance) comes from unit-tested functions, and the quiz and game rounds from a tested
+picker.
+
+**Benefits and intended impact.** Students meet the history of exploration through the machines
+themselves, in their own language, and see how engineering choices (solar or nuclear power, wheels or a
+fixed lander) led to discoveries. Teachers get a lesson they can run without internet. Every object is
+one open record, so the archive can grow to more hardware and more worlds, and the code is Apache-2.0.
+
+**What we did ourselves.** [TODO team: who designed, researched, wrote, tested; who tested it with
+students or a teacher, and what changed after that].
 
 ### Use of Super Intelligence (SI) tools
-The 2026 Space Apps rules use the term "Super Intelligence (SI)" for what was called AI, and every
-submission must describe how SI tools were used. See `docs/AI_USE.md`. [TODO: complete the team sections there first, then summarise here: which
-tools, why, the key prompts, and what the team did themselves.]
+[TODO team: summarise `docs/AI_USE.md` here: which SI tools (Google AI Studio for the first scaffold,
+Claude Code for review, data layer, accessibility, translations and new features), what they produced,
+how the team checked it, and what the team did without them.]
 
-### NASA data sources used
+### NASA data
 | Dataset | Used for |
 |---|---|
-| Moon Trek: LRO LROC WAC Global Mosaic (ASU) | Moon globe and map |
-| Mars Trek: Viking MDIM 2.1 colour mosaic (USGS) | Mars globe and map |
+| Moon Trek: LRO LROC WAC Global Mosaic | Moon globe and map |
+| Mars Trek: Viking MDIM 2.1 colour mosaic | Mars globe and map |
 | NASA GIBS: Blue Marble Next Generation | Earth globe |
 | NSSDCA Master Catalog | IDs, landing dates, last contact, coordinates |
-| PDS Search API / LROC PDS catalog (LRO-L-LROC-2-EDR-V1.0) | Context identifiers; LROC dataset description |
-| NTRS | Mission reports for each object |
-| NASA Image and Video Library | Every photograph (surface, orbit, hero, InSight before/after) |
-| JPL Horizons API | Live Earth–Moon and Earth–Mars distance and signal time |
-| mars.nasa.gov raw-image feeds (Curiosity, Perseverance; CNES/LANL instruments) | Today's sol and newest image |
+| PDS Search API; LROC PDS catalog (LRO-L-LROC-2-EDR-V1.0) | Context identifiers; LROC dataset description |
+| NTRS (NASA Technical Reports Server) | Mission reports for each object |
+| NASA Image and Video Library | Every photograph, including LRO orbital views |
+| JPL Horizons API | Live Earth–Moon and Earth–Mars distance, signal time |
+| mars.nasa.gov raw-image feeds (Curiosity, Perseverance) | Today's sol and newest image |
+
+### Space agency partner and other data
+- CNES (French space agency), with LANL: ChemCam and SuperCam instruments behind some rover images.
+- USGS Astrogeology Science Center: the Viking MDIM 2.1 Mars mosaic.
+- Arizona State University (LROC Science Operations Center): the LRO camera mosaic and orbital photos.
 
 ### References
-All dataset and image IDs are listed in `README.md` (artifact catalogue table) and in
-`public/data/objects.geojson`. Libraries: React, Vite, Three.js, Tailwind CSS, lucide-react.
-Fonts: Space Grotesk, Chakra Petch, JetBrains Mono, Hind Siliguri (Google Fonts).
-[TODO: add any article, paper or tutorial the team used.]
+- All dataset and image IDs: `README.md` (artifact catalogue) and `public/data/objects.geojson`.
+- Libraries: React, Vite, TypeScript, Three.js, Tailwind CSS, lucide-react.
+- Fonts (Google Fonts): Public Sans, Newsreader, IBM Plex Mono, Hind Siliguri, Noto Serif Bengali.
+- [TODO team: any article, paper or tutorial the team used.]
 
 ---
 

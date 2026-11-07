@@ -53,8 +53,7 @@ is that description.
   softened in English and Bangla ("first time in human history", "skeptical world", exclamation marks);
   a hero link to the Surveyor 3 then-and-now dossier; lower sections split into their own chunks. The
   lesson plan and all new Bangla text were written by the AI. **TODO (team): a teacher should read the
-  lesson plan; check the Surveyor 3 distance (160 m in English, 180 m in Bangla) against the Apollo 12
-  mission report.**
+  lesson plan.** The Surveyor 3 distance was later fixed to about 180 m (NSSDCA 1967-035A).
 - 7 Nov 2026: archive table shortened with "Show all"; quiz answers shown in bold green/red with a
   confetti burst for a perfect round; Young Explorers keeps quiz progress across tab switches.
 - 7 Nov 2026: quiz copy no longer explains the no-repeat rule; Match the machine now draws 4 of 15 pairs

@@ -278,10 +278,10 @@ export const QUIZ_BANK: QuizItem[] = [
   // ---------- Surveyor 3 ----------
   {
     id: 'q37', ref: 'surveyor3',
-    en: ['Apollo 12 landed close to an older robot lander. How close?', ['About 160 m from Surveyor 3', 'About 16 km from Surveyor 3', 'Right on top of it', 'On the other side of the Moon'],
-      'Apollo 12 made a pinpoint landing only 160 metres from Surveyor 3.'],
-    bn: ['অ্যাপোলো ১২ একটি পুরোনো রোবট ল্যান্ডারের কাছে নেমেছিল। কত কাছে?', ['সার্ভেয়র ৩ থেকে প্রায় ১৬০ মিটার', 'সার্ভেয়র ৩ থেকে প্রায় ১৬ কিমি', 'ঠিক এর ওপরে', 'চাঁদের অন্য পাশে'],
-      'অ্যাপোলো ১২ নিখুঁতভাবে সার্ভেয়র ৩ থেকে মাত্র ১৬০ মিটার দূরে নামে।'],
+    en: ['Apollo 12 landed close to an older robot lander. How close?', ['About 180 m from Surveyor 3', 'About 16 km from Surveyor 3', 'Right on top of it', 'On the other side of the Moon'],
+      'Apollo 12 made a pinpoint landing only 180 metres from Surveyor 3.'],
+    bn: ['অ্যাপোলো ১২ একটি পুরোনো রোবট ল্যান্ডারের কাছে নেমেছিল। কত কাছে?', ['সার্ভেয়র ৩ থেকে প্রায় ১৮০ মিটার', 'সার্ভেয়র ৩ থেকে প্রায় ১৬ কিমি', 'ঠিক এর ওপরে', 'চাঁদের অন্য পাশে'],
+      'অ্যাপোলো ১২ নিখুঁতভাবে সার্ভেয়র ৩ থেকে মাত্র ১৮০ মিটার দূরে নামে।'],
   },
   {
     id: 'q38', ref: 'surveyor3',
