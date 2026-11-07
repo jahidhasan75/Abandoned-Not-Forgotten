@@ -10,6 +10,7 @@ type StringKey = keyof typeof strings.en;
 /** Artifact fields that have a Bangla translation in artifacts.bn.json. */
 export type TranslatableField =
   | 'role'
+  | 'hook'
   | 'statusDescription'
   | 'story'
   | 'whyLeftBehind'

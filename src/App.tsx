@@ -137,7 +137,7 @@ export default function App() {
         <ImpactStrip />
 
         {/* Live NASA data: rovers still working, live Earth-Moon and Earth-Mars range */}
-        <LiveBand />
+        <LiveBand onOpenMachine={handleSelectMachineById} />
 
         {/* 2. Interactive Planet Selector ("WHERE STORIES REMAIN") */}
         <PlanetSelector

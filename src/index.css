@@ -23,6 +23,12 @@
 
   /* the one accent: rust. 5.6:1 on page, 4.8:1 on raised. Dark text on it, never white. */
   --color-accent: #d0704a;
+  /* Team palette (violet ramp #0E0B1D-#C9C2E3): the selected state in the status list.
+     Journey: the scroll progress light on the "One machine, one journey" timeline (green on dark). */
+  --color-state-sel: #2a1e4d;
+  --color-state-hover: rgb(42 30 77 / 0.5);
+  --color-state-bar: #8b7cc7;
+  --color-journey: #4ade80;
 
   /* type: Public Sans (the US government's open typeface) for the interface, Newsreader for
      headlines, IBM Plex Mono for figures and catalogue tags. Bangla: Hind Siliguri for text,
@@ -64,6 +70,10 @@
   --color-line: rgb(21 23 29 / 0.1);
   --color-line-strong: rgb(21 23 29 / 0.2);
   --color-accent: #9a4a27;
+  --color-state-sel: #c9c2e3;
+  --color-state-hover: rgb(201 194 227 / 0.45);
+  --color-state-bar: #5a3b8c;
+  --color-journey: #2563eb;  /* blue on light */
 }
 
 /* Dark stages: the header, the hero photo, the globes, the map and the 3D timeline stay night
@@ -80,6 +90,10 @@
   --color-line: rgb(238 240 245 / 0.08);
   --color-line-strong: rgb(238 240 245 / 0.16);
   --color-accent: #d0704a;
+  --color-state-sel: #2a1e4d;
+  --color-state-hover: rgb(42 30 77 / 0.5);
+  --color-state-bar: #8b7cc7;
+  --color-journey: #4ade80;
   color: var(--color-fg);
 }
 
@@ -325,4 +339,18 @@ html.theme-fading * {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-fg-3);
+}
+
+/* Journey timeline: the stage the middle of the screen has just reached gets a soft ring in the
+   progress colour (blue in light theme, green in dark). The ring breathes once; reduced motion keeps it still. */
+.journey-dot-current {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-journey) 25%, transparent);
+  animation: journeyArrive 0.6s var(--ease-archive) both;
+}
+@keyframes journeyArrive {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-journey) 45%, transparent); }
+  to { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-journey) 25%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-dot-current { animation: none; }
 }

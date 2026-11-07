@@ -38,6 +38,8 @@ export interface MissionArtifact {
     lngNum: number;
   };
   role: string;
+  /** One or two complete sentences for the catalogue card: the reason to open the dossier. */
+  hook: string;
   story: string;
   scienceContribution: string[];
   engineeringFeat: string;

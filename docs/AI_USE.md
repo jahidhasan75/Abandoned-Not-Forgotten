@@ -34,6 +34,12 @@ Keep this file current as you build. Match the wording to the official Project S
 - 7 Nov 2026: merged the 50-question quiz into Young Explorers as its Mission quiz tab (one section
   instead of two; the separate Quiz section and its menu link are gone); header background replaced
   with a crop of the team's Earth-limb artwork, and the footer notice now says it is artwork.
+- 7 Nov 2026: slimmer header; live tiles open details (rover dossiers, a Moon/Mars dialog that explains
+  how distance, signal time and speed are worked out); catalogue cards lift on hover and show a new
+  `hook` line per artifact. The 20 hooks (English and Bangla) were written by the AI only from facts
+  already in each dossier. **TODO (team): read the 20 hooks once, especially the Bangla.** Status list
+  uses the team's violet palette; the journey timeline gets a scroll progress light (blue light theme,
+  green dark theme), both at the team's request.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

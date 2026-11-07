@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 
@@ -125,6 +125,46 @@ export const OneMachineJourney: React.FC = () => {
 
   const currentJourney = JOURNEYS.find((j) => j.id === selectedMachine) || JOURNEYS[0];
 
+  // Scroll progress: a light runs down the timeline as the middle of the screen passes each
+  // stage (blue in the light theme, green in the dark one: the --color-journey token).
+  const listRef = useRef<HTMLOListElement | null>(null);
+  const lineRef = useRef<HTMLSpanElement | null>(null);
+  const [reached, setReached] = useState(-1);
+
+  useEffect(() => {
+    const list = listRef.current;
+    const line = lineRef.current;
+    if (!list || !line) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = list.getBoundingClientRect();
+      const centre = window.innerHeight / 2;
+      const dots = Array.from(list.querySelectorAll<HTMLElement>('[data-journey-dot]'));
+      if (dots.length === 0) return;
+      // Dot centres, measured from the top of the list
+      const ys = dots.map((d) => d.getBoundingClientRect().top + d.offsetHeight / 2 - rect.top);
+      const progress = Math.min(Math.max(centre - rect.top, 0), ys[ys.length - 1]);
+      line.style.height = `${progress}px`;
+      let last = -1;
+      ys.forEach((y, i) => {
+        if (progress >= y - 0.5) last = i;
+      });
+      setReached(last);
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+    };
+  }, [selectedMachine]);
+
   return (
     <section className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,10 +204,22 @@ export const OneMachineJourney: React.FC = () => {
             </p>
           </div>
 
-          <ol className="lg:col-span-8 border-l border-line">
+          <ol ref={listRef} className="relative lg:col-span-8 border-l border-line">
+            {/* The progress light, drawn over the hairline */}
+            <span
+              ref={lineRef}
+              className="absolute top-0 -left-[1.5px] w-0.5 h-0 bg-journey transition-[height] duration-150 ease-out motion-reduce:transition-none"
+              aria-hidden="true"
+            />
             {currentJourney.steps.map((step, idx) => (
-              <li key={idx} className="relative pl-6 sm:pl-8 pb-10 last:pb-0">
-                <span className="absolute -left-1 top-2 w-2 h-2 rounded-full bg-fg-3" aria-hidden="true" />
+              <li key={idx} className="relative pl-6 sm:pl-8 pb-10 last:pb-0" aria-current={idx === reached ? 'step' : undefined}>
+                <span
+                  data-journey-dot
+                  className={`absolute -left-1 top-2 w-2 h-2 rounded-full transition-[background-color,transform,box-shadow] duration-300 motion-reduce:transition-none ${
+                    idx <= reached ? 'bg-journey scale-125' : 'bg-fg-3'
+                  } ${idx === reached ? 'journey-dot-current' : ''}`}
+                  aria-hidden="true"
+                />
                 <p className="font-mono-data text-xs text-fg-2">
                   {String(idx + 1).padStart(2, '0')} · {step.year} · {step.badge}
                 </p>

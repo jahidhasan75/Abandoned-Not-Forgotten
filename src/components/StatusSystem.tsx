@@ -82,16 +82,21 @@ export const StatusSystem: React.FC<StatusSystemProps> = ({ onSelectMachineId })
                       setActiveTab(cat.status);
                     }}
                     aria-pressed={isCurrent}
-                    className={`w-full text-left px-3 py-4 flex items-start gap-3 transition-colors ${
-                      isCurrent ? 'bg-card' : 'hover:bg-card'
+                    className={`relative w-full text-left pl-4 pr-3 py-4 flex items-start gap-3 transition-colors ${
+                      isCurrent ? 'bg-state-sel' : 'hover:bg-state-hover'
                     }`}
                   >
+                    {/* The chosen state: a violet bar on the left edge (team palette) */}
+                    <span
+                      className={`absolute left-0 inset-y-0 w-1 bg-state-bar transition-opacity ${isCurrent ? 'opacity-100' : 'opacity-0'}`}
+                      aria-hidden="true"
+                    />
                     <span className="mt-1.5 w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[cat.status] }} aria-hidden="true" />
                     <span className="flex-1 min-w-0">
                       <span className={`block text-base ${isCurrent ? 'text-fg' : 'text-fg-2'}`}>{t(`status.${cat.status}`)}</span>
                       <span className="block text-sm text-fg-2 mt-0.5">{t(`status.sub.${cat.status}`)}</span>
                     </span>
-                    <span className="font-mono-data text-xs text-fg-3 mt-1">
+                    <span className={`font-mono-data text-xs mt-1 text-fg-2`}>
                       {MISSIONS_DATA.filter((m) => m.status === cat.status).length}
                     </span>
                   </button>

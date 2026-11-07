@@ -5,6 +5,7 @@ import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 import { STATUS_COLORS } from '../data/status';
 import { CatalogueTag } from './CatalogueTag';
+import { ArrowRight } from 'lucide-react';
 
 interface MachineCardsProps {
   onOpenDetails: (artifact: MissionArtifact) => void;
@@ -12,7 +13,7 @@ interface MachineCardsProps {
 }
 
 export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activePlanetFilter }) => {
-  const { t, tx, txScience } = useI18n();
+  const { t, tx } = useI18n();
   const [filter, setFilter] = useState<'ALL' | 'MOON' | 'MARS' | 'ROVER' | 'LANDER' | 'INSTRUMENT' | 'PARTS'>(
     activePlanetFilter || 'ALL'
   );
@@ -92,7 +93,7 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
               role="button"
               tabIndex={0}
               aria-label={t('cards.open', { name: machine.name })}
-              className="animate-fadeIn group rounded-xl p-2 -m-2 hover:bg-card transition-colors"
+              className="animate-fadeIn group cursor-pointer rounded-xl p-2 -m-2 transition-[background-color,transform] duration-200 hover:bg-card hover:-translate-y-0.5 focus-visible:bg-card focus-visible:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0"
             >
               <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-ink">
                 <img
@@ -101,7 +102,7 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
                   loading="lazy"
                   decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02] group-focus-visible:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </div>
 
@@ -117,14 +118,14 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
                 <p className="mt-3 text-sm text-fg-2">
                   {machine.mission} · {tx(machine, 'role')}
                 </p>
-                <p className="mt-2 text-sm text-fg-2 line-clamp-2">{tx(machine, 'story')}</p>
-                {txScience(machine)[0] && (
-                  <p className="mt-2 text-sm text-fg-2 line-clamp-1">
-                    <span className="text-fg-3">{t('cards.science')}: </span>
-                    {txScience(machine)[0]}
-                  </p>
-                )}
-                <p className="mt-3 catalogue-tag text-fg-3">{t('cards.photo', { id: machine.imageNasaId })}</p>
+                <p className="mt-2 text-base text-fg leading-relaxed">{tx(machine, 'hook')}</p>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <span className="catalogue-tag text-fg-3">{t('cards.photo', { id: machine.imageNasaId })}</span>
+                  <span className="flex items-center gap-1 text-sm text-fg-2 group-hover:text-fg transition-colors" aria-hidden="true">
+                    {t('cards.explore')}
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} />
+                  </span>
+                </div>
               </div>
             </div>
           ))}

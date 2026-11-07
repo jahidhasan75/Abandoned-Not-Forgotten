@@ -124,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header
       className={`theme-dark fixed top-0 left-0 right-0 z-50 bg-ink border-b transition-[padding,border-color] ${
-        scrolled ? 'border-line py-2' : 'border-transparent py-3 sm:py-4'
+        scrolled ? 'border-line py-1.5' : 'border-transparent pt-2 pb-2.5 sm:pt-2.5 sm:pb-3'
       }`}
     >
       {/* Earth's limb against the stars (the team's artwork, cropped to a thin band so the glowing

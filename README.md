@@ -226,6 +226,18 @@ the page colour (so it follows the theme) and two photo plates from the archive,
 (AS15-86-11602) and Curiosity (PIA24173); each plate opens that object's dossier. Light theme: the map
 section uses `bg-deep` (ink in dark, a deeper paper in light); only the map well itself stays dark.
 
+**Two team-requested colour exceptions** (outside the one-accent rule, both tokens in both themes):
+`state-sel` / `state-hover` / `state-bar` take the team's violet palette (#0E0B1D to #C9C2E3) for the
+chosen row in the Status list (selected #2A1E4D with a #8B7CC7 bar in dark, #C9C2E3 with a #5A3B8C bar
+in light). `journey` is the scroll progress light on the "One machine, one journey" timeline: green
+(#4ade80) in dark, blue (#2563eb) in light; it runs down the line as the middle of the screen passes
+each stage (`OneMachineJourney.tsx`).
+
+**Catalogue cards** show `hook` (en in `missionsData.ts`, bn in `artifacts.bn.json`): one or two
+complete sentences built only from facts already in that artifact's dossier, never clamped. Cards lift
+2 px on hover. Live tiles are clickable: rover tiles open their dossier, the Moon and Mars tiles open a
+detail dialog with the photo, the three numbers and how each is worked out.
+
 ---
 
 ## Polish done in v0.2.0 (7 Nov 2026)

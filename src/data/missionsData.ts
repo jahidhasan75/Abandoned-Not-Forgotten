@@ -40,6 +40,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -33.55,
     },
     role: 'Pioneering mobile Mars micro-rover',
+    hook: "The size of a microwave oven and built to last 7 Martian days, it kept going for 83. Then the lander that carried its messages went quiet, and no one knows why.",
     story: 'Weighing only 11.5 kg (about the size of a microwave oven), Sojourner proved to a skeptical world that mobile robotic exploration was possible on Mars. Designed for only 7 Martian days (sols), it operated for 83 sols, circling the Pathfinder lander and analyzing rocks named Barnacle Bill and Yogi.',
     scienceContribution: [
       'First in-situ chemical analysis of Martian rocks using APXS',
@@ -90,6 +91,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -5.23,
     },
     role: 'Long-range robotic field geologist',
+    hook: "Built for 90 Martian days, it kept driving for more than 14 years and covered a marathon. Then a dust storm swallowed the sky, and more than 1,000 calls from Earth went unanswered.",
     story: 'Designed to survive 90 Martian days and travel 600 meters, Opportunity roamed Mars for over 14 years and covered a marathon distance of 45.16 kilometers. It found unmistakable evidence that liquid, acidic water once soaked the Martian plains of Meridiani.',
     scienceContribution: [
       'Discovered hematite-rich mineral spherules nicknamed "blueberries"',
@@ -143,6 +145,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 175.478,
     },
     role: 'Robotic field geologist and crater explorer',
+    hook: "When one wheel jammed, Spirit kept going and dragged it behind. The broken wheel scraped open the soil and uncovered silica about 90% pure, a sign of ancient hot springs.",
     story: 'Opportunity’s twin sister Spirit landed on the opposite side of Mars in rugged Gusev Crater. Even after its right-front wheel seized up in 2006, Spirit dragged the dead wheel across the soil. That dragging wheel scraped away topsoil to accidentally uncover 90% pure silica—the signature of ancient volcanic hot springs where microbial life could have thrived.',
     scienceContribution: [
       'Discovered hydrothermal volcanic deposits (silica) in Home Plate',
@@ -191,6 +194,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -125.75,
     },
     role: 'Arctic ice excavator and soil chemistry lab',
+    hook: "Digging in the Martian arctic, it uncovered bright white patches that vanished within days: water ice. Then winter came and loaded it with frozen carbon dioxide.",
     story: 'Phoenix touched down on the frigid arctic plains of Mars. With its robotic arm, it scraped shallow trenches into the soil and exposed bright white patches that evaporated over several days—confirming they were water ice. Phoenix tasted Martian water for the first time in human history.',
     scienceContribution: [
       'First direct sample and confirmation of subsurface water ice on Mars',
@@ -238,6 +242,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 135.62,
     },
     role: 'Planetary interior geophysics observatory',
+    hook: "InSight did not look around. It listened. Its seismometer heard more than 1,300 marsquakes and impacts, enough to map the inside of Mars down to its liquid core.",
     story: 'Instead of looking at the surface, InSight checked the heartbeat and vital signs of Mars. It placed an ultra-sensitive seismometer directly onto the ground, listening to more than 1,300 marsquakes and meteorite impacts, mapping the crust, mantle, and molten liquid iron core.',
     scienceContribution: [
       'Detected over 1,318 Marsquakes up to magnitude 5',
@@ -287,6 +292,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -47.95,
     },
     role: 'First long-duration Mars lander and life-detection laboratory',
+    hook: "It sent the first clear photograph from the surface of Mars, then ran humanity’s first biology experiments on another world. One wrong command ended six years of work.",
     story: 'On July 20, 1976, Viking 1 sent humanity\'s first clear panoramic photograph from the surface of Mars. For more than six years, it collected meteorological data, scooped Martian soil, and conducted humanity\'s first biological experiments on another world.',
     scienceContribution: [
       'First high-resolution surface panoramas and color imaging of Mars',
@@ -337,6 +343,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 23.47314,
     },
     role: 'Lunar descent stage and launch platform',
+    hook: "Armstrong flew its last minute by hand to dodge a field of boulders. Its lower half still stands where people first walked on another world.",
     story: 'When Neil Armstrong and Buzz Aldrin blasted off from the Moon on July 21, 1969, they left the lower portion of the Eagle lander behind. Its four spidery landing legs, gold Kapton foil, and stainless steel plaque reading "We came in peace for all mankind" remain exactly where humanity first stepped onto another celestial body.',
     scienceContribution: [
       'Enabled humanity\'s first collection of pristine lunar rock and regolith samples (21.5 kg)',
@@ -391,6 +398,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 3.6333,
     },
     role: 'First crewed electric planetary buggy',
+    hook: "A car with no steering wheel, folded flat for the trip. Two astronauts drove it 27.8 km across the Moon, then left it parked for good beside Hadley Rille.",
     story: 'Nicknamed the "Moon Buggy," the Lunar Roving Vehicle transformed Apollo from short walking strolls into extensive geological field expeditions. Astronauts Dave Scott and Jim Irwin drove 27.8 kilometers, exploring the steep flanks of Mount Hadley Delta and the 300-meter-deep Hadley Rille canyon.',
     scienceContribution: [
       'Tripled the exploration radius of astronauts from 1 km to over 5 km',
@@ -441,6 +449,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -23.4219,
     },
     role: 'Nuclear-powered automated lunar geophysical stations',
+    hook: "Small nuclear generators kept these stations working day and night for up to eight years. They heard the Moon ring like a bell, until NASA switched them off in 1977.",
     story: 'The Apollo Lunar Surface Experiments Package (ALSEP) was a suite of scientific instruments left behind by astronauts. Powered by miniature SNAP-27 nuclear generators, these stations functioned around the clock for up to 8 years, transmitting seismic waves, solar wind data, and heat flow measurements back to Earth.',
     scienceContribution: [
       'Discovered deep Moonquakes triggered by Earth tidal gravity forces',
@@ -491,6 +500,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -23.42,
     },
     role: 'Pre-Apollo lunar scout and robotic soil sampler',
+    hook: "Two and a half years after it landed, Apollo 12 touched down 160 metres away. The astronauts walked over and took parts of it home: the first visit to an old spacecraft on another world.",
     story: 'Surveyor 3 landed on the Moon in April 1967 to prove the lunar surface was firm enough for human astronauts. Two and a half years later, Apollo 12 executed a pinpoint landing only 160 meters away. Pete Conrad and Alan Bean walked over to Surveyor 3, inspected its weathered parts, and clipped off its TV camera and mechanical scoop to bring back to Earth—humanity\'s first true space archaeology recovery!',
     scienceContribution: [
       'Proved lunar regolith could support the weight of heavy manned landers',
@@ -541,6 +551,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 23.47314,
     },
     role: 'Passive mirror array for lunar laser ranging',
+    hook: "No power, no moving parts, and still at work. Telescopes on Earth fire lasers at it and catch the echo, counting the returning light one photon at a time.",
     story: 'Buzz Aldrin set this panel of 100 fused-silica corner-cube prisms on the lunar surface a few metres from the Eagle lander. It needs no power and has no moving parts. More than half a century later, telescopes on Earth still fire laser pulses at it and time the faint echo, turning a 1969 artifact into a working scientific instrument.',
     scienceContribution: [
       'Measures the Earth–Moon distance by timing laser echoes',
@@ -589,6 +600,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 137.44,
     },
     role: 'Nuclear-powered mobile geochemistry laboratory',
+    hook: "A rocket-powered sky crane lowered it onto Mars. It found that Gale Crater once held a lake microbes could have lived in, and it is still climbing Mount Sharp today.",
     story: 'Curiosity landed in Gale Crater in August 2012, lowered onto the surface by a rocket-powered "sky crane". It soon found that the crater once held a lake with water that microbes could have lived in. It is still climbing the layered slopes of Mount Sharp, reading billions of years of Martian climate history layer by layer. It shows what the silent machines in this archive were like while they were still working.',
     scienceContribution: [
       'Showed that Gale Crater once held a long-lived lake that could have supported microbial life',
@@ -637,6 +649,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 77.45,
     },
     role: 'Astrobiology explorer and sample collector',
+    hook: "It seals rock cores in tubes for a possible trip back to Earth. It also brought a helicopter, which became the first aircraft to fly on another planet.",
     story: 'Perseverance landed in Jezero Crater, an ancient river delta, in February 2021. It searches for signs of past microbial life and seals promising rock cores in tubes for a possible future return to Earth. It carried the Ingenuity helicopter, which made the first powered, controlled flight on another planet. Ingenuity has since become a piece of abandoned hardware itself.',
     scienceContribution: [
       'Collected sealed rock and soil cores for possible return to Earth',
@@ -688,6 +701,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 165,
     },
     role: 'Polar lander to search for water ice and study the climate',
+    hook: "It went quiet as planned before landing and never spoke again. The leading theory: a jolt from its own legs fooled the software, and the engines cut out about 40 metres up.",
     story: 'Mars Polar Lander was meant to be the first spacecraft to land near a Martian pole. On 3 December 1999 it went silent as planned before entering the atmosphere and was never heard from again. The leading explanation is that the landing legs jolted open, the software read that jolt as touchdown, and the engines shut off while the lander was still about 40 metres up. Its remains have never been confirmed in orbital images.',
     scienceContribution: [
       'Its loss led to stricter testing of landing software and touchdown sensors',
@@ -736,6 +750,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 134.2809,
     },
     role: 'Second Viking lander and long-term weather station',
+    hook: "It landed on the far side of Mars from its twin and watched the seasons turn for more than three years. One winter it photographed a thin layer of frost on the ground.",
     story: "Viking 2 landed on the far side of Mars from its twin, on the rock-strewn plains of Utopia Planitia. For more than three Earth years it measured the weather, searched the soil for signs of life and watched the seasons change. In the northern winter its cameras photographed a thin layer of water frost on the ground around it, one of the most famous pictures ever sent from Mars.",
     scienceContribution: [
       'Photographed seasonal water frost on the Martian surface',
@@ -784,6 +799,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -5.53,
     },
     role: 'Thermal protection that shielded the rover through atmospheric entry',
+    hook: "It took the heat so Opportunity could land, then fell away. Eleven months later the rover drove back to find it, and nearby found the first meteorite ever identified on another planet.",
     story: "Before Opportunity could land, its heat shield had to survive a fiery plunge through the Martian atmosphere, then fall away. Eleven months later the rover drove back to find it, crumpled and turned inside out on the plain. Engineers used its photographs to see how the shield had performed. Nearby, the rover found a basketball-sized iron rock, the first meteorite ever identified on another planet, nicknamed Heat Shield Rock.",
     scienceContribution: [
       'Gave engineers a close look at how a heat shield survives Mars entry',
@@ -830,6 +846,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 77.45,
     },
     role: 'Upper half of the entry capsule, carrying the parachute',
+    hook: "Its parachute hid a message in binary code. Fourteen months after landing, a helicopter flew over and photographed the wreck lying on the crater floor.",
     story: "The backshell protected Perseverance on its way to Mars and held the 21.5-metre parachute that slowed its fall. After the rover was lowered away, the backshell and parachute crashed onto the crater floor. Fourteen months later the Ingenuity helicopter flew over and photographed them: the shell sitting upright, cables trailing, the parachute spread across the ground. Engineers studied the pictures to design future landings, including the plan to bring Martian samples home.",
     scienceContribution: [
       'First aerial photographs of landing hardware on another planet',
@@ -877,6 +894,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 77.45,
     },
     role: 'First aircraft to make a powered, controlled flight on another world',
+    hook: "Planned for five flights, it flew 72, in air about one per cent as thick as Earth’s. It carries a scrap of fabric from the Wright brothers’ first airplane.",
     story: "Ingenuity rode to Mars under Perseverance's belly and was meant to fly just five times. It flew 72. It scouted routes for the rover, photographed its own landing hardware and proved that flight is possible in air about one per cent as dense as Earth's. On 18 January 2024 it landed hard and damaged its rotor blades. Perseverance photographed it weeks later, a tiny figure among the sand ripples at the spot the team named Valinor Hills.",
     scienceContribution: [
       'Proved powered, controlled flight is possible on Mars',
@@ -925,6 +943,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: 30.7723,
     },
     role: 'Lunar module descent stage, lunar rover and launch platform of the final Apollo mission',
+    hook: "The last place people stood on the Moon. Here a geologist found orange soil made of ancient volcanic glass, and a plaque marks the end of humanity’s first explorations.",
     story: "Apollo 17 was the last time humans walked on the Moon. Eugene Cernan and Harrison Schmitt, a geologist, spent three days in the Taurus-Littrow valley and drove their rover to explore boulders and craters. Schmitt discovered a patch of orange soil, formed from ancient volcanic glass. When they lifted off on 14 December 1972, they left the Challenger descent stage, the rover and a science station behind, with a plaque marking the end of humanity's first explorations of the Moon.",
     scienceContribution: [
       'Discovered orange volcanic glass soil at Shorty crater',
@@ -974,6 +993,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
       lngNum: -26.0305,
     },
     role: 'Spent rocket stage used as an artificial moonquake',
+    hook: "This crater was made on purpose. A spent Saturn V stage was steered into the Moon at about 2.5 km/s, and a seismometer 170 km away felt the Moon shake.",
     story: "After sending Apollo 14 towards the Moon, the empty third stage of its Saturn V rocket was steered onto a collision course. On 4 February 1971 it struck the surface at about 2.54 km per second. The impact shook the Moon, and the seismometer the Apollo 12 crew had left 170 km away recorded it, letting scientists probe the Moon's interior. Decades later, LRO photographed the bright crater it left.",
     scienceContribution: [
       'Gave a known, timed seismic source for the Apollo seismometers',

@@ -305,7 +305,18 @@
     "quiz.score": "{score} of {total} correct",
     "quiz.after": "These questions will not come back for the next {rounds} rounds. A new round brings five you have not just seen.",
     "quiz.again": "New round",
-    "hero.open": "Open the dossier: {name}"
+    "hero.open": "Open the dossier: {name}",
+    "live.detail.open": "Details: {title}",
+    "live.detail.distance": "Distance from Earth",
+    "live.detail.signal": "Radio signal, one way",
+    "live.detail.motion": "Motion",
+    "live.detail.away": "Moving away, {v} km/s",
+    "live.detail.toward": "Moving closer, {v} km/s",
+    "live.detail.how": "How these numbers are worked out",
+    "live.detail.how1.moon": "NASA JPL’s Horizons service gives the distance from the centre of the Earth to the centre of the Moon at {time} UTC.",
+    "live.detail.how1.mars": "NASA JPL’s Horizons service gives the distance from the centre of the Earth to the centre of Mars at {time} UTC.",
+    "live.detail.how2": "This page divides that distance by the speed of light (299,792.458 km/s) to get how long a radio signal takes.",
+    "live.detail.how3": "The speed is how fast that distance is changing at the same moment. It also comes from Horizons."
   },
   "bn": {
     "lang.toggle": "EN",
@@ -613,6 +624,17 @@
     "quiz.score": "{total}টির মধ্যে {score}টি সঠিক",
     "quiz.after": "এই প্রশ্নগুলো পরের {rounds} রাউন্ডে আর আসবে না। নতুন রাউন্ডে এমন পাঁচটি প্রশ্ন আসবে যা এইমাত্র দেখেননি।",
     "quiz.again": "নতুন রাউন্ড",
-    "hero.open": "ডসিয়ার খুলুন: {name}"
+    "hero.open": "ডসিয়ার খুলুন: {name}",
+    "live.detail.open": "বিস্তারিত: {title}",
+    "live.detail.distance": "পৃথিবী থেকে দূরত্ব",
+    "live.detail.signal": "রেডিও সংকেত, এক দিকে",
+    "live.detail.motion": "গতি",
+    "live.detail.away": "দূরে সরছে, সেকেন্ডে {v} কিমি",
+    "live.detail.toward": "কাছে আসছে, সেকেন্ডে {v} কিমি",
+    "live.detail.how": "সংখ্যাগুলো কীভাবে বের করা হয়",
+    "live.detail.how1.moon": "নাসা জেপিএল-এর Horizons সেবা থেকে {time} UTC সময়ে পৃথিবীর কেন্দ্র থেকে চাঁদের কেন্দ্রের দূরত্ব নেওয়া হয়।",
+    "live.detail.how1.mars": "নাসা জেপিএল-এর Horizons সেবা থেকে {time} UTC সময়ে পৃথিবীর কেন্দ্র থেকে মঙ্গলের কেন্দ্রের দূরত্ব নেওয়া হয়।",
+    "live.detail.how2": "সেই দূরত্বকে আলোর গতি (সেকেন্ডে ২,৯৯,৭৯২.৪৫৮ কিমি) দিয়ে ভাগ করে এই পেজ হিসাব করে রেডিও সংকেত পৌঁছাতে কত সময় লাগে।",
+    "live.detail.how3": "গতি মানে সেই মুহূর্তে দূরত্বটা কত দ্রুত বদলাচ্ছে। এটাও Horizons থেকে আসে।"
   }
 }
