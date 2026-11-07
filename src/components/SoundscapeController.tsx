@@ -16,7 +16,7 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
   const [audioState, setAudioState] = useState<SoundscapeState>({
     isPlaying: false,
     environment: 'MARTIAN',
-    volume: 0.4,
+    volume: 0.6,
   });
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

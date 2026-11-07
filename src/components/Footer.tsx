@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({ onScrollToTop, onExploreAgain })
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-8 text-sm text-fg-2">
           <div className="space-y-3 max-w-2xl">
             <p className="text-fg font-medium">
-              Abandoned <span className="text-fg-3">//</span> Not Forgotten
+              EXOARCHIVE <span className="text-fg-3 font-normal">· {t('brand.tagline')}</span>
             </p>
             <p className="leading-relaxed">{t('footer.about')}</p>
             <p className="text-xs leading-relaxed">{t('footer.notice')}</p>

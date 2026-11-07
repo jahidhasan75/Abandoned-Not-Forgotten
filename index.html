@@ -1,21 +1,33 @@
 <!doctype html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="scroll-smooth" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Abandoned // Not Forgotten — an archive of hardware left on the Moon and Mars</title>
-    <meta name="description" content="Interactive space archaeology archive exploring NASA's discarded equipment and scientific legacy on the Moon and Mars for the 2026 NASA Space Apps Challenge." />
-    <meta property="og:title" content="Abandoned // Not Forgotten — an archive of hardware left on the Moon and Mars" />
-    <meta property="og:description" content="Every machine left a footprint. Every footprint tells a story. Explore abandoned hardware on the Moon and Mars." />
+    <title>EXOARCHIVE — an archive of hardware left on the Moon and Mars</title>
+    <meta name="description" content="EXOARCHIVE: an interactive space archaeology archive of the hardware NASA left on the Moon and Mars, built for the 2026 NASA Space Apps Challenge." />
+    <meta property="og:title" content="EXOARCHIVE — an archive of hardware left on the Moon and Mars" />
+    <meta property="og:description" content="Abandoned, not forgotten. Explore the hardware left on the Moon and Mars." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="color-scheme" content="dark light" />
+    <script>
+      // Apply the saved theme (or the system setting) before the page paints.
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('exoarchive-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.theme = t;
+        document.documentElement.style.colorScheme = t;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Noto+Serif+Bengali:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
   <body class="bg-page text-fg antialiased selection:bg-accent selection:text-ink overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

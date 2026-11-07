@@ -40,7 +40,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
   }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col justify-between pt-24 pb-8 overflow-hidden bg-page">
+    <section id="hero" className="theme-dark relative min-h-screen flex flex-col justify-between pt-24 pb-8 overflow-hidden bg-page">
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" aria-hidden="true" />
 
       {/* The Apollo 11 photo: the lunar module's shadow falls on the right, the calm regolith on the

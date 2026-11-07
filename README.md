@@ -1,4 +1,6 @@
-# ABANDONED // NOT FORGOTTEN
+# EXOARCHIVE
+
+*Abandoned, not forgotten.*
 
 An interactive space-archaeology museum for the **NASA Space Apps Challenge 2026**. It tells the story of the
 machines humanity left on the Moon and Mars: where each one rests, what it discovered, why it was left behind,
@@ -134,6 +136,7 @@ src/
 | 14 | `ArchaeologyArchive` | `archive` | Searchable, filterable table of all artifacts | `MISSIONS_DATA` |
 | 14b | `DataSources` | `data-sources` | Every NASA dataset and what it is used for; featured LROC dataset read from the local PDS catalog; GeoJSON download | `pdsCatalog.json`, `MISSIONS_DATA` |
 | 16 | `YoungExplorers` | `explorers` | Quiz, Match-the-Machine game, Build-a-Mission configurator | `QUIZ_QUESTIONS` + inline |
+| 17 | `Quiz` | `quiz` | 5 questions per round from a bank of 50 (en + bn); a question does not return for the next 5 rounds (history in `localStorage`, `exoarchive-quiz-history`); each answer links to its dossier | `src/data/quiz.ts`, `src/lib/quizPick.ts` (tested) |
 | 17 | `Footer` | — | Closing message, data accuracy notice | inline |
 | — | `MachineDetailModal` | — | Full dossier dialog (Esc to close) | the selected artifact |
 | — | `SoundscapeController` | — | Fixed bottom-right audio widget with live waveform | `spaceAudio` |
@@ -202,9 +205,22 @@ Signature: every object carries a mono catalogue tag, `ARCH/MOON/001 · 0.67416�
 from `src/components/CatalogueTag.tsx` (cards, map panel, globe list, timeline card, dossier).
 
 Fonts (Google Fonts in `index.html`): Newsreader (h1/h2 and display headings, 400–500, sentence case),
-Inter (interface), JetBrains Mono (`.font-mono-data`, `.catalogue-tag`: figures, coordinates, IDs, with
-tabular numbers). Hind Siliguri is the Bangla fallback in every stack. Every click calls
-`spaceAudio.playTelemetryPing(freq, dur)`.
+Public Sans (interface; the US government's open typeface), IBM Plex Mono (`.font-mono-data`,
+`.catalogue-tag`: figures, coordinates, IDs, with tabular numbers). Bangla: Hind Siliguri in the sans and
+mono stacks, Noto Serif Bengali in the serif stack, so Bangla headlines are serif too. Every click calls
+`spaceAudio.playTelemetryPing(freq, dur)`; it is silent until the visitor turns sound on (one switch
+for the ambient sound and the clicks).
+
+**Light theme.** `:root[data-theme='light']` re-values the same tokens (paper `#f3f1ea`, ink text
+`#15171d`, accent `#9a4a27`; all text pairs checked for AA). The header, the hero photo and every
+`bg-ink` stage (globes, map, timeline, constellation) stay dark in both themes: `.theme-dark` and
+`[data-theme='light'] .bg-ink` bring the dark values back inside them. The toggle is in the header
+(`src/lib/theme.ts`); the choice is stored in `localStorage` (`exoarchive-theme`), otherwise the system
+setting decides, and `index.html` applies it before the first paint.
+
+**Brand.** Logo: `src/assets/brand/exoarchive-logo.webp` (the team's EXOARCHIVE wordmark, black
+background removed). Header photo strip: AS11-44-6550, Earth over the lunar horizon from Apollo 11
+(NASA, public domain), placed in the gap before the header controls so it never sits behind a label.
 
 ---
 

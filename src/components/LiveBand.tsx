@@ -6,6 +6,14 @@ import { splitLightTime } from '../lib/compute';
 import { SourceBadge } from './SourceBadge';
 import type { BodyRange, RoverLatest } from '../lib/live/nasa';
 import type { LiveResult } from '../lib/live/live';
+import moonPhoto from '../assets/images/nasa/moon-nearside-lroc-pia14011.webp';
+import marsPhoto from '../assets/images/nasa/mars-viking-globe-pia00407.webp';
+
+/** Photos for the range tiles (NASA, public domain), bundled so they also work offline. */
+const BODY_PHOTO = {
+  moon: { src: moonPhoto, credit: 'PIA14011 · NASA/GSFC/Arizona State University (LRO)' },
+  mars: { src: marsPhoto, credit: 'PIA00407 · NASA/JPL-Caltech/USGS (Viking)' },
+} as const;
 
 /** Formats a light-time in the current language (seconds below a minute, otherwise min + s). */
 export const useLightTimeText = () => {
@@ -94,10 +102,22 @@ const RangeTile: React.FC<{ body: 'moon' | 'mars'; result: LiveResult<BodyRange>
         </h3>
         {result && <SourceBadge source={result.source} fetchedAt={result.fetchedAt} />}
       </div>
+      <div className="relative h-40 bg-ink">
+        <img
+          src={BODY_PHOTO[body].src}
+          alt={t(`live.range.photoAlt.${body}`)}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover"
+        />
+        <span className="absolute bottom-2 left-2 right-2 truncate text-xs font-mono-data bg-page/90 text-fg px-2 py-0.5 rounded w-fit max-w-full">
+          {BODY_PHOTO[body].credit}
+        </span>
+      </div>
       {!result ? (
         <Pending state={result as undefined | null} />
       ) : (
-        <div className="p-4 pt-2 space-y-2 flex-1 flex flex-col">
+        <div className="p-4 space-y-2 flex-1 flex flex-col">
           <div className="text-2xl font-mono-data text-fg">
             {body === 'moon'
               ? t('live.range.km', { km: Math.round(result.data.distanceKm).toLocaleString(loc) })

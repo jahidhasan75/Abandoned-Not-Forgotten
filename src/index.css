@@ -23,10 +23,12 @@
   /* the one accent: rust. 5.6:1 on page, 4.8:1 on raised. Dark text on it, never white. */
   --color-accent: #d0704a;
 
-  /* type */
-  --font-sans: 'Inter', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Newsreader', 'Hind Siliguri', Georgia, 'Times New Roman', serif;
-  --font-mono: 'JetBrains Mono', 'Hind Siliguri', ui-monospace, monospace;
+  /* type: Public Sans (the US government's open typeface) for the interface, Newsreader for
+     headlines, IBM Plex Mono for figures and catalogue tags. Bangla: Hind Siliguri for text,
+     Noto Serif Bengali for headlines, so both languages keep the same serif/sans rhythm. */
+  --font-sans: 'Public Sans', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Newsreader', 'Noto Serif Bengali', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', 'Hind Siliguri', ui-monospace, monospace;
 
   /* scale: 12 / 14 / 15 / 18 / 28 / 36, hero 56–72 */
   --text-base: 0.9375rem;
@@ -45,6 +47,37 @@
   --ease-archive: cubic-bezier(0.22, 1, 0.36, 1);
   --default-transition-duration: 150ms;
   --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Light theme ----------
+   Archival paper instead of night. The same roles, re-valued; contrast checked for AA:
+   fg 15.9:1, fg-2 7.5:1, fg-3 5.3:1 on page (4.7:1 on raised); accent 5.5:1 on page, 4.9:1 on raised. */
+:root[data-theme='light'] {
+  --color-page: #f3f1ea;
+  --color-card: #faf9f5;
+  --color-raised: #e7e4da;
+  --color-fg: #15171d;
+  --color-fg-2: #474d5c;
+  --color-fg-3: #5c6375;
+  --color-line: rgb(21 23 29 / 0.1);
+  --color-line-strong: rgb(21 23 29 / 0.2);
+  --color-accent: #9a4a27;
+}
+
+/* Dark stages: the header, the hero photo, the globes, the map and the 3D timeline stay night
+   in both themes (space is black). Inside them the dark values come back. */
+.theme-dark,
+:root[data-theme='light'] .bg-ink {
+  --color-page: #0b0d14;
+  --color-card: #11141c;
+  --color-raised: #1a1e28;
+  --color-fg: #eef0f5;
+  --color-fg-2: #a3a9b8;
+  --color-fg-3: #7a8296;
+  --color-line: rgb(238 240 245 / 0.08);
+  --color-line-strong: rgb(238 240 245 / 0.16);
+  --color-accent: #d0704a;
+  color: var(--color-fg);
 }
 
 @layer base {
@@ -118,13 +151,13 @@ button:disabled {
   padding: 12px 20px;
   border-radius: var(--radius-btn);
   background-color: var(--color-fg);
-  color: var(--color-ink);
+  color: var(--color-page);
   font-weight: 500;
   font-size: 0.9375rem;
-  transition: background-color 150ms var(--ease-archive);
+  transition: opacity 150ms var(--ease-archive);
 }
 .btn-primary:hover {
-  background-color: #ffffff;
+  opacity: 0.88;
 }
 .btn-secondary {
   display: inline-flex;
@@ -141,6 +174,45 @@ button:disabled {
 }
 .btn-secondary:hover {
   background-color: var(--color-raised);
+}
+
+/* ---------- Header ---------- */
+
+/* The Earthrise photo strip fades into the header at both ends. */
+.header-strip {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
+}
+
+/* The active-link underline slides between links. */
+.nav-indicator {
+  transition: transform 300ms var(--ease-archive), width 300ms var(--ease-archive), opacity 150ms var(--ease-archive);
+}
+
+/* A section reached from the menu draws one accent rule across its top, then fades. */
+section[data-arrive]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transform-origin: left;
+  animation: arriveRule 1.4s var(--ease-archive) both;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes arriveRule {
+  0% { transform: scaleX(0); opacity: 1; }
+  45% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* Theme change: colours cross-fade instead of snapping. */
+html.theme-fading,
+html.theme-fading * {
+  transition: background-color 200ms var(--ease-archive), border-color 200ms var(--ease-archive), color 200ms var(--ease-archive) !important;
 }
 
 /* ---------- Motion system ---------- */
@@ -254,5 +326,5 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(238 240 245 / 0.28);
+  background: var(--color-fg-3);
 }

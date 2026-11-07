@@ -51,7 +51,13 @@ async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
 
 // ---------- Mars rovers: mars.nasa.gov raw-image feeds (the api.nasa.gov Mars Rover Photos API is retired) ----------
 
-const PREFERRED = /NAV|MAST|HAZ|MCZ|CHEMCAM|SKYCAM/i;
+// Cameras that show the landscape, best first. ChemCam's RMI frames are small grey close-ups of
+// rock, so they are only used when nothing else came down that sol.
+const PREFERRED = [/NAV/i, /MAST|MCZ/i, /HAZ/i, /SKYCAM/i];
+const pickBest = <T,>(items: T[], instrument: (i: T) => string): T =>
+  PREFERRED.map((re) => items.find((i) => re.test(instrument(i)))).find(Boolean) ??
+  items.find((i) => !/CHEMCAM|CCAM/i.test(instrument(i))) ??
+  items[0];
 
 interface MslItem { sol: number; instrument: string; https_url: string; date_taken: string; imageid: string; link: string; image_credit?: string }
 
@@ -61,7 +67,7 @@ export async function loadCuriosity(): Promise<RoverLatest> {
   if (!data.items?.length) throw new Error('Curiosity feed is empty');
   const latestSol = data.items[0].sol;
   const sameSol = data.items.filter((i) => i.sol === latestSol);
-  const pick = sameSol.find((i) => PREFERRED.test(i.instrument)) ?? sameSol[0];
+  const pick = pickBest(sameSol, (i) => i.instrument);
   return {
     rover: 'curiosity',
     sol: pick.sol,
@@ -83,7 +89,7 @@ export async function loadPerseverance(): Promise<RoverLatest> {
   if (!data.images?.length) throw new Error('Perseverance feed is empty');
   const latestSol = data.images[0].sol;
   const sameSol = data.images.filter((i) => i.sol === latestSol);
-  const pick = sameSol.find((i) => PREFERRED.test(i.camera.instrument)) ?? sameSol[0];
+  const pick = pickBest(sameSol, (i) => i.camera.instrument);
   return {
     rover: 'perseverance',
     sol: pick.sol,

@@ -16,7 +16,7 @@ class MissionControlAudioEngine {
   private ctx: AudioContext | null = null;
   private isPlaying: boolean = false;
   private environment: SoundscapeType = 'MARTIAN';
-  private volume: number = 0.4;
+  private volume: number = 0.6;
   private listeners: Set<StateListener> = new Set();
 
   // Web Audio Nodes
@@ -59,7 +59,7 @@ class MissionControlAudioEngine {
       if (AudioCtx) {
         this.ctx = new AudioCtx();
         this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.setValueAtTime(this.volume * 0.08, this.ctx.currentTime);
+        this.masterGain.gain.setValueAtTime(this.level(), this.ctx.currentTime);
 
         this.analyser = this.ctx.createAnalyser();
         this.analyser.fftSize = 64;
@@ -85,10 +85,15 @@ class MissionControlAudioEngine {
     return this.analyser;
   }
 
+  /** Master gain for the slider value. A squared curve, so the slider feels even to the ear. */
+  private level(): number {
+    return this.volume * this.volume * 1.2;
+  }
+
   public setVolume(vol: number) {
     this.volume = Math.max(0, Math.min(1, vol));
     if (this.masterGain && this.ctx) {
-      this.masterGain.gain.setTargetAtTime(this.volume * 0.08, this.ctx.currentTime, 0.05);
+      this.masterGain.gain.setTargetAtTime(this.level(), this.ctx.currentTime, 0.05);
     }
     this.notify();
   }
@@ -184,17 +189,38 @@ class MissionControlAudioEngine {
     if (!this.ctx || !this.masterGain) return;
     const now = this.ctx.currentTime;
 
-    // 1. Sub-harmonic seismic hum (Apollo ALSEP ringing frequency ~48 Hz)
+    // 1. Low hum at 48 Hz (felt on headphones) plus a slowly breathing drone at 110 and 165 Hz,
+    //    which small laptop and phone speakers can actually play.
     const subOsc = this.ctx.createOscillator();
     subOsc.type = 'sine';
     subOsc.frequency.setValueAtTime(48, now);
 
     const subGain = this.ctx.createGain();
-    subGain.gain.setValueAtTime(0.3, now);
+    subGain.gain.setValueAtTime(0.25, now);
     subOsc.connect(subGain);
     subGain.connect(this.masterGain);
     subOsc.start();
     this.activeSourceNodes.push(subOsc, subGain);
+
+    const droneGain = this.ctx.createGain();
+    droneGain.gain.setValueAtTime(0.09, now);
+    const breath = this.ctx.createOscillator();
+    breath.frequency.setValueAtTime(0.08, now);
+    const breathDepth = this.ctx.createGain();
+    breathDepth.gain.setValueAtTime(0.05, now);
+    breath.connect(breathDepth);
+    breathDepth.connect(droneGain.gain);
+    droneGain.connect(this.masterGain);
+    breath.start();
+    this.activeSourceNodes.push(breath, breathDepth, droneGain);
+    [110, 165.4].forEach((f) => {
+      const o = this.ctx!.createOscillator();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(f, now);
+      o.connect(droneGain);
+      o.start();
+      this.activeSourceNodes.push(o);
+    });
 
     // 2. High vacuum ether drone (cold overtone at 96 Hz & 192 Hz)
     const etherOsc = this.ctx.createOscillator();
@@ -225,7 +251,7 @@ class MissionControlAudioEngine {
 
         pingOsc.type = 'sine';
         pingOsc.frequency.setValueAtTime(freq, t);
-        pingGain.gain.setValueAtTime(0.015, t);
+        pingGain.gain.setValueAtTime(0.05, t);
         pingGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
 
         pingOsc.connect(pingGain);
@@ -265,14 +291,14 @@ class MissionControlAudioEngine {
     noiseSource.buffer = noiseBuffer;
     noiseSource.loop = true;
 
-    // Wind filter swept between 90 Hz and 240 Hz
+    // Wind: a band of filtered noise swept between 300 and 900 Hz, where small speakers can play it
     const windFilter = this.ctx.createBiquadFilter();
-    windFilter.type = 'lowpass';
-    windFilter.frequency.setValueAtTime(140, now);
-    windFilter.Q.setValueAtTime(2.5, now);
+    windFilter.type = 'bandpass';
+    windFilter.frequency.setValueAtTime(450, now);
+    windFilter.Q.setValueAtTime(0.9, now);
 
     const windGain = this.ctx.createGain();
-    windGain.gain.setValueAtTime(0.35, now);
+    windGain.gain.setValueAtTime(0.9, now);
 
     noiseSource.connect(windFilter);
     windFilter.connect(windGain);
@@ -286,7 +312,7 @@ class MissionControlAudioEngine {
     chassisOsc.frequency.setValueAtTime(62, now);
 
     const chassisGain = this.ctx.createGain();
-    chassisGain.gain.setValueAtTime(0.12, now);
+    chassisGain.gain.setValueAtTime(0.05, now);
 
     chassisOsc.connect(chassisGain);
     chassisGain.connect(this.masterGain);
@@ -297,7 +323,7 @@ class MissionControlAudioEngine {
     this.windIntervalId = window.setInterval(() => {
       if (!this.isPlaying || !this.ctx || !windFilter) return;
       try {
-        const targetFreq = 100 + Math.random() * 160;
+        const targetFreq = 300 + Math.random() * 600;
         const rampDuration = 2.5 + Math.random() * 2.0;
         windFilter.frequency.linearRampToValueAtTime(targetFreq, this.ctx.currentTime + rampDuration);
       } catch {}
@@ -307,6 +333,7 @@ class MissionControlAudioEngine {
   // -------------------------------------------------------------
   // APOLLO QUINDAR TONE: Authentic 2,525 Hz intro or 2,475 Hz outro
   // -------------------------------------------------------------
+  /** Played only from its own button, so it sounds even while ambient sound is off. */
   public playQuindarTone(isIntro: boolean = true) {
     this.initContext();
     if (!this.ctx || !this.masterGain) return;
@@ -320,8 +347,8 @@ class MissionControlAudioEngine {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now);
 
-      gain.gain.setValueAtTime(0.04, now);
-      gain.gain.setValueAtTime(0.04, now + duration - 0.02);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.setValueAtTime(0.08, now + duration - 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
       osc.connect(gain);
@@ -335,7 +362,9 @@ class MissionControlAudioEngine {
   // -------------------------------------------------------------
   // TELEMETRY PING / RADIO CHIRP
   // -------------------------------------------------------------
+  /** A short chirp for a click. Silent unless sound is on (one switch for the whole site). */
   public playTelemetryPing(freq: number = 1046.5, duration: number = 0.08) {
+    if (!this.isPlaying) return;
     this.initContext();
     if (!this.ctx || !this.masterGain) return;
     try {
@@ -347,7 +376,7 @@ class MissionControlAudioEngine {
       osc.frequency.setValueAtTime(freq, now);
       osc.frequency.exponentialRampToValueAtTime(freq * 0.75, now + duration);
 
-      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.setValueAtTime(0.12, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
       osc.connect(gain);

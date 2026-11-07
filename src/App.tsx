@@ -21,6 +21,7 @@ import { LiveBand } from './components/LiveBand';
 import { ImpactStrip } from './components/ImpactStrip';
 import { useI18n } from './i18n/I18nProvider';
 import { YoungExplorers } from './components/YoungExplorers';
+import { Quiz } from './components/Quiz';
 import { Footer } from './components/Footer';
 import { MachineDetailModal } from './components/MachineDetailModal';
 import { SoundscapeController } from './components/SoundscapeController';
@@ -110,7 +111,7 @@ export default function App() {
     <div className="min-h-screen bg-page text-fg selection:bg-accent selection:text-ink relative">
       <a
         href="#explore"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[110] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-fg focus:text-ink focus: focus:text-xs"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[110] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-fg focus:text-page focus:text-xs"
       >
         {t('skip')}
       </a>
@@ -183,6 +184,9 @@ export default function App() {
 
         {/* 15. For Young Explorers (Quiz, Match, Build a Mission) */}
         <YoungExplorers />
+
+        {/* 16. Quiz: five questions per round from a bank of fifty */}
+        <Quiz onOpenMachine={handleSelectMachineById} />
       </main>
 
       {/* 16. Final Cinematic Section & Institutional Footer */}

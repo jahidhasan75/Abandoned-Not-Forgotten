@@ -21,6 +21,14 @@ Keep this file current as you build. Match the wording to the official Project S
   tag signature, quieter 3D timeline. No facts, data or sources were changed. Audit and before/after
   screenshots: `docs/unslop/`.
 
+- 7 Nov 2026: renamed the project EXOARCHIVE and added the team's logo to the header with an Apollo 11
+  Earthrise photo strip (AS11-44-6550); sliding menu underline and a section "arrival" rule; a
+  dark/light theme toggle; fonts changed to Public Sans, IBM Plex Mono and Noto Serif Bengali; photos
+  (PIA14011, PIA00407) on the live Moon and Mars tiles; fixed the sound system (levels were near silent
+  and the drones were below what small speakers can play); a 50-question quiz drawn from the archive's
+  own facts, 5 per round with no repeats for 5 rounds. The quiz questions were written by the AI from
+  `src/data/missionsData.ts`. **TODO (team): read all 50 questions once before submission.**
+
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;
   describe your own contributions here.

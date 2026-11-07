@@ -13,7 +13,7 @@ site when you record.
 |---|---|---|
 | 0:00–0:20 | Team name card, then each member | "We are **[TODO team name]**: [TODO names and roles]. Our challenge is **[TODO official challenge name]**." |
 | 0:20–0:45 | Hero (Apollo 11 shadow over footprints) | "Humanity has left more than [TODO verified figure, or drop the number] of hardware on the Moon and Mars: descent stages, rovers, landers that went quiet. They stopped working. They did not stop meaning something. But today their stories are scattered across catalogues most people never see." |
-| 0:45–1:10 | "Where Stories Remain": Earth → fly to the Moon | "Abandoned // Not Forgotten puts every object back where it is. These globes are real NASA mosaics: the Moon from the **Lunar Reconnaissance Orbiter Camera via Moon Trek**, Mars from the **Viking MDIM mosaic via Mars Trek**, Earth from **NASA GIBS Blue Marble**." |
+| 0:45–1:10 | "Where Stories Remain": Earth → fly to the Moon | "EXOARCHIVE puts every object back where it is. These globes are real NASA mosaics: the Moon from the **Lunar Reconnaissance Orbiter Camera via Moon Trek**, Mars from the **Viking MDIM mosaic via Mars Trek**, Earth from **NASA GIBS Blue Marble**." |
 | 1:10–1:50 | Click Apollo 11 on the map → dossier | "Click the Apollo 11 descent stage. Its coordinates, 0.67416 north, 23.47314 east, come from the **NSSDCA catalogue**. Here is its final photograph from the surface, and here is the same site from orbit, photographed by LRO. Every fact links to its source: NSSDCA, the **PDS context identifier**, and the Apollo 11 mission report on **NTRS**." |
 | 1:50–2:15 | Live panel in the dossier, then the "Still Talking" band | "And it is live. A radio signal from Earth would take about 1.3 seconds to reach it today, computed from **JPL Horizons**. Curiosity and Perseverance are still sending raw images from Mars, so we show today's sol and newest picture. Every number carries a badge: live, cached, or offline copy." |
 | 2:15–2:35 | Year scrubber: press play from 1967 | "The timeline replays fifty-nine years of hardware arriving on two worlds." |
@@ -30,14 +30,14 @@ readable; turn on English subtitles.
 2. (5–12 s) Fly from Earth to the Moon on the real LRO mosaic: "Every machine we left on the Moon and Mars, on real NASA maps."
 3. (12–22 s) Click Apollo 11: surface photo, orbit photo, source links, live signal time: "Each one with its last photo, its coordinates and its NASA source."
 4. (22–27 s) Toggle Bangla, flash the Data Sources: "Bilingual, open data, works offline."
-5. (27–30 s) "Abandoned // Not Forgotten."
+5. (27–30 s) "EXOARCHIVE. Abandoned, not forgotten."
 
 ---
 
 ## 3. Project page fields (drafts)
 
 ### High-Level Summary
-Abandoned // Not Forgotten is an interactive, bilingual (English and Bangla) museum of the hardware
+EXOARCHIVE is an interactive, bilingual (English and Bangla) museum of the hardware
 NASA left on the Moon and Mars. Visitors fly between 3D globes built from real NASA mosaics, open
 each object to see its last photograph, catalogued coordinates, the date contact ended and links to
 the NASA records behind every fact, and watch live data from the rovers that are still working. It
