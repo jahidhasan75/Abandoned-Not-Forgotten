@@ -2,6 +2,7 @@ import React from 'react';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 import { ArrowUp, ExternalLink } from 'lucide-react';
+import { CHALLENGE_URL } from './ChallengeFit';
 
 interface FooterProps {
   onScrollToTop: () => void;
@@ -47,6 +48,16 @@ export const Footer: React.FC<FooterProps> = ({ onScrollToTop, onExploreAgain })
           </div>
 
           <div className="flex flex-col gap-2 text-sm shrink-0">
+            <a
+              href={CHALLENGE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 hover:text-fg transition-colors"
+            >
+              {t('footer.challenge')}
+              <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.5} aria-hidden="true" />
+              <span className="sr-only">{t('modal.newTab')}</span>
+            </a>
             <a
               href="https://www.spaceappschallenge.org"
               target="_blank"

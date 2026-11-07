@@ -1,6 +1,6 @@
 # Submission kit — ABANDONED // NOT FORGOTTEN
 
-Drafts for the videos and the NASA project page. Replace every **[TODO]** before submitting, and
+Drafts for the videos and the NASA project page. Challenge: **Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars** (https://www.spaceappschallenge.org/2026/challenges/nasas-discarded-equipment-storytelling/). Replace every **[TODO]** before submitting, and
 match the wording to the official Project Submission Guide published on 13 November 2026.
 Numbers below were true on 7 Nov 2026; the live ones (sols, distances) change, so read them off the
 site when you record.
@@ -11,7 +11,7 @@ site when you record.
 
 | Time | On screen | Voice-over (English; say the NASA dataset names out loud) |
 |---|---|---|
-| 0:00–0:20 | Team name card, then each member | "We are **[TODO team name]**: [TODO names and roles]. Our challenge is **[TODO official challenge name]**." |
+| 0:00–0:20 | Team name card, then each member | "We are **[TODO team name]**: [TODO names and roles]. Our challenge is **Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars**." |
 | 0:20–0:45 | Hero (Apollo 11 shadow over footprints) | "Humanity has left more than [TODO verified figure, or drop the number] of hardware on the Moon and Mars: descent stages, rovers, landers that went quiet. They stopped working. They did not stop meaning something. But today their stories are scattered across catalogues most people never see." |
 | 0:45–1:10 | "Where Stories Remain": Earth → fly to the Moon | "EXOARCHIVE puts every object back where it is. These globes are real NASA mosaics: the Moon from the **Lunar Reconnaissance Orbiter Camera via Moon Trek**, Mars from the **Viking MDIM mosaic via Mars Trek**, Earth from **NASA GIBS Blue Marble**." |
 | 1:10–1:50 | Click Apollo 11 on the map → dossier | "Click the Apollo 11 descent stage. Its coordinates, 0.67416 north, 23.47314 east, come from the **NSSDCA catalogue**. Here is its final photograph from the surface, and here is the same site from orbit, photographed by LRO. Every fact links to its source: NSSDCA, the **PDS context identifier**, and the Apollo 11 mission report on **NTRS**." |
@@ -26,7 +26,7 @@ readable; turn on English subtitles.
 
 ## 2. 30-second global video (script, English subtitles required)
 
-1. (0–5 s) Team name + "NASA Space Apps 2026, [TODO challenge]".
+1. (0–5 s) Team name + "NASA Space Apps 2026, Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars".
 2. (5–12 s) Fly from Earth to the Moon on the real LRO mosaic: "Every machine we left on the Moon and Mars, on real NASA maps."
 3. (12–22 s) Click Apollo 11: surface photo, orbit photo, source links, live signal time: "Each one with its last photo, its coordinates and its NASA source."
 4. (22–27 s) Toggle Bangla, flash the Data Sources: "Bilingual, open data, works offline."

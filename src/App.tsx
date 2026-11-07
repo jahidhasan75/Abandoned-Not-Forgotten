@@ -15,6 +15,7 @@ import { StatusSystem } from './components/StatusSystem';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import { LiveBand } from './components/LiveBand';
 import { ImpactStrip } from './components/ImpactStrip';
+import { ChallengeFit } from './components/ChallengeFit';
 import { useI18n } from './i18n/I18nProvider';
 import { Footer } from './components/Footer';
 import { MachineDetailModal } from './components/MachineDetailModal';
@@ -188,6 +189,9 @@ export default function App() {
 
         {/* Who it is for, how it is used, how it grows */}
         <ImpactStrip />
+
+        {/* The official challenge and how each part of its brief is answered */}
+        <ChallengeFit onNavigate={handleNavigate} />
 
         {/* Live NASA data: rovers still working, live Earth-Moon and Earth-Mars range */}
         <LiveBand onOpenMachine={handleSelectMachineById} />

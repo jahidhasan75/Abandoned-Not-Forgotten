@@ -58,6 +58,9 @@ Keep this file current as you build. Match the wording to the official Project S
 - 7 Nov 2026: quiz copy no longer explains the no-repeat rule; Match the machine now draws 4 of 15 pairs
   per round (written by the AI from the dossiers, en + bn) without repeating recent pairs, and celebrates a
   finished round. **TODO (team): read the 15 match pairs once.**
+- 7 Nov 2026: a "Our challenge" section names the official challenge and maps each part of its brief
+  (paraphrased by the AI from the challenge page) to the section that answers it; the footer links the
+  challenge, and docs/SUBMISSION.md now carries the challenge name.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;
