@@ -354,3 +354,28 @@ html.theme-fading * {
 @media (prefers-reduced-motion: reduce) {
   .journey-dot-current { animation: none; }
 }
+
+/* Teacher worksheet (TeacherKit): rendered into #print-root, the only thing shown while printing.
+   Plain black on white, serif, so it photocopies well. */
+#print-root { display: none; }
+@media print {
+  @page { margin: 16mm; }
+  body.printing-sheet > *:not(#print-root) { display: none !important; }
+  body.printing-sheet { background: #fff !important; }
+  body.printing-sheet #print-root {
+    display: block;
+    color: #000;
+    background: #fff;
+    font-family: var(--font-serif);
+    font-size: 11.5pt;
+    line-height: 1.45;
+  }
+  #print-root .print-title { font-size: 20pt; margin: 0 0 6pt; }
+  #print-root .print-fields { display: flex; gap: 18pt; margin: 0 0 10pt; font-family: var(--font-sans); font-size: 10pt; }
+  #print-root .print-instr { margin: 0 0 12pt; font-family: var(--font-sans); font-size: 10pt; }
+  #print-root ol { margin: 0; padding-left: 18pt; }
+  #print-root .print-questions > li { margin: 0 0 10pt; break-inside: avoid; }
+  #print-root .print-questions ul { list-style: none; margin: 3pt 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2pt 16pt; }
+  #print-root .print-key { break-before: page; }
+  #print-root .print-key h2 { font-size: 16pt; margin: 0 0 8pt; }
+}

@@ -132,10 +132,11 @@ src/
 | 7 | `StatusSystem` | — | 5 status tabs (ACTIVE/SILENT/INACTIVE/LOST/HISTORIC) + matching artifacts | inline + `MISSIONS_DATA` |
 | 8 | `OneMachineJourney` | `journey` | 6-step biography of Sojourner, Opportunity, InSight or Ingenuity (en + bn), with that object's sources and a dossier link | `src/data/journeys.ts` |
 | 10 | `BeforeAfterSlider` | — | Drag slider: InSight's first selfie (2018, PIA22876) vs final selfie (2022, PIA25287) | `ASSET_IMAGES` |
-| 11 | `ScienceConstellation` | `science` | SVG graph linking machines to discoveries | `CONSTELLATION_*` |
+| 11 | `ScienceConstellation` | `science` | SVG graph linking 17 machines to 9 themes (en + bn, keyboard-operable); a machine node opens its dossier | `CONSTELLATION_*` in `missionsData.ts` |
 | 14 | `ArchaeologyArchive` | `archive` | Searchable, filterable table of all artifacts | `MISSIONS_DATA` |
 | 14b | `DataSources` | `data-sources` | Every NASA dataset and what it is used for; featured LROC dataset read from the local PDS catalog; GeoJSON download | `pdsCatalog.json`, `MISSIONS_DATA` |
-| 16 | `YoungExplorers` | `explorers` | Mission quiz (the 50-question `QuizPanel`), Match-the-Machine game, Build-a-Mission configurator | `src/data/quiz.ts` + inline |
+| 16 | `YoungExplorers` | `explorers` | Mission quiz (the 50-question `QuizPanel`), Match-the-Machine, Build-a-Mission (lists real archive machines like your design), For teachers (`TeacherKit`) — all en + bn | `src/data/quiz.ts` + `strings.json` |
+| 16b | `TeacherKit` (the For teachers tab) | — | 45-minute lesson plan, learning goals, a printable 10-question worksheet with answer key (`#print-root`, print CSS in `index.css`), how to share a dossier link | `src/data/quiz.ts` |
 | 16a | `QuizPanel` (the Mission quiz tab inside `YoungExplorers`) | `quiz` | 5 questions per round from a bank of 50 (en + bn); a question does not return for the next 5 rounds (history in `localStorage`, `exoarchive-quiz-history`); each answer links to its dossier | `src/data/quiz.ts`, `src/lib/quizPick.ts` (tested) |
 | 17 | `Footer` | — | Closing message, data accuracy notice | inline |
 | — | `MachineDetailModal` | — | Full dossier dialog (Esc to close) | the selected artifact |
@@ -280,7 +281,11 @@ Data and credibility
     coordinates. On the 3D globe, Apollo 11's descent stage and retroreflector share one point.
 11. Curiosity and Perseverance use their landing coordinates and fixed "5,000+ sols" style counts;
     live position and sol come in Phase 3.
-12. Constellation nodes do not yet include the newer artifacts. ("One Machine, One Journey" now has InSight and Ingenuity.)
+12. (fixed) The constellation and "One Machine, One Journey" now include the newer artifacts.
+16. Deep links: `#machine=<id>` opens that dossier, and the dossier has a Copy link button. Sections below
+    the status list load as separate chunks right after first paint (main chunk 625 kB → 306 kB).
+17. Check against the Apollo 12 mission report: the English Surveyor 3 story, hook and quiz say Apollo 12
+    landed 160 m away, the Bangla story says 180 m.
 13. Removed in v0.7.0: the AI-generated images (replaced by NASA photos), four unsourced sections (Hardware
     Anatomy, Why Leave It Behind, Did You Know, What Did It Teach Us), AI Studio leftovers, and several
     unverifiable claims and quotes.

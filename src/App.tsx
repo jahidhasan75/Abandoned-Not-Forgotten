@@ -12,18 +12,25 @@ import { PlanetSelector } from './components/PlanetSelector';
 import { ArchaeologyMap } from './components/ArchaeologyMap';
 import { MachineCards } from './components/MachineCards';
 import { StatusSystem } from './components/StatusSystem';
-import { OneMachineJourney } from './components/OneMachineJourney';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
-import { ScienceConstellation } from './components/ScienceConstellation';
-import { ArchaeologyArchive } from './components/ArchaeologyArchive';
-import { DataSources } from './components/DataSources';
 import { LiveBand } from './components/LiveBand';
 import { ImpactStrip } from './components/ImpactStrip';
 import { useI18n } from './i18n/I18nProvider';
-import { YoungExplorers } from './components/YoungExplorers';
 import { Footer } from './components/Footer';
 import { MachineDetailModal } from './components/MachineDetailModal';
 import { SoundscapeController } from './components/SoundscapeController';
+
+// Sections further down the page load in their own chunks right after the first paint, so the
+// first download is smaller. Each placeholder keeps the section id, so menu links still work.
+const OneMachineJourney = lazy(() => import('./components/OneMachineJourney').then((m) => ({ default: m.OneMachineJourney })));
+const ScienceConstellation = lazy(() => import('./components/ScienceConstellation').then((m) => ({ default: m.ScienceConstellation })));
+const ArchaeologyArchive = lazy(() => import('./components/ArchaeologyArchive').then((m) => ({ default: m.ArchaeologyArchive })));
+const DataSources = lazy(() => import('./components/DataSources').then((m) => ({ default: m.DataSources })));
+const YoungExplorers = lazy(() => import('./components/YoungExplorers').then((m) => ({ default: m.YoungExplorers })));
+
+const SectionPlaceholder: React.FC<{ id: string; minHeight: number }> = ({ id, minHeight }) => (
+  <section id={id} className="relative bg-page border-t border-line" style={{ minHeight }} aria-busy="true" />
+);
 
 // Three.js is large (~500 kB), so the 3D timeline loads in its own chunk.
 const Timeline3D = lazy(() =>
@@ -129,6 +136,29 @@ export default function App() {
 
   const handleCloseModal = useCallback(() => setSelectedArtifact(null), []);
 
+  // Deep links: #machine=<id> opens that dossier (a teacher can send a class straight to one object).
+  useEffect(() => {
+    const openFromHash = () => {
+      const m = window.location.hash.match(/^#machine=([\w-]+)$/);
+      if (m) handleSelectMachineById(m[1]);
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
+  }, [handleSelectMachineById]);
+
+  // Keep the address in step with the open dossier, without adding history entries.
+  useEffect(() => {
+    const { pathname, search, hash } = window.location;
+    if (selectedArtifact) {
+      if (hash !== `#machine=${selectedArtifact.id}`) {
+        window.history.replaceState(null, '', `${pathname}${search}#machine=${selectedArtifact.id}`);
+      }
+    } else if (hash.startsWith('#machine=')) {
+      window.history.replaceState(null, '', `${pathname}${search}`);
+    }
+  }, [selectedArtifact]);
+
   return (
     <div className="min-h-screen bg-page text-fg selection:bg-accent selection:text-ink relative">
       <a
@@ -189,22 +219,32 @@ export default function App() {
         <StatusSystem onSelectMachineId={handleSelectMachineById} />
 
         {/* 7. "One Machine. One Journey." Cinematic Timeline */}
-        <OneMachineJourney onOpenMachine={handleSelectMachineById} />
+        <Suspense fallback={<SectionPlaceholder id="journey" minHeight={1300} />}>
+          <OneMachineJourney onOpenMachine={handleSelectMachineById} />
+        </Suspense>
 
         {/* 9. Before & After Draggable Comparison Slider */}
         <BeforeAfterSlider />
 
         {/* 10. Science Impact Constellation */}
-        <ScienceConstellation />
+        <Suspense fallback={<SectionPlaceholder id="science" minHeight={980} />}>
+          <ScienceConstellation onOpenMachine={handleSelectMachineById} />
+        </Suspense>
 
         {/* 13. Space Archaeology Master Archive */}
-        <ArchaeologyArchive onOpenDetails={setSelectedArtifact} />
+        <Suspense fallback={<SectionPlaceholder id="archive" minHeight={1900} />}>
+          <ArchaeologyArchive onOpenDetails={setSelectedArtifact} />
+        </Suspense>
 
         {/* NASA data provenance: every dataset and what it is used for */}
-        <DataSources />
+        <Suspense fallback={<SectionPlaceholder id="data-sources" minHeight={1600} />}>
+          <DataSources />
+        </Suspense>
 
         {/* 15. For Young Explorers (Quiz, Match, Build a Mission) */}
-        <YoungExplorers onOpenMachine={handleSelectMachineById} />
+        <Suspense fallback={<SectionPlaceholder id="explorers" minHeight={720} />}>
+          <YoungExplorers onOpenMachine={handleSelectMachineById} />
+        </Suspense>
       </main>
 
       {/* 16. Final Cinematic Section & Institutional Footer */}

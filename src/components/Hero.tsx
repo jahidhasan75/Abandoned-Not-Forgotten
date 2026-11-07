@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowRight } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../lib/theme';
@@ -53,6 +53,16 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap, onOpenM
     onOpenMachine(a.id);
   };
 
+  // The demo moment: Surveyor 3, photographed by the Apollo 12 crew in 1969 and again from orbit by LRO in 2009
+  const openThenAndNow = () => {
+    spaceAudio.playTelemetryPing(1080, 0.07);
+    onOpenMachine('surveyor3');
+    window.setTimeout(() => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.getElementById('then-now')?.parentElement?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }, 350);
+  };
+
   const plateLabel = (a: MissionArtifact) => `${t(`body.${a.destination}`)} · ${a.mission}, ${a.landingYear}`;
 
   return (
@@ -96,6 +106,17 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap, onOpenM
               {t('hero.map')}
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={openThenAndNow}
+            className="group mt-6 flex items-start gap-2 text-left text-sm text-fg-2 hover:text-fg transition-colors max-w-xl"
+          >
+            <span>
+              <span className="text-fg">{t('hero.demo.kicker')}</span> {t('hero.demo.body')}
+            </span>
+            <ArrowRight className="w-4 h-4 mt-0.5 shrink-0 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden="true" />
+          </button>
         </div>
 
         {/* Two catalogue plates: real NASA photographs of objects in the archive */}

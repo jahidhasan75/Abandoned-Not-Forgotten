@@ -41,7 +41,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     },
     role: 'Pioneering mobile Mars micro-rover',
     hook: "The size of a microwave oven and built to last 7 Martian days, it kept going for 83. Then the lander that carried its messages went quiet, and no one knows why.",
-    story: 'Weighing only 11.5 kg (about the size of a microwave oven), Sojourner proved to a skeptical world that mobile robotic exploration was possible on Mars. Designed for only 7 Martian days (sols), it operated for 83 sols, circling the Pathfinder lander and analyzing rocks named Barnacle Bill and Yogi.',
+    story: 'Weighing only 11.5 kg (about the size of a microwave oven), Sojourner showed that a rover could explore Mars. Designed for only 7 Martian days (sols), it operated for 83 sols, circling the Pathfinder lander and analyzing rocks named Barnacle Bill and Yogi.',
     scienceContribution: [
       'First in-situ chemical analysis of Martian rocks using APXS',
       'Demonstrated autonomous hazard avoidance and rocker-bogie mobility',
@@ -68,7 +68,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     funFacts: [
       'Named after Sojourner Truth, the African American abolitionist and women\'s rights activist.',
-      'Transmitted 550 pristine photographs back to Earth before falling silent.',
+      'Sent about 550 images back to Earth before falling silent.',
       'If it lost contact, its software told it to drive back towards the lander, so it may have ended its days circling the silent base station.'
     ]
   },
@@ -92,7 +92,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     },
     role: 'Long-range robotic field geologist',
     hook: "Built for 90 Martian days, it kept driving for more than 14 years and covered a marathon. Then a dust storm swallowed the sky, and more than 1,000 calls from Earth went unanswered.",
-    story: 'Designed to survive 90 Martian days and travel 600 meters, Opportunity roamed Mars for over 14 years and covered a marathon distance of 45.16 kilometers. It found unmistakable evidence that liquid, acidic water once soaked the Martian plains of Meridiani.',
+    story: 'Designed to survive 90 Martian days and travel 600 meters, Opportunity roamed Mars for over 14 years and covered a marathon distance of 45.16 kilometers. It found strong evidence that liquid, acidic water once soaked the Martian plains of Meridiani.',
     scienceContribution: [
       'Discovered hematite-rich mineral spherules nicknamed "blueberries"',
       'Confirmed ancient groundwater systems and past habitable environments',
@@ -195,7 +195,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     },
     role: 'Arctic ice excavator and soil chemistry lab',
     hook: "Digging in the Martian arctic, it uncovered bright white patches that vanished within days: water ice. Then winter came and loaded it with frozen carbon dioxide.",
-    story: 'Phoenix touched down on the frigid arctic plains of Mars. With its robotic arm, it scraped shallow trenches into the soil and exposed bright white patches that evaporated over several days—confirming they were water ice. Phoenix tasted Martian water for the first time in human history.',
+    story: 'Phoenix touched down on the frigid arctic plains of Mars. With its robotic arm, it scraped shallow trenches into the soil and exposed bright white patches that evaporated over several days—confirming they were water ice.',
     scienceContribution: [
       'First direct sample and confirmation of subsurface water ice on Mars',
       'Discovered perchlorate salts in Martian soil, an oxidizer and chemical energy source',
@@ -346,7 +346,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     hook: "Armstrong flew its last minute by hand to dodge a field of boulders. Its lower half still stands where people first walked on another world.",
     story: 'When Neil Armstrong and Buzz Aldrin blasted off from the Moon on July 21, 1969, they left the lower portion of the Eagle lander behind. Its four spidery landing legs, gold Kapton foil, and stainless steel plaque reading "We came in peace for all mankind" remain exactly where humanity first stepped onto another celestial body.',
     scienceContribution: [
-      'Enabled humanity\'s first collection of pristine lunar rock and regolith samples (21.5 kg)',
+      'Enabled the first lunar rock and soil samples brought to Earth (21.5 kg)',
       'Deployed the Early Apollo Scientific Experiments Package (EASEP)',
       'Served as launch pad for first extraterrestrial liftoff'
     ],
@@ -371,7 +371,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     funFacts: [
       'Armstrong piloted the lander manually for the final 60 seconds because the computer was guiding them toward a boulder-strewn crater.',
-      'The boots worn by the astronauts were also discarded on the surface to save weight for lunar rocks!'
+      'The boots worn by the astronauts were also discarded on the surface to save weight for lunar rocks.'
     ],
     historicalQuote: {
       text: 'Houston, Tranquility Base here. The Eagle has landed.',
@@ -426,7 +426,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     ],
     funFacts: [
       'Had no steering wheel—astronauts steered with a small T-handle joystick between their seats.',
-      'On Apollo 17, astronaut Gene Cernan broke a fender and repaired it with lunar maps and duct tape!'
+      'On Apollo 17, astronaut Gene Cernan broke a fender and repaired it with lunar maps and duct tape.'
     ]
   },
   {
@@ -473,10 +473,10 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     subsystems: [
       { name: 'Passive Seismic Experiment (PSE)', description: 'Three-component long-period seismometer', significance: 'Detected over 12,000 seismic events on the Moon.' },
       { name: 'SNAP-27 Radioisotope Generator', description: 'Plutonium-238 heat converted to 73W electricity', significance: 'Uninterrupted power throughout 14-day lunar nights.' },
-      { name: 'Laser Ranging Retroreflector (LRRR)', description: 'Array of 100 quartz corner-cube prisms', significance: 'STILL IN USE TODAY: Earth lasers bounce off it to measure Moon distance to millimeter accuracy!' }
+      { name: 'Laser Ranging Retroreflector (LRRR)', description: 'Array of 100 quartz corner-cube prisms', significance: 'Still in use: observatories on Earth bounce lasers off it to measure the distance to the Moon.' }
     ],
     funFacts: [
-      'While the electronic stations were turned off in 1977, the mirror retroreflectors need NO electricity and are still used by scientists today in 2026!',
+      'While the electronic stations were turned off in 1977, the mirror retroreflectors need no electricity and are still used by scientists today.',
       'When Apollo ascent stages intentionally crashed into the Moon, the ALSEPs recorded the Moon "ringing like a bell" for hours.'
     ]
   },
@@ -501,7 +501,7 @@ export const MISSIONS_DATA: MissionArtifact[] = [
     },
     role: 'Pre-Apollo lunar scout and robotic soil sampler',
     hook: "Two and a half years after it landed, Apollo 12 touched down 160 metres away. The astronauts walked over and took parts of it home: the first visit to an old spacecraft on another world.",
-    story: 'Surveyor 3 landed on the Moon in April 1967 to prove the lunar surface was firm enough for human astronauts. Two and a half years later, Apollo 12 executed a pinpoint landing only 160 meters away. Pete Conrad and Alan Bean walked over to Surveyor 3, inspected its weathered parts, and clipped off its TV camera and mechanical scoop to bring back to Earth—humanity\'s first true space archaeology recovery!',
+    story: 'Surveyor 3 landed on the Moon in April 1967 to prove the lunar surface was firm enough for human astronauts. Two and a half years later, Apollo 12 executed a pinpoint landing only 160 meters away. Pete Conrad and Alan Bean walked over to Surveyor 3, inspected its weathered parts, and clipped off its TV camera and mechanical scoop to bring back to Earth: the first time people went back to an earlier spacecraft on another world.',
     scienceContribution: [
       'Proved lunar regolith could support the weight of heavy manned landers',
       'Conducted first mechanical digging and bearing-strength tests',
@@ -1024,48 +1024,64 @@ export const MISSIONS_DATA: MissionArtifact[] = [
 ];
 
 export const CONSTELLATION_NODES: ConstellationNode[] = [
-  // Machines
-  { id: 'm-sojourner', label: 'Sojourner', category: 'machine', destination: 'MARS', description: 'First mobile robot on Mars (1997)', x: 180, y: 140 },
-  { id: 'm-spirit', label: 'Spirit', category: 'machine', destination: 'MARS', description: 'Gusev crater & silica deposits (2004)', x: 260, y: 280 },
-  { id: 'm-opportunity', label: 'Opportunity', category: 'machine', destination: 'MARS', description: 'Meridiani water evidence & 45km marathon (2004)', x: 380, y: 150 },
-  { id: 'm-insight', label: 'InSight', category: 'machine', destination: 'MARS', description: 'Geophysics & 1300+ marsquakes (2018)', x: 490, y: 310 },
-  { id: 'm-apollo11', label: 'Apollo 11 Eagle', category: 'machine', destination: 'MOON', description: 'First crewed lunar landing site (1969)', x: 680, y: 140 },
-  { id: 'm-apollo15', label: 'Apollo 15 LRV', category: 'machine', destination: 'MOON', description: 'First crewed planetary rover (1971)', x: 800, y: 270 },
-  { id: 'm-alsep', label: 'Apollo ALSEP', category: 'machine', destination: 'MOON', description: 'Nuclear seismic & magnetic network (1969-77)', x: 920, y: 160 },
-  { id: 'm-viking2', label: 'Viking 2', category: 'machine', destination: 'MARS', description: 'Photographed water frost in Utopia Planitia (1976-80)', x: 90, y: 250 },
-  { id: 'm-ingenuity', label: 'Ingenuity', category: 'machine', destination: 'MARS', description: 'First powered flight on another world (2021-24)', x: 460, y: 60 },
-  { id: 'm-apollo17', label: 'Apollo 17', category: 'machine', destination: 'MOON', description: 'Last crewed landing; orange volcanic glass (1972)', x: 690, y: 405 },
-  { id: 'm-apollo14sivb', label: 'Apollo 14 S-IVB', category: 'machine', destination: 'MOON', description: 'Rocket stage crashed as a seismic source (1971)', x: 1010, y: 405 },
+  // Machines (Mars on the left, the Moon on the right)
+  { id: 'm-phoenix', artifactId: 'phoenix', label: 'Phoenix', category: 'machine', destination: 'MARS', description: 'Dug up water ice in the Martian arctic (2008)', bn: { description: 'মঙ্গলের মেরু অঞ্চলে মাটি খুঁড়ে পানির বরফ পেয়েছে (২০০৮)' }, x: 90, y: 55 },
+  { id: 'm-viking1', artifactId: 'viking1', label: 'Viking 1', category: 'machine', destination: 'MARS', description: 'First clear photo from the surface of Mars and the first biology experiments on another world (1976)', bn: { description: 'মঙ্গলের মাটি থেকে প্রথম স্পষ্ট ছবি, আর অন্য জগতে প্রথম জীববিজ্ঞান পরীক্ষা (১৯৭৬)' }, x: 60, y: 150 },
+  { id: 'm-sojourner', artifactId: 'sojourner', label: 'Sojourner', category: 'machine', destination: 'MARS', description: 'First wheeled rover to drive on Mars (1997)', bn: { description: 'মঙ্গলে চলা প্রথম চাকাওয়ালা রোভার (১৯৯৭)' }, x: 180, y: 140 },
+  { id: 'm-viking2', artifactId: 'viking2', label: 'Viking 2', category: 'machine', destination: 'MARS', description: 'Photographed water frost at Utopia Planitia (1976–80)', bn: { description: 'ইউটোপিয়া প্ল্যানিশিয়ায় পানির বরফের ছবি তুলেছে (১৯৭৬–৮০)' }, x: 90, y: 260 },
+  { id: 'm-spirit', artifactId: 'spirit', label: 'Spirit', category: 'machine', destination: 'MARS', description: 'Found silica about 90% pure in Gusev Crater (2004–10)', bn: { description: 'গুসেভ ক্রেটারে প্রায় ৯০% খাঁটি সিলিকা খুঁজে পেয়েছে (২০০৪–১০)' }, x: 260, y: 290 },
+  { id: 'm-opportunity', artifactId: 'opportunity', label: 'Opportunity', category: 'machine', destination: 'MARS', description: 'Evidence of water at Meridiani, and 45.16 km driven (2004–18)', bn: { description: 'মেরিডিয়ানিতে পানির প্রমাণ, আর ৪৫.১৬ কিমি পথ (২০০৪–১৮)' }, x: 380, y: 150 },
+  { id: 'm-ingenuity', artifactId: 'ingenuity', label: 'Ingenuity', category: 'machine', destination: 'MARS', description: 'First powered, controlled flight on another world (2021–24)', bn: { description: 'অন্য জগতে প্রথম চালিত, নিয়ন্ত্রিত উড্ডয়ন (২০২১–২৪)' }, x: 460, y: 60 },
+  { id: 'm-perseverance', artifactId: 'perseverance', label: 'Perseverance', category: 'machine', destination: 'MARS', description: 'Seals rock samples from an ancient river delta (2021–)', bn: { description: 'প্রাচীন নদী-বদ্বীপ থেকে পাথরের নমুনা সিল করে রাখছে (২০২১–)' }, x: 560, y: 120 },
+  { id: 'm-insight', artifactId: 'insight', label: 'InSight', category: 'machine', destination: 'MARS', description: 'Heard more than 1,300 marsquakes and impacts (2018–22)', bn: { description: '১,৩০০-র বেশি মঙ্গলকম্প আর উল্কাপাত শুনেছে (২০১৮–২২)' }, x: 490, y: 300 },
+  { id: 'm-curiosity', artifactId: 'curiosity', label: 'Curiosity', category: 'machine', destination: 'MARS', description: 'Found that Gale Crater once held a lake microbes could have lived in (2012–)', bn: { description: 'দেখেছে গেল ক্রেটারে একসময় অণুজীবের বসবাসযোগ্য হ্রদ ছিল (২০১২–)' }, x: 370, y: 405 },
+  { id: 'm-apollo11', artifactId: 'apollo11-descent', label: 'Apollo 11 Eagle', category: 'machine', destination: 'MOON', description: 'First crewed landing site on the Moon (1969)', bn: { description: 'চাঁদে মানুষের প্রথম অবতরণস্থল (১৯৬৯)' }, x: 680, y: 150 },
+  { id: 'm-surveyor3', artifactId: 'surveyor3', label: 'Surveyor 3', category: 'machine', destination: 'MOON', description: 'Visited by the Apollo 12 crew, who brought parts of it back to Earth (1967, visited 1969)', bn: { description: 'অ্যাপোলো ১২-এর নভোচারীরা গিয়ে এর কিছু অংশ পৃথিবীতে ফিরিয়ে আনেন (১৯৬৭, পরিদর্শন ১৯৬৯)' }, x: 860, y: 45 },
+  { id: 'm-alsep', artifactId: 'alsep-instruments', label: 'Apollo ALSEP', category: 'machine', destination: 'MOON', description: 'Nuclear-powered science stations that listened to the Moon (1969–77)', bn: { description: 'পারমাণবিক শক্তিতে চলা বিজ্ঞান স্টেশন, যারা চাঁদের কম্পন শুনেছে (১৯৬৯–৭৭)' }, x: 920, y: 165 },
+  { id: 'm-apollo15', artifactId: 'apollo15-lrv', label: 'Apollo 15 LRV', category: 'machine', destination: 'MOON', description: 'First crewed rover on the Moon (1971)', bn: { description: 'চাঁদে মানুষের চালানো প্রথম রোভার (১৯৭১)' }, x: 790, y: 270 },
+  { id: 'm-lrrr', artifactId: 'apollo11-lrrr', label: 'Apollo 11 LRRR', category: 'machine', destination: 'MOON', description: 'Laser mirror still used by observatories today (1969–)', bn: { description: 'আজও মানমন্দিরগুলো যে লেজার আয়না ব্যবহার করে (১৯৬৯–)' }, x: 1040, y: 300 },
+  { id: 'm-apollo17', artifactId: 'apollo17-challenger', label: 'Apollo 17', category: 'machine', destination: 'MOON', description: 'Last crewed landing; orange soil of volcanic glass (1972)', bn: { description: 'মানুষের শেষ চন্দ্রাবতরণ; আগ্নেয় কাচের কমলা মাটি (১৯৭২)' }, x: 690, y: 405 },
+  { id: 'm-apollo14sivb', artifactId: 'apollo14-sivb', label: 'Apollo 14 S-IVB', category: 'machine', destination: 'MOON', description: 'Rocket stage crashed on purpose as a seismic source (1971)', bn: { description: 'কম্পন তৈরির জন্য ইচ্ছা করে আছড়ে ফেলা রকেটের ধাপ (১৯৭১)' }, x: 1000, y: 410 },
 
-  // Science Discoveries
-  { id: 's-mobility', label: 'Autonomous Mobility', category: 'science', description: 'Rocker-bogie chassis & hazard avoidance across boulders', x: 220, y: 70 },
-  { id: 's-water', label: 'Ancient Liquid Water', category: 'breakthrough', description: 'Hematite berries, jarosite minerals, and river gravels', x: 320, y: 220 },
-  { id: 's-hydrothermal', label: 'Hydrothermal Springs', category: 'science', description: 'Pure silica deposits indicating ancient hot water vents', x: 200, y: 390 },
-  { id: 's-interior', label: 'Planetary Core & Seismology', category: 'breakthrough', description: 'Measuring internal crust thickness and liquid metallic cores', x: 580, y: 370 },
-  { id: 's-lunar-geology', label: 'Lunar Primordial Crust', category: 'science', description: 'Genesis rock and deep anorthosite magma ocean theory', x: 740, y: 80 },
-  { id: 's-moonquakes', label: 'Moonquake Dynamics', category: 'breakthrough', description: 'Tidal forces and ringing acoustic properties of lunar rock', x: 880, y: 330 },
-  { id: 's-retroreflector', label: 'Laser Moon Ranging', category: 'science', description: 'Active today: measuring Moon distance to millimeter precision', x: 1000, y: 220 }
+  // What they taught us
+  { id: 's-mobility', label: 'Moving on other worlds', category: 'science', description: 'Rocker-bogie wheels, hazard avoidance, crewed rovers and a helicopter', bn: { label: 'অন্য জগতে চলাচল', description: 'রকার-বোগি চাকা, বিপদ এড়িয়ে চলা, মানুষের চালানো রোভার আর একটি হেলিকপ্টার' }, x: 240, y: 55 },
+  { id: 's-water', label: 'Water on Mars', category: 'breakthrough', description: 'Water-formed minerals, an ancient lake, frost and buried ice', bn: { label: 'মঙ্গলে পানি', description: 'পানিতে তৈরি খনিজ, প্রাচীন হ্রদ, তুষার আর মাটির নিচের বরফ' }, x: 300, y: 220 },
+  { id: 's-hydrothermal', label: 'Ancient hot springs', category: 'science', description: 'Almost pure silica, a sign of ancient hot water', bn: { label: 'প্রাচীন উষ্ণ প্রস্রবণ', description: 'প্রায় খাঁটি সিলিকা, প্রাচীন গরম পানির চিহ্ন' }, x: 170, y: 390 },
+  { id: 's-life', label: 'Searching for life', category: 'breakthrough', description: 'Biology experiments, a habitable lake and sealed samples', bn: { label: 'প্রাণের খোঁজ', description: 'জীববিজ্ঞান পরীক্ষা, বসবাসযোগ্য হ্রদ আর সিল করা নমুনা' }, x: 590, y: 225 },
+  { id: 's-interior', label: 'Cores and quakes', category: 'breakthrough', description: 'Seismometers that measured crusts and a liquid metal core', bn: { label: 'কেন্দ্র আর কম্পন', description: 'যে সিসমোমিটার ভূত্বক আর তরল ধাতব কেন্দ্র মেপেছে' }, x: 570, y: 380 },
+  { id: 's-archaeology', label: 'Revisiting old hardware', category: 'science', description: 'Going back to hardware left earlier, to see what happened to it', bn: { label: 'পুরোনো যন্ত্রের কাছে ফেরা', description: 'আগে রেখে আসা যন্ত্রের কাছে ফিরে গিয়ে দেখা তার কী হয়েছে' }, x: 690, y: 40 },
+  { id: 's-lunar-geology', label: 'The Moon’s rocks', category: 'science', description: 'Rock and soil samples, including orange volcanic glass', bn: { label: 'চাঁদের পাথর', description: 'পাথর আর মাটির নমুনা, কমলা আগ্নেয় কাচসহ' }, x: 780, y: 120 },
+  { id: 's-moonquakes', label: 'Moonquakes', category: 'breakthrough', description: 'After impacts the Moon rang like a bell for hours', bn: { label: 'চন্দ্রকম্প', description: 'আঘাতের পর চাঁদ ঘণ্টার মতো ঘণ্টার পর ঘণ্টা বেজেছে' }, x: 870, y: 340 },
+  { id: 's-retroreflector', label: 'Laser ranging', category: 'science', description: 'Timing laser echoes to measure the Earth–Moon distance, still today', bn: { label: 'লেজারে দূরত্ব মাপা', description: 'লেজারের প্রতিধ্বনির সময় মেপে পৃথিবী–চাঁদের দূরত্ব নির্ণয়, আজও' }, x: 1020, y: 215 },
 ];
 
 export const CONSTELLATION_LINKS: ConstellationLink[] = [
-  { source: 'm-sojourner', target: 's-mobility', label: 'Rocker-Bogie proof' },
-  { source: 'm-sojourner', target: 's-water', label: 'Ares Vallis flood plain' },
-  { source: 'm-opportunity', target: 's-water', label: 'Hematite discovery' },
-  { source: 'm-opportunity', target: 's-mobility', label: '45.16 km navigation' },
-  { source: 'm-spirit', target: 's-hydrothermal', label: 'Broken wheel silica find' },
-  { source: 'm-spirit', target: 's-water', label: 'Volcanic hydrothermal vents' },
-  { source: 'm-insight', target: 's-interior', label: '1,318 Marsquakes analyzed' },
-  { source: 'm-apollo11', target: 's-lunar-geology', label: 'First 21.5 kg regolith' },
-  { source: 'm-apollo15', target: 's-lunar-geology', label: 'Genesis Rock 4.1 Ga' },
-  { source: 'm-apollo15', target: 's-mobility', label: 'First crewed rover on Moon' },
-  { source: 'm-alsep', target: 's-moonquakes', label: '12,000 seismic tremors' },
-  { source: 'm-alsep', target: 's-interior', label: 'Moon core & crust model' },
-  { source: 'm-alsep', target: 's-retroreflector', label: 'Millimeter laser ranging' },
-  { source: 'm-viking2', target: 's-water', label: 'Seasonal water frost' },
+  { source: 'm-sojourner', target: 's-mobility', label: 'Rocker-bogie proof' },
+  { source: 'm-opportunity', target: 's-water', label: 'Hematite and jarosite' },
+  { source: 'm-opportunity', target: 's-mobility', label: '45.16 km driven' },
+  { source: 'm-opportunity', target: 's-archaeology', label: 'Drove back to its heat shield' },
+  { source: 'm-spirit', target: 's-hydrothermal', label: 'Broken-wheel silica find' },
+  { source: 'm-spirit', target: 's-water', label: 'Hot-spring silica' },
+  { source: 'm-phoenix', target: 's-water', label: 'Water ice' },
+  { source: 'm-viking1', target: 's-life', label: 'Biology experiments' },
+  { source: 'm-viking2', target: 's-water', label: 'Water frost' },
+  { source: 'm-viking2', target: 's-life', label: 'Searched the soil for life' },
+  { source: 'm-curiosity', target: 's-water', label: 'Ancient lake' },
+  { source: 'm-curiosity', target: 's-life', label: 'Habitable lake' },
+  { source: 'm-perseverance', target: 's-life', label: 'Sealed samples' },
   { source: 'm-ingenuity', target: 's-mobility', label: 'First flight on Mars' },
+  { source: 'm-ingenuity', target: 's-archaeology', label: 'Photographed the backshell' },
+  { source: 'm-insight', target: 's-interior', label: 'Marsquakes and the core' },
+  { source: 'm-apollo11', target: 's-lunar-geology', label: 'First lunar samples' },
+  { source: 'm-surveyor3', target: 's-archaeology', label: 'Visited by Apollo 12' },
+  { source: 'm-apollo15', target: 's-mobility', label: 'First crewed rover on the Moon' },
   { source: 'm-apollo17', target: 's-lunar-geology', label: 'Orange volcanic glass' },
+  { source: 'm-alsep', target: 's-moonquakes', label: 'Moon rang like a bell' },
+  { source: 'm-alsep', target: 's-interior', label: 'Lunar seismic network' },
+  { source: 'm-alsep', target: 's-retroreflector', label: 'Mirrors that need no power' },
+  { source: 'm-lrrr', target: 's-retroreflector', label: 'Laser echoes' },
   { source: 'm-apollo14sivb', target: 's-moonquakes', label: 'Artificial moonquake' },
-  { source: 'm-apollo14sivb', target: 's-interior', label: 'Probed the lunar crust' }
+  { source: 'm-apollo14sivb', target: 's-interior', label: 'Probed the lunar interior' },
 ];
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [

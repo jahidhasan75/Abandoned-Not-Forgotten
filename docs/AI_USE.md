@@ -45,6 +45,14 @@ Keep this file current as you build. Match the wording to the official Project S
   journey now lists that object's sources. Claims not in the dossier (Pathfinder's bounce count and
   impact speed) were dropped. Page trimmed (catalogue and data sources show a first set, then "Show
   all"; Three.js loads late). **TODO (team): read the Bangla journey text once.**
+- 7 Nov 2026: Young Explorers fully translated, with a new For teachers tab (lesson plan, learning goals,
+  printable worksheet drawn from the quiz bank); dossier deep links and Copy link; constellation extended
+  to 17 machines and 9 themes with Bangla text; Data Sources descriptions in Bangla; overstated lines
+  softened in English and Bangla ("first time in human history", "skeptical world", exclamation marks);
+  a hero link to the Surveyor 3 then-and-now dossier; lower sections split into their own chunks. The
+  lesson plan and all new Bangla text were written by the AI. **TODO (team): a teacher should read the
+  lesson plan; check the Surveyor 3 distance (160 m in English, 180 m in Bangla) against the Apollo 12
+  mission report.**
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

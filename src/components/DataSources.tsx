@@ -114,6 +114,56 @@ const SOURCES: DataSource[] = [
   },
 ];
 
+const bnNum = (x: number) => x.toLocaleString('bn-BD');
+
+/** Bangla for what each source is used for (names, providers and layer ids stay as they are). */
+const SOURCES_BN: Record<string, { usedFor: string; detail: string }> = {
+  'Moon Trek: LRO LROC WAC Global Mosaic': {
+    usedFor: 'চাঁদের ৩ডি গ্লোব আর চাঁদের মানচিত্রের ভিত্তি',
+    detail: 'টাইল লেয়ার LRO_WAC_Mosaic_Global_303ppd_v02, জুম ৩ (১২৮টি টাইল), scripts/build-textures.py দিয়ে জোড়া দিয়ে ৪০৯৬ × ২০৪৮ মাপের একটি সমআয়তাকার টেক্সচার বানানো হয়েছে।',
+  },
+  'Mars Trek: Viking MDIM 2.1 Colour Mosaic': {
+    usedFor: 'মঙ্গলের ৩ডি গ্লোব আর মঙ্গলের মানচিত্রের ভিত্তি',
+    detail: 'টাইল লেয়ার Mars_Viking_MDIM21_ClrMosaic_global_232m, জুম ৩, একইভাবে জোড়া দেওয়া।',
+  },
+  'Blue Marble Next Generation': {
+    usedFor: 'পৃথিবীর ৩ডি গ্লোব (প্রতিটি যাত্রার শুরু)',
+    detail: 'EPSG:4326 WMTS লেয়ার BlueMarble_NextGeneration, ৫০০ মিটারের টাইল সেট, জুম ৩।',
+  },
+  'NSSDCA Master Catalog': {
+    usedFor: 'স্থায়ী শনাক্তকারী, অবতরণের তারিখ, শেষ যোগাযোগ, স্থানাঙ্ক',
+    detail: `${bnNum(MISSIONS_DATA.length)}টি ক্যাটালগ এন্ট্রি উদ্ধৃত (objects.geojson-এ dataset_id "NSSDCA <id>")। অ্যাপোলো ১১, ১২, ১৫, পাথফাইন্ডার, স্পিরিট আর ভাইকিং ১-এর অবতরণ স্থানাঙ্ক এই পাতাগুলো থেকে নেওয়া।`,
+  },
+  'PDS Search API': {
+    usedFor: 'মিশন ও মহাকাশযানের কনটেক্সট শনাক্তকারী (LID)',
+    detail: `${bnNum(MISSIONS_DATA.length)}টি বস্তুর মধ্যে ${bnNum(count((m) => Boolean(m.pdsLid)))}টির PDS কনটেক্সট LID আছে (সার্ভেয়ার ৩ আর মার্স পোলার ল্যান্ডারের PDS-এ নেই)।`,
+  },
+  'NTRS: NASA Technical Reports Server': {
+    usedFor: 'তারিখ আর প্রতিটি বস্তুর বিজ্ঞানের পেছনের মিশন রিপোর্ট',
+    detail: `${bnNum(new Set(MISSIONS_DATA.map((m) => m.ntrs.id)).size)}টি রিপোর্টের লিংক, এর মধ্যে অ্যাপোলো ১১, ১২ ও ১৫-এর মিশন রিপোর্ট আর মার্স পোলার ল্যান্ডার হারানোর রিপোর্ট।`,
+  },
+  'NASA Image and Video Library': {
+    usedFor: 'প্রতিটি বস্তুর ছবি',
+    detail: `${bnNum(MISSIONS_DATA.length)}টি ছবি একবার ডাউনলোড করে, কৃতিত্বসহ, WebP হিসেবে সাইটেই রাখা, যাতে ডেমো অফলাইনেও চলে।`,
+  },
+  'JPL Horizons': {
+    usedFor: 'পৃথিবী–চাঁদ আর পৃথিবী–মঙ্গলের লাইভ দূরত্ব ও রেডিও সংকেতের সময়',
+    detail: 'ভূকেন্দ্রিক দূরত্ব (QUANTITIES=20) ব্রাউজারেই আনা হয়; আলোর সময় হিসাব করে src/lib/compute.ts-এর পরীক্ষিত ফাংশন। অফলাইন কপি src/data/fixtures/live.json-এ।',
+  },
+  'Mars raw-image feeds (Curiosity, Perseverance)': {
+    usedFor: 'এখনো কাজ করা রোভারগুলোর আজকের সল আর সর্বশেষ কাঁচা ছবি',
+    detail: 'বাতিল হয়ে যাওয়া api.nasa.gov Mars Rover Photos API-এর বদলে। ব্রাউজারে এক ঘণ্টা সংরক্ষিত থাকে, সর্বশেষ ছবির একটি অফলাইন কপিসহ।',
+  },
+  'api.nasa.gov: APOD': {
+    usedFor: 'লাইভ অংশে আজকের জ্যোতির্বিজ্ঞান ছবি',
+    detail: 'যুক্ত ও যাচাই করা হয়েছে। ৭ নভেম্বর ২০২৬ তারিখে API প্রতিটি তারিখের জন্য একটি প্লেসহোল্ডার (নাসার লোগো, "NASA Science") দিচ্ছিল, তাই আসল ছবি না আসা পর্যন্ত টাইলটি লুকানো থাকে।',
+  },
+  'api.nasa.gov: Mars Rover Photos': {
+    usedFor: 'রোভারের ছবি',
+    detail: '৬ নভেম্বর ২০২৬ তারিখের পরীক্ষায় HTTP 404 দিয়েছে। এর বদলে ওপরের mars.nasa.gov কাঁচা ছবির ফিড ব্যবহার হয়।',
+  },
+};
+
 // Dot colour per source state; the word is always shown next to it
 const STATUS_DOT: Record<SourceStatus, string> = {
   USED: '#a3a9b8',
@@ -125,8 +175,9 @@ const STATUS_DOT: Record<SourceStatus, string> = {
 const PREVIEW = 5;
 
 export const DataSources: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const ds = pdsCatalog.dataset;
+  const textOf = (src: DataSource) => (lang === 'bn' && SOURCES_BN[src.name]) || src;
   const [expanded, setExpanded] = useState(false);
   const rows = expanded ? SOURCES : SOURCES.slice(0, PREVIEW);
   return (
@@ -189,7 +240,9 @@ export const DataSources: React.FC = () => {
         <ol className="border-t border-line divide-y divide-line">
           {rows.map((src, i) => (
             <li key={src.name} className="py-5 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-2">
-              <span className="md:col-span-1 font-mono-data text-xs text-fg-3 pt-1">{String(i + 1).padStart(2, '0')}</span>
+              <span className="md:col-span-1 font-mono-data text-xs text-fg-3 pt-1">
+                {(i + 1).toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US').padStart(2, lang === 'bn' ? '০' : '0')}
+              </span>
               <div className="md:col-span-4">
                 <h3 className="text-base text-fg">{src.name}</h3>
                 <p className="text-sm text-fg-2 mt-1">{src.provider}</p>
@@ -207,9 +260,9 @@ export const DataSources: React.FC = () => {
               <div className="md:col-span-7 text-sm">
                 <p className="text-fg">
                   <span className="text-fg-2">{t('sources.usedFor')}: </span>
-                  {src.usedFor}
+                  {textOf(src).usedFor}
                 </p>
-                <p className="mt-1 text-fg-2">{src.detail}</p>
+                <p className="mt-1 text-fg-2">{textOf(src).detail}</p>
                 <a
                   href={src.url}
                   target="_blank"

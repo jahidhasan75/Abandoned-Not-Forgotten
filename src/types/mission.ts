@@ -84,6 +84,10 @@ export interface ConstellationNode {
   category: 'machine' | 'science' | 'breakthrough';
   destination?: Destination;
   description?: string;
+  /** For machines: the artifact id whose dossier the node opens. */
+  artifactId?: string;
+  /** Bangla label (machine names stay as they are) and description. */
+  bn?: { label?: string; description: string };
   x: number;
   y: number;
 }

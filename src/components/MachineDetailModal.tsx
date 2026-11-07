@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MissionArtifact } from '../types/mission';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 import { DossierLive } from './DossierLive';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, Link2, Check } from 'lucide-react';
 import { CatalogueTag } from './CatalogueTag';
 import { STATUS_COLORS } from '../data/status';
 
@@ -18,6 +18,28 @@ const FOCUSABLE =
 export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({ artifact, onClose }) => {
   const { t, tx, txScience, lang } = useI18n();
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => setCopied(false), [artifact]);
+
+  // Copy this dossier's own address (#machine=<id>) so it can be shared with a class.
+  const copyLink = async () => {
+    if (!artifact) return;
+    spaceAudio.playTelemetryPing(1040, 0.05);
+    const url = `${window.location.origin}${window.location.pathname}${window.location.search}#machine=${artifact.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Older browsers or blocked clipboard: select the text through a temporary field
+      const field = document.createElement('textarea');
+      field.value = url;
+      document.body.appendChild(field);
+      field.select();
+      document.execCommand('copy');
+      field.remove();
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     if (!artifact) return;
@@ -86,16 +108,30 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({ artifact
           <span className="text-sm text-fg-2 truncate">
             {t('modal.sector', { body: t(`body.name.${artifact.destination}`) })} · {t(`category.${artifact.category}`)}
           </span>
-          <button
-            onClick={() => {
-              spaceAudio.playTelemetryPing(700, 0.04);
-              onClose();
-            }}
-            aria-label={t('modal.close')}
-            className="p-2 rounded-lg text-fg-2 hover:text-fg hover:bg-raised transition-colors"
-          >
-            <X className="w-5 h-5" strokeWidth={1.5} />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={copyLink}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-fg-2 hover:text-fg hover:bg-raised transition-colors"
+            >
+              {copied ? (
+                <Check className="w-4 h-4 text-accent" strokeWidth={1.5} aria-hidden="true" />
+              ) : (
+                <Link2 className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
+              )}
+              <span aria-live="polite">{copied ? t('modal.copied') : t('modal.copyLink')}</span>
+            </button>
+            <button
+              onClick={() => {
+                spaceAudio.playTelemetryPing(700, 0.04);
+                onClose();
+              }}
+              aria-label={t('modal.close')}
+              className="p-2 rounded-lg text-fg-2 hover:text-fg hover:bg-raised transition-colors"
+            >
+              <X className="w-5 h-5" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
 
         <div className="px-6 sm:px-10 pt-8 pb-10">
@@ -119,7 +155,7 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({ artifact
 
           {/* The visual centre: then and now when LRO has photographed the site, else the surface photo */}
           {artifact.orbitalView ? (
-            <section className="mt-8" aria-labelledby="then-now">
+            <section className="mt-8 scroll-mt-20" aria-labelledby="then-now">
               <h3 id="then-now" className="sr-only">{t('modal.orbitTitle')}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <figure>
