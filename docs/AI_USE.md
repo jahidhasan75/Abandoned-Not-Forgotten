@@ -55,6 +55,9 @@ Keep this file current as you build. Match the wording to the official Project S
   mission report.**
 - 7 Nov 2026: archive table shortened with "Show all"; quiz answers shown in bold green/red with a
   confetti burst for a perfect round; Young Explorers keeps quiz progress across tab switches.
+- 7 Nov 2026: quiz copy no longer explains the no-repeat rule; Match the machine now draws 4 of 15 pairs
+  per round (written by the AI from the dossiers, en + bn) without repeating recent pairs, and celebrates a
+  finished round. **TODO (team): read the 15 match pairs once.**
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

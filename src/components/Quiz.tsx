@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { spaceAudio } from '../utils/audio';
 import { QUIZ_BANK, QuizItem } from '../data/quiz';
+import { Confetti } from './Confetti';
 import { pickRound, remember, shuffle, ROUND_SIZE } from '../lib/quizPick';
 
 const HISTORY_KEY = 'exoarchive-quiz-history';
@@ -39,45 +40,6 @@ interface QuizPanelProps {
   onOpenMachine: (id: string) => void;
 }
 
-const CONFETTI_COLOURS = ['var(--color-accent)', 'var(--color-ok)', 'var(--color-journey)', 'var(--color-state-bar)', 'var(--color-fg)'];
-
-/** A one-off confetti burst over the result card (hidden with reduced motion). */
-const Confetti: React.FC = () => {
-  const pieces = useMemo(
-    () =>
-      Array.from({ length: 36 }, (_, i) => ({
-        left: `${Math.random() * 100}%`,
-        dx: `${Math.round((Math.random() - 0.5) * 160)}px`,
-        r: `${Math.round(360 + Math.random() * 540)}deg`,
-        d: `${(Math.random() * 0.35).toFixed(2)}s`,
-        colour: CONFETTI_COLOURS[i % CONFETTI_COLOURS.length],
-        round: i % 3 === 0,
-      })),
-    []
-  );
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {pieces.map((p, i) => (
-        <span
-          key={i}
-          className="confetti-piece"
-          style={
-            {
-              left: p.left,
-              background: p.colour,
-              borderRadius: p.round ? '9999px' : undefined,
-              width: p.round ? 8 : undefined,
-              height: p.round ? 8 : undefined,
-              '--dx': p.dx,
-              '--r': p.r,
-              '--d': p.d,
-            } as React.CSSProperties
-          }
-        />
-      ))}
-    </div>
-  );
-};
 
 /** The "Mission quiz" tab of Young Explorers: 5 questions per round from the bank of 50. */
 export const QuizPanel: React.FC<QuizPanelProps> = ({ onOpenMachine }) => {
@@ -275,7 +237,7 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({ onOpenMachine }) => {
                 )}
               </div>
               {perfect && <p className="mt-3 text-base text-fg">{t('quiz.perfectBody')}</p>}
-              <p className="mt-3 text-base text-fg-2 max-w-xl">{t('quiz.after', { rounds: num(5) })}</p>
+              <p className="mt-3 text-base text-fg-2 max-w-xl">{t('quiz.after')}</p>
               <button onClick={startRound} className="btn-primary mt-6">
                 {t('quiz.again')}
               </button>

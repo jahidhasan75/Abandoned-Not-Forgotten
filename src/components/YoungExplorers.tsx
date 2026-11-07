@@ -1,11 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { Check } from 'lucide-react';
+import React, { useState } from 'react';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 import { MISSIONS_DATA } from '../data/missionsData';
-import { shuffle } from '../lib/quizPick';
 import { QuizPanel } from './Quiz';
 import { TeacherKit } from './TeacherKit';
+import { MatchGame } from './MatchGame';
 
 interface YoungExplorersProps {
   onOpenMachine: (id: string) => void;
@@ -18,14 +17,6 @@ const TABS = [
   { id: 'BUILDER', key: 'explorers.tab.builder' },
   { id: 'TEACHERS', key: 'explorers.tab.teachers' },
 ] as const satisfies readonly { id: Tab; key: string }[];
-
-/** Match the machine: each pair is an archive object and a fact from its dossier. */
-const MATCH_PAIRS = [
-  { id: 'sojourner', machine: 'Sojourner', discovery: 'match.d.sojourner' },
-  { id: 'spirit', machine: 'Spirit', discovery: 'match.d.spirit' },
-  { id: 'insight', machine: 'InSight', discovery: 'match.d.insight' },
-  { id: 'apollo15-lrv', machine: 'Apollo 15 LRV', discovery: 'match.d.lrv' },
-] as const;
 
 type Dest = 'MOON' | 'MARS';
 type Power = 'SOLAR' | 'RTG';
@@ -52,42 +43,8 @@ const Choice: React.FC<{ selected: boolean; onClick: () => void; title: string; 
 );
 
 export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine }) => {
-  const { t, lang } = useI18n();
-  const num = (n: number) => n.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US');
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<Tab>('QUIZ');
-
-  // ---------- Match the machine ----------
-  const [round, setRound] = useState(0);
-  const discoveries = useMemo(() => shuffle(MATCH_PAIRS, Math.random), [round]);
-  const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
-  const [matched, setMatched] = useState<string[]>([]);
-  const [matchError, setMatchError] = useState(false);
-
-  const pickMachine = (id: string) => {
-    if (matched.includes(id)) return;
-    spaceAudio.playTelemetryPing(850, 0.04);
-    setSelectedMachine(id);
-    setMatchError(false);
-  };
-  const pickDiscovery = (id: string) => {
-    if (!selectedMachine) return;
-    if (selectedMachine === id) {
-      spaceAudio.playTelemetryPing(1100, 0.08);
-      setMatched((m) => [...m, id]);
-      setSelectedMachine(null);
-      setMatchError(false);
-    } else {
-      spaceAudio.playTelemetryPing(400, 0.08);
-      setMatchError(true);
-    }
-  };
-  const resetMatch = () => {
-    spaceAudio.playTelemetryPing(900, 0.05);
-    setMatched([]);
-    setSelectedMachine(null);
-    setMatchError(false);
-    setRound((r) => r + 1);
-  };
 
   // ---------- Build a mission ----------
   const [dest, setDest] = useState<Dest>('MARS');
@@ -140,69 +97,7 @@ export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine })
         </div>
 
         <div hidden={activeTab !== 'MATCH'}>
-          <div className="rounded-2xl border border-line bg-card p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-line text-sm text-fg-2">
-              <span className="text-fg">{t('match.title')}</span>
-              <span>{t('match.count', { n: num(matched.length), total: num(MATCH_PAIRS.length) })}</span>
-            </div>
-
-            <p aria-live="polite" className={`text-sm text-center ${matchError ? 'text-fg' : 'sr-only'}`}>
-              {matchError ? t('match.wrong') : ''}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <span className="text-sm text-fg-2 block">{t('match.step1')}</span>
-                {MATCH_PAIRS.map((p) => {
-                  const done = matched.includes(p.id);
-                  const selected = selectedMachine === p.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => pickMachine(p.id)}
-                      disabled={done}
-                      aria-pressed={selected}
-                      className={`w-full p-4 rounded-xl border text-left text-sm transition-colors flex items-center justify-between ${
-                        done ? 'border-accent text-fg' : selected ? 'bg-raised border-line-strong text-fg' : 'border-line hover:bg-raised text-fg'
-                      }`}
-                    >
-                      <span>{p.machine}</span>
-                      {done && <Check className="w-4 h-4 text-accent" strokeWidth={1.5} aria-hidden="true" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="space-y-3">
-                <span className="text-sm text-fg-2 block">{t('match.step2')}</span>
-                {discoveries.map((p) => {
-                  const done = matched.includes(p.id);
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => pickDiscovery(p.id)}
-                      disabled={done || !selectedMachine}
-                      className={`w-full p-4 rounded-xl border text-left text-sm transition-colors flex items-center justify-between gap-3 disabled:cursor-default ${
-                        done ? 'border-accent text-fg' : 'border-line hover:bg-raised text-fg-2'
-                      }`}
-                    >
-                      <span>{t(p.discovery)}</span>
-                      {done && <Check className="w-4 h-4 shrink-0 text-accent" strokeWidth={1.5} aria-hidden="true" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {matched.length === MATCH_PAIRS.length && (
-              <div className="pt-6 border-t border-line text-center space-y-3 animate-fadeIn" aria-live="polite">
-                <p className="font-serif text-2xl text-fg">{t('match.done')}</p>
-                <button onClick={resetMatch} className="btn-primary">
-                  {t('match.again')}
-                </button>
-              </div>
-            )}
-          </div>
+          <MatchGame onOpenMachine={onOpenMachine} />
         </div>
 
         <div hidden={activeTab !== 'BUILDER'}>

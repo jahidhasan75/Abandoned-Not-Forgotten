@@ -136,6 +136,7 @@ src/
 | 14 | `ArchaeologyArchive` | `archive` | Searchable, filterable table of all artifacts | `MISSIONS_DATA` |
 | 14b | `DataSources` | `data-sources` | Every NASA dataset and what it is used for; featured LROC dataset read from the local PDS catalog; GeoJSON download | `pdsCatalog.json`, `MISSIONS_DATA` |
 | 16 | `YoungExplorers` | `explorers` | Mission quiz (the 50-question `QuizPanel`), Match-the-Machine, Build-a-Mission (lists real archive machines like your design), For teachers (`TeacherKit`) — all en + bn | `src/data/quiz.ts` + `strings.json` |
+| 16c | `MatchGame` (the Match the machine tab) | — | 4 pairs per round from a bank of 15 (each a fact from that machine's dossier, en + bn); a pair seen in the last 2 rounds is not picked again (`exoarchive-match-history`); confetti and dossier links when a round is done | `src/data/matchPairs.ts`, `pickRound` from `src/lib/quizPick.ts` |
 | 16b | `TeacherKit` (the For teachers tab) | — | 45-minute lesson plan, learning goals, a printable 10-question worksheet with answer key (`#print-root`, print CSS in `index.css`), how to share a dossier link | `src/data/quiz.ts` |
 | 16a | `QuizPanel` (the Mission quiz tab inside `YoungExplorers`) | `quiz` | 5 questions per round from a bank of 50 (en + bn); a question does not return for the next 5 rounds (history in `localStorage`, `exoarchive-quiz-history`); each answer links to its dossier | `src/data/quiz.ts`, `src/lib/quizPick.ts` (tested) |
 | 17 | `Footer` | — | Closing message, data accuracy notice | inline |
