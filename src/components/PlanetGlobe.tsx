@@ -11,6 +11,7 @@ import moon4k from '../assets/textures/moon_4k.webp';
 import moon2k from '../assets/textures/moon_2k.webp';
 import mars4k from '../assets/textures/mars_4k.webp';
 import mars2k from '../assets/textures/mars_2k.webp';
+import { easeInOutCubic, latLonToVector, rotationFacing } from '../lib/globe';
 
 export type GlobeBody = 'EARTH' | 'MOON' | 'MARS';
 
@@ -29,25 +30,8 @@ const BODIES: Record<GlobeBody, BodyConfig> = {
   MARS: { radius: 1.8, position: new THREE.Vector3(38, -0.4, -9), textures: { hi: mars4k, lo: mars2k }, atmosphere: { color: 0xd0704a, opacity: 0.12 }, spin: 0.04 },
 };
 
-/** Planetocentric lat/lon (degrees, east-positive) -> point on a Three.js SphereGeometry.
- *  Matches the default sphere UV layout, so markers line up with the equirectangular texture. */
-export const latLonToVector = (lat: number, lon: number, radius: number) => {
-  const phi = ((lon + 180) / 360) * Math.PI * 2;
-  const theta = ((90 - lat) / 180) * Math.PI;
-  return new THREE.Vector3(
-    -radius * Math.cos(phi) * Math.sin(theta),
-    radius * Math.cos(theta),
-    radius * Math.sin(phi) * Math.sin(theta)
-  );
-};
-
-/** Globe rotation that turns the given lat/lon to face the camera (+Z). */
-const rotationFacing = (lat: number, lon: number) => {
-  const p = latLonToVector(lat, lon, 1);
-  return { y: Math.atan2(-p.x, p.z), x: THREE.MathUtils.degToRad(lat) };
-};
-
-const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+// Coordinate helpers are shared with the 3D timeline
+export { latLonToVector };
 
 interface PlanetGlobeProps {
   view: GlobeBody;

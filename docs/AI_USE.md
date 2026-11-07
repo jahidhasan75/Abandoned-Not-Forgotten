@@ -67,6 +67,10 @@ is that description.
   `src/lib/compute.ts`). "Send a signal" times a message at the speed of light with today's JPL Horizons
   distance and says what the machine would do next (reply, laser echo, or silence). Text written by the
   AI from the dossiers.
+- 7 Nov 2026: the 3D timeline rebuilt on the real NASA globes (same Trek/GIBS textures as the globe
+  section): each mission turns its world to the catalogued landing site with a pin, Moon ↔ Mars flights pass
+  Earth, and a photo plate shows the NASA photograph (and the LRO orbital view where one exists). Surveyor 3
+  distance corrected to about 180 m from NSSDCA 1967-035A.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

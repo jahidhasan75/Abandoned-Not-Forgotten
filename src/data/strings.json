@@ -101,7 +101,7 @@
     "map.close": "Close side panel",
     "timeline.kicker": "1967 to today, by landing year",
     "timeline.title": "The missions, year by year",
-    "timeline.intro": "Fly through the decades in 3D, from the first lunar landers of 1967 to the Mars rovers still at work today.",
+    "timeline.intro": "Fly through the decades on real NASA maps of the Moon and Mars, from the first lunar landers of 1967 to the Mars rovers still at work today. Each stop turns the world to the real landing site and shows the object’s NASA photograph.",
     "timeline.play": "Play",
     "timeline.pause": "Pause",
     "timeline.inspect": "Open dossier",
@@ -492,7 +492,12 @@
     "signal.reply.laser": "Observatories do this for real: a laser pulse bounces off this mirror and comes back {t} after it was sent.",
     "signal.reply.silent": "But {name} has not answered since {year}. The signal arrives, and no reply comes.",
     "signal.reply.never": "It never had a radio of its own. The signal arrives at a silent site.",
-    "signal.note": "Distance from the centre of the Earth to the centre of the Moon or Mars at {time} UTC; a machine on the surface is a little nearer or farther."
+    "signal.note": "Distance from the centre of the Earth to the centre of the Moon or Mars at {time} UTC; a machine on the surface is a little nearer or farther.",
+    "timeline.prev": "Previous mission",
+    "timeline.next": "Next mission",
+    "timeline.stageAria": "3D timeline on NASA maps of the Moon and Mars. Left and right arrow keys move between missions.",
+    "timeline.notToScale": "Sizes and distances not to scale",
+    "timeline.noWebgl": "3D is not available on this device, so the flat NASA map shows the site."
   },
   "bn": {
     "lang.toggle": "EN",
@@ -596,7 +601,7 @@
     "map.close": "পাশের প্যানেল বন্ধ করুন",
     "timeline.kicker": "১৯৬৭ থেকে আজ, অবতরণের বছর অনুযায়ী",
     "timeline.title": "বছর ধরে ধরে মিশনগুলো",
-    "timeline.intro": "৩ডিতে দশকের পর দশক পেরিয়ে চলুন, ১৯৬৭ সালের প্রথম চন্দ্র ল্যান্ডার থেকে আজও কাজ করে চলা মঙ্গলের রোভার পর্যন্ত।",
+    "timeline.intro": "চাঁদ ও মঙ্গলের আসল নাসা মানচিত্রে দশকের পর দশক পেরিয়ে চলুন, ১৯৬৭ সালের প্রথম চন্দ্র ল্যান্ডার থেকে আজও কাজ করে চলা মঙ্গলের রোভার পর্যন্ত। প্রতিটি থামায় গ্রহটি ঘুরে আসল অবতরণস্থলের দিকে ফেরে, আর দেখায় বস্তুটির নাসার ছবি।",
     "timeline.play": "চালান",
     "timeline.pause": "থামান",
     "timeline.inspect": "বিস্তারিত দেখুন",
@@ -987,6 +992,11 @@
     "signal.reply.laser": "মানমন্দিরগুলো সত্যিই এটা করে: লেজারের আলো এই আয়নায় লেগে পাঠানোর {t} পর ফিরে আসে।",
     "signal.reply.silent": "কিন্তু {name} {year} সালের পর আর সাড়া দেয়নি। সংকেত পৌঁছায়, কোনো উত্তর আসে না।",
     "signal.reply.never": "এর নিজের কোনো রেডিও কখনো ছিল না। সংকেত পৌঁছায় এক নীরব জায়গায়।",
-    "signal.note": "{time} UTC-তে পৃথিবীর কেন্দ্র থেকে চাঁদ বা মঙ্গলের কেন্দ্রের দূরত্ব; পৃষ্ঠে থাকা যন্ত্রটি এর চেয়ে সামান্য কাছে বা দূরে।"
+    "signal.note": "{time} UTC-তে পৃথিবীর কেন্দ্র থেকে চাঁদ বা মঙ্গলের কেন্দ্রের দূরত্ব; পৃষ্ঠে থাকা যন্ত্রটি এর চেয়ে সামান্য কাছে বা দূরে।",
+    "timeline.prev": "আগের মিশন",
+    "timeline.next": "পরের মিশন",
+    "timeline.stageAria": "চাঁদ ও মঙ্গলের নাসা মানচিত্রে ৩ডি টাইমলাইন। বাম ও ডান অ্যারো কি দিয়ে মিশন বদলান।",
+    "timeline.notToScale": "আকার ও দূরত্ব মাপমতো নয়",
+    "timeline.noWebgl": "এই ডিভাইসে ৩ডি চলে না, তাই সমতল নাসা মানচিত্রে জায়গাটি দেখানো হলো।"
   }
 }

@@ -85,7 +85,7 @@ Source of truth for object data: `src/data/missionsData.ts`. Re-run `export:data
 |---|---|
 | UI | React 19 + TypeScript, single page, no router |
 | Styling | Tailwind CSS v4 (via `@tailwindcss/vite`), custom classes in `src/index.css` |
-| 3D | Three.js (only in `Timeline3D.tsx`) |
+| 3D | Three.js (`PlanetGlobe.tsx`, `Timeline3D.tsx`; shared helpers in `src/lib/globe.ts`) |
 | Icons | lucide-react |
 | Audio | Web Audio API, procedurally synthesised (`src/utils/audio.ts`), no audio files |
 | Build | Vite 8 |
@@ -127,7 +127,7 @@ src/
 | 2 | `Hero` | `hero` | Canvas starfield, headline, 2 CTAs, 4 stat tiles | inline |
 | 3 | `PlanetSelector` + `PlanetGlobe` | `explore` | 3D Earth/Moon/Mars globes on real NASA mosaics; camera flies between worlds; markers at catalogued lat/lon; site list; click opens dossier. Launches Earth → active planet once visible and loaded. | `MISSIONS_DATA`, textures |
 | 4 | `ArchaeologyMap` | `archaeology-map` | Markers on the real equirectangular Moon/Mars mosaic with a 15° graticule; year scrubber (with play) filters by `leftBehind`; side dossier panel | `MISSIONS_DATA`, textures |
-| 5 | `Timeline3D` | `timeline-3d` | Three.js fly-through of missions by year, auto-cruise | `MISSIONS_DATA` |
+| 5 | `Timeline3D` | `timeline-3d` | The missions by year on real NASA globes (Earth GIBS, Moon LROC WAC, Mars Viking MDIM): each stop turns the world to the catalogued site with a pin, flies Moon ↔ Mars past Earth, and shows a photo plate (then-and-now where an LRO view exists); auto-cruise, ←/→ keys, flat-map fallback without WebGL, "not to scale" note | `MISSIONS_DATA`, `src/assets/textures/*_2k.webp` |
 | 6 | `MachineCards` | `machines` | Filterable card grid | `MISSIONS_DATA` |
 | 7 | `StatusSystem` | — | 5 status tabs (ACTIVE/SILENT/INACTIVE/LOST/HISTORIC) + matching artifacts | inline + `MISSIONS_DATA` |
 | 8 | `OneMachineJourney` | `journey` | 6-step biography of Sojourner, Opportunity, InSight or Ingenuity (en + bn), with that object's sources and a dossier link | `src/data/journeys.ts` |
