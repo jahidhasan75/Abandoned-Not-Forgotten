@@ -1,222 +1,245 @@
-import React, { useState } from 'react';
-import { Destination } from '../types/mission';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { Destination, MissionArtifact } from '../types/mission';
 import { MISSIONS_DATA } from '../data/missionsData';
+import { STATUS_COLORS } from '../data/status';
 import { spaceAudio } from '../utils/audio';
-import { Globe, ArrowRight, Radio } from 'lucide-react';
-import { ASSET_IMAGES } from '../assets/images';
+import { CatalogueTag } from './CatalogueTag';
+import type { GlobeBody } from './PlanetGlobe';
+import { useI18n } from '../i18n/I18nProvider';
+
+// Three.js and the 4K textures load in their own chunk, only when this section is near view.
+const PlanetGlobe = lazy(() => import('./PlanetGlobe'));
 
 interface PlanetSelectorProps {
   activePlanet: Destination;
   onSelectPlanet: (planet: Destination) => void;
-  onExplorePlanet: (planet: Destination) => void;
+  onOpenDetails: (artifact: MissionArtifact) => void;
 }
 
-export const PlanetSelector: React.FC<PlanetSelectorProps> = ({
-  activePlanet,
-  onSelectPlanet,
-  onExplorePlanet,
-}) => {
-  const [hoveredPlanet, setHoveredPlanet] = useState<Destination | null>(null);
+// Text for each world lives in strings.json (globe.tagline.*, globe.distance.*, globe.credit.*)
+const BODY_INFO: Record<GlobeBody, { gravity: string; creditUrl: string }> = {
+  EARTH: { gravity: '1.000 g', creditUrl: 'https://nasa-gibs.github.io/gibs-api-docs/' },
+  MOON: { gravity: '0.166 g', creditUrl: 'https://trek.nasa.gov/moon/' },
+  MARS: { gravity: '0.379 g', creditUrl: 'https://trek.nasa.gov/mars/' },
+};
 
-  const moonCount = MISSIONS_DATA.filter((m) => m.destination === 'MOON').length;
-  const marsCount = MISSIONS_DATA.filter((m) => m.destination === 'MARS').length;
+const TABS: GlobeBody[] = ['EARTH', 'MOON', 'MARS'];
 
-  const handleSelect = (planet: Destination) => {
-    spaceAudio.playTelemetryPing(planet === 'MOON' ? 880 : 1020, 0.06);
-    onSelectPlanet(planet);
-    onExplorePlanet(planet);
+export const PlanetSelector: React.FC<PlanetSelectorProps> = ({ activePlanet, onSelectPlanet, onOpenDetails }) => {
+  const { t, tx } = useI18n();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [view, setView] = useState<GlobeBody>('EARTH');
+  const [nearView, setNearView] = useState(false);
+  const [hovered, setHovered] = useState<MissionArtifact | null>(null);
+  const [selected, setSelected] = useState<MissionArtifact | null>(null);
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const hasLaunched = useRef(false);
+  const [seen, setSeen] = useState(false);
+  const [globeReady, setGlobeReady] = useState(false);
+
+  // Mount the globe shortly before the section scrolls into view; the first time it is
+  // actually visible, fly from Earth to the active destination.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const preload = new IntersectionObserver(([e]) => e.isIntersecting && setNearView(true), { rootMargin: '600px' });
+    const launch = new IntersectionObserver(([e]) => e.isIntersecting && setSeen(true), { threshold: 0.45 });
+    preload.observe(el);
+    launch.observe(el);
+    return () => {
+      preload.disconnect();
+      launch.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // The opening journey: once the section is on screen AND the NASA mosaics have loaded,
+  // hold on Earth for a moment, then fly to the active destination.
+  const activePlanetRef = useRef(activePlanet);
+  activePlanetRef.current = activePlanet;
+  useEffect(() => {
+    if (!seen || !globeReady || hasLaunched.current) return;
+    const id = window.setTimeout(() => {
+      if (hasLaunched.current) return;
+      hasLaunched.current = true;
+      setView((v) => (v === 'EARTH' ? activePlanetRef.current : v));
+    }, 1400);
+    return () => window.clearTimeout(id);
+  }, [seen, globeReady]);
+
+  // Follow the global Moon/Mars switch (navbar, map, etc.)
+  useEffect(() => {
+    if (hasLaunched.current) setView(activePlanet);
+    setSelected(null);
+  }, [activePlanet]);
+
+  const goTo = (body: GlobeBody) => {
+    spaceAudio.playTelemetryPing(body === 'EARTH' ? 760 : body === 'MOON' ? 880 : 1020, 0.06);
+    hasLaunched.current = true;
+    setSelected(null);
+    setFocusId(null);
+    setView(body);
+    if (body !== 'EARTH') onSelectPlanet(body);
   };
 
-  return (
-    <section id="explore" className="relative py-24 bg-[#05070B] border-t border-white/10 overflow-hidden">
-      {/* Ambient background glow according to active planet */}
-      <div
-        className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${
-          activePlanet === 'MARS' ? 'mars-radial-glow opacity-100' : 'moon-radial-glow opacity-100'
-        }`}
-      />
+  const pickArtifact = (artifact: MissionArtifact) => {
+    setSelected(artifact);
+    setFocusId(null);
+    // re-set so picking the same artifact twice still re-centres it
+    window.requestAnimationFrame(() => setFocusId(artifact.id));
+  };
 
+  const sites = view === 'EARTH' ? [] : MISSIONS_DATA.filter((m) => m.destination === view);
+  const info = BODY_INFO[view];
+  const label = hovered ?? selected;
+
+  return (
+    <section ref={sectionRef} id="explore" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-hud tracking-widest text-[#62D9FF] mb-2">
-              <Radio className="w-3.5 h-3.5 animate-pulse" />
-              <span>PLANETARY EXPLORATION SECTOR</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-hud uppercase tracking-tight text-white">
-              Where Stories Remain
-            </h2>
-            <p className="mt-2 text-base text-[#8D98A8] max-w-xl font-light">
-              Select a world to examine the hardware preserved across alien soils. Two celestial bodies,
-              dozens of robotic outposts, one shared human journey.
+            <p className="section-label">{t('globe.kicker')}</p>
+            <h2 className="mt-2 text-2xl sm:text-3xl text-fg">{t('globe.title')}</h2>
+            <p className="mt-3 text-base text-fg-2 max-w-xl">
+              {t('globe.intro')}
             </p>
           </div>
 
-          {/* Interactive Toggle Pill-free Segmented Control */}
-          <div className="inline-flex items-center p-1.5 bg-[#0B1018] border border-white/20 rounded-xl self-start md:self-auto">
-            <button
-              onClick={() => handleSelect('MOON')}
-              className={`px-6 py-2.5 rounded-lg font-hud text-sm font-semibold tracking-wider transition-all cursor-pointer ${
-                activePlanet === 'MOON'
-                  ? 'bg-[#D9DDE3] text-[#05070B] shadow-md shadow-white/10'
-                  : 'text-[#8D98A8] hover:text-white'
-              }`}
-            >
-              MOON ({moonCount})
-            </button>
-            <button
-              onClick={() => handleSelect('MARS')}
-              className={`px-6 py-2.5 rounded-lg font-hud text-sm font-semibold tracking-wider transition-all cursor-pointer ${
-                activePlanet === 'MARS'
-                  ? 'bg-[#B85C38] text-white shadow-md shadow-[#B85C38]/20'
-                  : 'text-[#8D98A8] hover:text-white'
-              }`}
-            >
-              MARS ({marsCount})
-            </button>
+          <div role="tablist" aria-label={t('globe.tabsAria')} className="inline-flex items-center p-1 border border-line rounded-xl self-start md:self-auto">
+            {TABS.map((id) => {
+              const tab = { id };
+              const count = tab.id === 'EARTH' ? null : MISSIONS_DATA.filter((m) => m.destination === tab.id).length;
+              const active = view === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => goTo(tab.id)}
+                  className={`px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+                    active ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
+                  }`}
+                >
+                  {t(`body.${tab.id}`)}
+                  {count !== null && <span className="font-mono-data text-fg-2">{count}</span>}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Two Giant Planetary Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* THE MOON */}
-          <div
-            onMouseEnter={() => setHoveredPlanet('MOON')}
-            onMouseLeave={() => setHoveredPlanet(null)}
-            onClick={() => handleSelect('MOON')}
-            className={`group relative rounded-2xl overflow-hidden border cursor-pointer transition-all duration-500 min-h-[440px] flex flex-col justify-between p-8 sm:p-10 ${
-              activePlanet === 'MOON'
-                ? 'border-[#D9DDE3]/60 bg-[#0B1018]/90 ring-1 ring-[#D9DDE3]/40 shadow-2xl shadow-white/5'
-                : 'border-white/10 bg-[#0B1018]/50 hover:border-white/30'
-            }`}
-          >
-            {/* Background Texture & Image */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              <img
-                src={ASSET_IMAGES.moonLander}
-                alt="Moon lunar landscape with Apollo descent stage"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover object-center opacity-40 group-hover:opacity-55 group-hover:scale-105 transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B1018] via-[#0B1018]/70 to-transparent" />
-            </div>
+        {/* Globe stage + site list */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-8 relative h-112 sm:h-140 rounded-2xl border border-line bg-ink overflow-hidden">
+            {nearView ? (
+              <Suspense fallback={<div className="absolute inset-0 bg-card/60" />}>
+                <PlanetGlobe
+                  view={view}
+                  focusArtifactId={focusId}
+                  onHoverArtifact={setHovered}
+                  onPickArtifact={pickArtifact}
+                  onReady={() => setGlobeReady(true)}
+                />
+              </Suspense>
+            ) : (
+              <div className="absolute inset-0 bg-card/60" />
+            )}
 
-            {/* Top Card Bar */}
-            <div className="relative z-10 flex items-start justify-between">
-              <div>
-                <span className="text-xs font-mono-data text-[#8D98A8] tracking-widest uppercase">
-                  DESTINATION // 01 · 384,400 KM FROM EARTH
-                </span>
-                <h3 className="text-3xl sm:text-4xl font-bold font-hud text-[#D9DDE3] uppercase mt-1">
-                  The Moon
-                </h3>
-              </div>
-              <div className="p-3 rounded-full bg-white/5 border border-white/15 text-[#D9DDE3]">
-                <Globe className="w-6 h-6" />
+            {/* Overlay: current world */}
+            <div className="absolute top-4 left-4 pointer-events-none bg-page/85 border border-line rounded-lg px-3 py-2 max-w-[75%]">
+              <div className="font-serif text-fg text-lg leading-tight">{t(`body.name.${view}`)}</div>
+              <div className="text-xs text-fg-2">{t(`globe.tagline.${view}`)}</div>
+              <div className="mt-1 flex flex-wrap gap-x-3 text-xs font-mono-data text-fg-2">
+                <span>{t(`globe.distance.${view}`)}</span>
+                <span>{t('globe.gravity', { g: info.gravity })}</span>
+                {view !== 'EARTH' && <span>{t('globe.sites', { n: sites.length })}</span>}
               </div>
             </div>
 
-            {/* Middle Coordinates & Teaser */}
-            <div className="relative z-10 my-6 space-y-3">
-              <p className="text-lg text-white/90 font-light italic">
-                “Silent machines beneath the lunar sky.”
-              </p>
-              <p className="text-sm text-[#8D98A8] max-w-md font-light">
-                Preserved in the airless lunar vacuum where footprints and tire tracks remain unchanged for
-                eons. Home to Apollo descent stages, electric rovers, and laser reflectors.
-              </p>
-
-              {/* Coordinates & Metadata */}
-              <div className="pt-2 flex flex-wrap gap-4 text-xs font-mono-data text-[#8D98A8]">
-                <span>0.67° N, 23.47° E (Tranquility)</span>
-                <span aria-hidden="true">·</span>
-                <span>Gravity: 0.166 g</span>
-                <span aria-hidden="true">·</span>
-                <span className="text-[#62D9FF]">{moonCount} Cataloged Artifacts</span>
+            {/* Hover / selection label */}
+            {label && (
+              <div className="absolute top-4 right-4 pointer-events-none bg-page/90 border border-line rounded-lg px-3 py-2 text-xs max-w-[55%]">
+                <div className="font-medium text-fg">{label.name}</div>
+                <div className="font-mono-data text-fg-2">
+                  {label.coordinates.lat}, {label.coordinates.lng}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Bottom Action Button */}
-            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between">
-              <span className="text-xs font-hud tracking-wider text-[#8D98A8] group-hover:text-white transition-colors">
-                APOLLO 11 TO 17 · SURVEYOR · ALSEP
-              </span>
-              <div className="inline-flex items-center gap-2 font-hud text-sm font-semibold tracking-wider text-[#D9DDE3] group-hover:text-white group-hover:translate-x-1 transition-all">
-                <span>{hoveredPlanet === 'MOON' ? 'EXPLORE MOON' : 'EXAMINE LUNAR SITES'}</span>
-                <ArrowRight className="w-4 h-4 text-[#62D9FF]" />
-              </div>
+            {/* Interaction hint + credit */}
+            <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-end justify-between gap-2 text-xs font-mono-data text-fg-2 pointer-events-none">
+              <span className="bg-page/80 rounded px-2 py-1">{t('globe.hint')}</span>
+              <a
+                href={info.creditUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="pointer-events-auto bg-page/80 rounded px-2 py-1 hover:text-fg underline decoration-line-strong underline-offset-2 transition-colors"
+              >
+                {t(`globe.credit.${view}`)}
+              </a>
             </div>
           </div>
 
-          {/* MARS */}
-          <div
-            onMouseEnter={() => setHoveredPlanet('MARS')}
-            onMouseLeave={() => setHoveredPlanet(null)}
-            onClick={() => handleSelect('MARS')}
-            className={`group relative rounded-2xl overflow-hidden border cursor-pointer transition-all duration-500 min-h-[440px] flex flex-col justify-between p-8 sm:p-10 ${
-              activePlanet === 'MARS'
-                ? 'border-[#B85C38]/70 bg-[#0B1018]/90 ring-1 ring-[#B85C38]/40 shadow-2xl shadow-[#B85C38]/10'
-                : 'border-white/10 bg-[#0B1018]/50 hover:border-white/30'
-            }`}
-          >
-            {/* Background Texture & Image */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              <img
-                src={ASSET_IMAGES.marsOpportunity}
-                alt="Mars planetary dunes with rover memorial"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover object-center opacity-40 group-hover:opacity-55 group-hover:scale-105 transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B1018] via-[#0B1018]/70 to-transparent" />
-            </div>
-
-            {/* Top Card Bar */}
-            <div className="relative z-10 flex items-start justify-between">
-              <div>
-                <span className="text-xs font-mono-data text-[#8D98A8] tracking-widest uppercase">
-                  DESTINATION // 02 · 225,000,000 KM AVERAGE DISTANCE
-                </span>
-                <h3 className="text-3xl sm:text-4xl font-bold font-hud text-[#B85C38] uppercase mt-1">
-                  Mars
+          {/* Site list (keyboard-accessible twin of the globe markers) */}
+          <aside className="lg:col-span-4 rounded-2xl border border-line bg-card p-5 flex flex-col max-h-140">
+            {view === 'EARTH' ? (
+              <div className="flex-1 flex flex-col justify-center gap-3 text-sm text-fg-2">
+                <p className="text-fg-2">{t('globe.earthIntro')}</p>
+                <button onClick={() => goTo('MOON')} className="btn-secondary w-full">
+                  {t('globe.flyMoon')}
+                </button>
+                <button onClick={() => goTo('MARS')} className="btn-secondary w-full">
+                  {t('globe.flyMars')}
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-sm text-fg-2 mb-3">
+                  {t('globe.hardwareOn', { body: t(`body.name.${view}`) })}
                 </h3>
-              </div>
-              <div className="p-3 rounded-full bg-[#B85C38]/15 border border-[#B85C38]/30 text-[#B85C38]">
-                <Globe className="w-6 h-6" />
-              </div>
-            </div>
+                <ul className="space-y-1 overflow-y-auto pr-1 flex-1">
+                  {sites.map((m) => {
+                    const isSel = selected?.id === m.id;
+                    return (
+                      <li key={m.id}>
+                        <button
+                          onClick={() => {
+                            spaceAudio.playTelemetryPing(1100, 0.06);
+                            pickArtifact(m);
+                          }}
+                          onMouseEnter={() => setHovered(m)}
+                          onMouseLeave={() => setHovered(null)}
+                          aria-pressed={isSel}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-3 ${
+                            isSel ? 'bg-raised' : 'hover:bg-raised'
+                          }`}
+                        >
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[m.status] }} aria-hidden="true" />
+                          <span className="flex-1 min-w-0">
+                            <span className="block text-fg truncate">{m.name}</span>
+                            <span className="block text-xs text-fg-2">
+                              {m.landingYear} · {t(`status.${m.status}`)}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
 
-            {/* Middle Coordinates & Teaser */}
-            <div className="relative z-10 my-6 space-y-3">
-              <p className="text-lg text-white/90 font-light italic">
-                “Robotic explorers frozen in time.”
-              </p>
-              <p className="text-sm text-[#8D98A8] max-w-md font-light">
-                Resting under rusty skies and whispering dust devils. Small mechanical scouts that drove
-                marathons, climbed alien peaks, and tasted fossil riverbeds.
-              </p>
-
-              {/* Coordinates & Metadata */}
-              <div className="pt-2 flex flex-wrap gap-4 text-xs font-mono-data text-[#8D98A8]">
-                <span>2.28° S, 5.23° W (Endeavour)</span>
-                <span aria-hidden="true">·</span>
-                <span>Gravity: 0.379 g</span>
-                <span aria-hidden="true">·</span>
-                <span className="text-[#B85C38]">{marsCount} Cataloged Artifacts</span>
-              </div>
-            </div>
-
-            {/* Bottom Action Button */}
-            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between">
-              <span className="text-xs font-hud tracking-wider text-[#8D98A8] group-hover:text-white transition-colors">
-                SOJOURNER · SPIRIT · OPPORTUNITY · INSIGHT
-              </span>
-              <div className="inline-flex items-center gap-2 font-hud text-sm font-semibold tracking-wider text-[#B85C38] group-hover:text-white group-hover:translate-x-1 transition-all">
-                <span>{hoveredPlanet === 'MARS' ? 'EXPLORE MARS' : 'EXAMINE MARTIAN ROVERS'}</span>
-                <ArrowRight className="w-4 h-4 text-[#B85C38]" />
-              </div>
-            </div>
-          </div>
+                {selected && (
+                  <div className="mt-4 pt-4 border-t border-line">
+                    <CatalogueTag artifact={selected} />
+                    <p className="text-sm text-fg-2 mt-2 line-clamp-3">{tx(selected, 'statusDescription')}</p>
+                    <button onClick={() => onOpenDetails(selected)} className="btn-primary mt-4 w-full">
+                      {t('globe.openDossier')}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </aside>
         </div>
       </div>
     </section>

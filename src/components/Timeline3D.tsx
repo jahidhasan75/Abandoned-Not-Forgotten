@@ -3,30 +3,55 @@ import * as THREE from 'three';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { MissionArtifact } from '../types/mission';
 import { spaceAudio } from '../utils/audio';
-import { Play, Pause, ChevronLeft, ChevronRight, Eye, Sparkles } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+import { Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CatalogueTag } from './CatalogueTag';
 
 interface Timeline3DProps {
   onOpenDetails: (artifact: MissionArtifact) => void;
 }
 
+// Missions sorted chronologically (data is static, so compute once per module load)
+const sortedMissions = [...MISSIONS_DATA].sort((a, b) => a.landingYear - b.landingYear);
+const SPACING = 26;
+const CRUISE_SECONDS = 4.5;
+
+const nodePosition = (idx: number) =>
+  new THREE.Vector3(Math.sin(idx * 0.9) * 6, Math.cos(idx * 0.8) * 3, -idx * SPACING);
+
 export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
+  const { t, tx } = useI18n();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [selectedMissionIndex, setSelectedMissionIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const isPlayingRef = useRef<boolean>(false);
-  isPlayingRef.current = isPlaying;
+  const [webglFailed, setWebglFailed] = useState<boolean>(false);
 
-  // Sorted missions chronologically
-  const sortedMissions = [...MISSIONS_DATA].sort((a, b) => a.landingYear - b.landingYear);
+  // The render loop reads these refs, so the scene is built only once.
+  const isPlayingRef = useRef<boolean>(false);
+  const selectedIndexRef = useRef<number>(0);
+  isPlayingRef.current = isPlaying;
+  selectedIndexRef.current = selectedMissionIndex;
+
   const currentMission = sortedMissions[selectedMissionIndex];
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch {
+      setWebglFailed(true);
+      return;
+    }
+
     // Scene, Camera, Renderer
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05070b, 0.015);
+    // Neutral fog the colour of the stage, so distant markers recede without a tint
+    scene.fog = new THREE.FogExp2(0x07080d, 0.014);
 
     const camera = new THREE.PerspectiveCamera(
       55,
@@ -35,7 +60,6 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
       1000
     );
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
@@ -44,188 +68,163 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
     const starsCount = 1200;
     const starGeometry = new THREE.BufferGeometry();
     const starPositions = new Float32Array(starsCount * 3);
-    const starColors = new Float32Array(starsCount * 3);
 
     for (let i = 0; i < starsCount; i++) {
       starPositions[i * 3] = (Math.random() - 0.5) * 200;
       starPositions[i * 3 + 1] = (Math.random() - 0.5) * 120;
       starPositions[i * 3 + 2] = (Math.random() - 0.5) * 300;
-
-      // Subtle cyan, amber, white tints
-      const tint = Math.random();
-      if (tint > 0.7) {
-        starColors[i * 3] = 0.38;
-        starColors[i * 3 + 1] = 0.85;
-        starColors[i * 3 + 2] = 1.0;
-      } else if (tint > 0.4) {
-        starColors[i * 3] = 0.95;
-        starColors[i * 3 + 1] = 0.71;
-        starColors[i * 3 + 2] = 0.38;
-      } else {
-        starColors[i * 3] = 0.85;
-        starColors[i * 3 + 1] = 0.87;
-        starColors[i * 3 + 2] = 0.89;
-      }
     }
 
     starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
+    // Dim, neutral, still stars
     const starMaterial = new THREE.PointsMaterial({
-      size: 0.8,
-      vertexColors: true,
+      color: 0xeef0f5,
+      size: 0.5,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.35,
     });
     const starField = new THREE.Points(starGeometry, starMaterial);
     scene.add(starField);
 
-    // 3D Mission Waypoint nodes along chronological timeline corridor
-    // Node spacing along Z-axis: 0, -25, -50, -75, etc.
-    const spacing = 26;
-    const missionObjects: THREE.Group[] = [];
+    // One quiet matte sphere per mission, in the neutral ramp; the current mission turns rust.
+    const NEUTRAL = new THREE.Color(0x7a8296);
+    const CURRENT = new THREE.Color(0xd0704a);
+    const missionObjects: THREE.Mesh[] = [];
+    const markerGeo = new THREE.SphereGeometry(0.6, 32, 24);
 
-    sortedMissions.forEach((m, idx) => {
-      const group = new THREE.Group();
-      const zPos = -idx * spacing;
-      // Slight sinusoidal wave offset along X and Y
-      const xPos = Math.sin(idx * 0.9) * 6;
-      const yPos = Math.cos(idx * 0.8) * 3;
-      group.position.set(xPos, yPos, zPos);
-
-      // Core sphere
-      const isMars = m.destination === 'MARS';
-      const color = isMars ? 0xb85c38 : 0x62d9ff;
-      const sphereGeo = new THREE.SphereGeometry(1.2, 24, 24);
-      const sphereMat = new THREE.MeshBasicMaterial({
-        color,
-        wireframe: true,
-      });
-      const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-      group.add(sphere);
-
-      // Inner glowing core
-      const innerGeo = new THREE.OctahedronGeometry(0.7, 0);
-      const innerMat = new THREE.MeshBasicMaterial({
-        color: isMars ? 0xff7a45 : 0xffffff,
-      });
-      const inner = new THREE.Mesh(innerGeo, innerMat);
-      group.add(inner);
-
-      // Planetary orbital ring
-      const ringGeo = new THREE.RingGeometry(1.8, 2.0, 32);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.6,
-      });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = Math.PI / 2.3;
-      group.add(ring);
-
-      scene.add(group);
-      missionObjects.push(group);
+    sortedMissions.forEach((_, idx) => {
+      const marker = new THREE.Mesh(
+        markerGeo,
+        new THREE.MeshLambertMaterial({ color: NEUTRAL.clone() })
+      );
+      marker.position.copy(nodePosition(idx));
+      scene.add(marker);
+      missionObjects.push(marker);
     });
 
-    // Spline curve connecting missions
-    const curvePoints = sortedMissions.map((_, idx) => {
-      const z = -idx * spacing;
-      const x = Math.sin(idx * 0.9) * 6;
-      const y = Math.cos(idx * 0.8) * 3;
-      return new THREE.Vector3(x, y, z);
-    });
-
+    // The path between missions: a thin neutral hairline
+    const curvePoints = sortedMissions.map((_, idx) => nodePosition(idx));
     const spline = new THREE.CatmullRomCurve3(curvePoints);
-    const tubeGeo = new THREE.TubeGeometry(spline, 120, 0.15, 8, false);
-    const tubeMat = new THREE.MeshBasicMaterial({
-      color: 0x62d9ff,
-      transparent: true,
-      opacity: 0.35,
-    });
-    const tube = new THREE.Mesh(tubeGeo, tubeMat);
-    scene.add(tube);
+    const pathGeo = new THREE.BufferGeometry().setFromPoints(spline.getPoints(240));
+    const path = new THREE.Line(
+      pathGeo,
+      new THREE.LineBasicMaterial({ color: 0xeef0f5, transparent: true, opacity: 0.18 })
+    );
+    scene.add(path);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+    // Soft, even light so the spheres read as solid objects, not glowing ones
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 1.4);
+    key.position.set(-6, 8, 10);
+    scene.add(key);
 
-    // Initial Camera target
-    let targetCameraZ = 12;
-    let targetCameraX = 0;
-    let targetCameraY = 0;
-    camera.position.set(0, 0, targetCameraZ);
+    // Camera starts at the first mission and then eases towards the selected one
+    const startPos = nodePosition(selectedIndexRef.current);
+    camera.position.set(startPos.x * 0.7, startPos.y * 0.7 + 1.2, startPos.z + 10);
+    const lookTarget = startPos.clone();
 
-    let animationId: number;
-    let clock = new THREE.Clock();
+    let animationId = 0;
+    let running = false;
+    let isVisible = false;
+    const timer = new THREE.Timer();
+    timer.connect(document);
     let cruiseTimer = 0;
+    let lastIndex = -1;
 
-    const animate = () => {
+    const animate = (timestamp?: number) => {
       animationId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      timer.update(timestamp);
+      const delta = Math.min(timer.getDelta(), 0.1);
+      const selected = selectedIndexRef.current;
 
-      // Spin waypoint markers
+      // Restart the cruise countdown whenever the selection changes (manual or automatic)
+      if (selected !== lastIndex) {
+        lastIndex = selected;
+        cruiseTimer = 0;
+      }
+
+      // The current mission is slightly larger and rust; the rest stay neutral
       missionObjects.forEach((obj, idx) => {
-        obj.rotation.y = elapsed * 0.8 + idx;
-        obj.rotation.x = Math.sin(elapsed * 0.5 + idx) * 0.2;
+        const isCurrent = idx === selected;
+        const targetScale = isCurrent ? 1.3 : 0.9;
+        const k = prefersReducedMotion ? 1 : Math.min(1, delta * 6);
+        obj.scale.setScalar(obj.scale.x + (targetScale - obj.scale.x) * k);
+        (obj.material as THREE.MeshLambertMaterial).color.copy(isCurrent ? CURRENT : NEUTRAL);
       });
 
-      // Slowly rotate starfield
-      starField.rotation.y = elapsed * 0.02;
-
-      // Automatic Cruise Mode when playing
+      // Automatic cruise mode
       if (isPlayingRef.current) {
         cruiseTimer += delta;
-        if (cruiseTimer > 4.5) {
+        if (cruiseTimer > CRUISE_SECONDS) {
           cruiseTimer = 0;
           setSelectedMissionIndex((prev) => (prev + 1) % sortedMissions.length);
         }
       }
 
-      // Smooth camera interpolation towards selected mission
-      const currGroup = missionObjects[selectedMissionIndex];
-      if (currGroup) {
-        targetCameraZ = currGroup.position.z + 10;
-        targetCameraX = currGroup.position.x * 0.7;
-        targetCameraY = currGroup.position.y * 0.7 + 1.2;
-      }
-
-      camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
-      camera.position.x += (targetCameraX - camera.position.x) * 0.05;
-      camera.position.y += (targetCameraY - camera.position.y) * 0.05;
-
-      if (currGroup) {
-        camera.lookAt(currGroup.position.x, currGroup.position.y, currGroup.position.z);
+      // Frame-rate independent easing towards the selected mission
+      const target = missionObjects[selected]?.position;
+      if (target) {
+        const ease = prefersReducedMotion ? 1 : 1 - Math.pow(0.04, delta);
+        camera.position.x += (target.x * 0.7 - camera.position.x) * ease;
+        camera.position.y += (target.y * 0.7 + 1.2 - camera.position.y) * ease;
+        camera.position.z += (target.z + 10 - camera.position.z) * ease;
+        lookTarget.lerp(target, ease);
+        camera.lookAt(lookTarget);
       }
 
       renderer.render(scene, camera);
     };
 
-    animate();
+    // Only render while the section is on screen (saves battery and CPU)
+    const start = () => {
+      if (running) return;
+      running = true;
+      timer.reset();
+      animationId = requestAnimationFrame(animate);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animationId);
+    };
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) start();
+        else stop();
+      },
+      { rootMargin: '100px' }
+    );
+    visibilityObserver.observe(container);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!container.clientWidth || !container.clientHeight) return;
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
-    };
-    window.addEventListener('resize', handleResize);
+      if (!running) renderer.render(scene, camera);
+    });
+    resizeObserver.observe(container);
 
     return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
-      if (container && renderer.domElement) {
+      stop();
+      visibilityObserver.disconnect();
+      resizeObserver.disconnect();
+      timer.dispose();
+      scene.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        if (mesh.geometry) mesh.geometry.dispose();
+        const material = mesh.material as THREE.Material | THREE.Material[] | undefined;
+        if (Array.isArray(material)) material.forEach((mat) => mat.dispose());
+        else material?.dispose();
+      });
+      renderer.dispose();
+      if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
-      renderer.dispose();
-      starGeometry.dispose();
-      starMaterial.dispose();
-      tubeGeo.dispose();
-      tubeMat.dispose();
     };
-  }, [selectedMissionIndex]);
+  }, []);
 
   const handleSelectIndex = (idx: number) => {
     spaceAudio.playTelemetryPing(900 + idx * 40, 0.05);
@@ -243,21 +242,15 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
   };
 
   return (
-    <section id="timeline-3d" className="relative py-24 bg-[#05070B] border-t border-white/10 overflow-hidden">
+    <section id="timeline-3d" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-hud tracking-widest text-[#62D9FF] mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>3D CHRONOLOGICAL FLIGHT TRAJECTORY</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-hud uppercase tracking-tight text-white">
-              Spacetime Mission Flight
-            </h2>
-            <p className="mt-2 text-base text-[#8D98A8] max-w-2xl font-light">
-              Fly through the decades in 3D perspective. Track human engineering milestones from humanity’s
-              first Moon landing stages in 1967 to deep Mars interior seismology in the 2020s.
+            <p className="section-label">{t('timeline.kicker')}</p>
+            <h2 className="mt-2 text-2xl sm:text-3xl text-fg">{t('timeline.title')}</h2>
+            <p className="mt-3 text-base text-fg-2 max-w-2xl">
+              {t('timeline.intro')}
             </p>
           </div>
 
@@ -268,115 +261,85 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
                 spaceAudio.playTelemetryPing(1000, 0.06);
                 setIsPlaying(!isPlaying);
               }}
-              className={`px-4 py-2 rounded-lg font-hud text-xs font-semibold tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
-                isPlaying
-                  ? 'bg-[#62D9FF] text-[#05070B] shadow-md shadow-[#62D9FF]/20'
-                  : 'bg-[#0B1018] border border-white/20 text-white hover:border-[#62D9FF]'
+              aria-pressed={isPlaying}
+              className={`px-4 py-2 rounded-lg text-sm border transition-colors flex items-center gap-2 ${
+                isPlaying ? 'bg-raised border-line-strong text-fg' : 'border-line text-fg hover:bg-raised'
               }`}
             >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isPlaying ? 'PAUSE CRUISE' : 'AUTO CRUISE'}</span>
+              {isPlaying ? <Pause className="w-4 h-4" strokeWidth={1.5} /> : <Play className="w-4 h-4" strokeWidth={1.5} />}
+              <span>{isPlaying ? t('timeline.pause') : t('timeline.play')}</span>
             </button>
-            <div className="flex items-center gap-1 bg-[#0B1018] border border-white/20 p-1 rounded-lg">
+            <div className="flex items-center gap-1 border border-line p-1 rounded-lg">
               <button
                 onClick={handlePrev}
                 aria-label="Previous mission in 3D timeline"
-                className="p-1.5 text-[#8D98A8] hover:text-white transition-colors"
+                className="p-2 rounded text-fg-2 hover:text-fg hover:bg-raised transition-colors"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
               </button>
-              <span className="text-xs font-mono-data px-2 text-[#62D9FF]">
+              <span className="text-xs font-mono-data px-2 text-fg-2">
                 {selectedMissionIndex + 1} / {sortedMissions.length}
               </span>
               <button
                 onClick={handleNext}
                 aria-label="Next mission in 3D timeline"
-                className="p-1.5 text-[#8D98A8] hover:text-white transition-colors"
+                className="p-2 rounded text-fg-2 hover:text-fg hover:bg-raised transition-colors"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
               </button>
             </div>
           </div>
         </div>
 
         {/* 3D Canvas Stage Container */}
-        <div className="relative rounded-2xl border border-white/15 bg-[#05070B] overflow-hidden min-h-[500px] h-[580px] shadow-2xl">
+        <div className="relative rounded-2xl border border-line bg-ink overflow-hidden min-h-128 h-144">
           {/* Three.js Canvas Mount */}
-          <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-
-          {/* Top HUD Telemetry Banner */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none text-xs font-mono-data text-[#8D98A8]">
-            <div className="bg-[#05070B]/80 px-3 py-1.5 rounded border border-white/10 backdrop-blur-md flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-[#62D9FF] animate-pulse" />
-              <span className="text-white font-medium">3D SPATIAL CHRONOMETER</span>
-              <span className="hidden sm:inline text-white/30">|</span>
-              <span className="hidden sm:inline">WARP VECTOR Z: -{selectedMissionIndex * 26} m</span>
+          <div ref={mountRef} className="w-full h-full" aria-hidden="true" />
+          {webglFailed && (
+            <div className="absolute inset-0 flex items-center justify-center text-xs font-mono-data text-fg-2 p-6 text-center">
+              3D view unavailable on this device (WebGL disabled). Use the arrows above to browse missions.
             </div>
-            <div className="bg-[#05070B]/80 px-3 py-1.5 rounded border border-white/10 backdrop-blur-md">
-              <span className="text-[#F3B562] font-semibold">{currentMission.landingYear} CE</span>
+          )}
+
+          {/* Current position in the flight: year and mission name */}
+          <div className="absolute top-4 left-4 right-4 flex items-center pointer-events-none text-xs text-fg-2" aria-live="polite">
+            <div className="bg-page/85 px-2 py-1 rounded flex items-center gap-2 max-w-full">
+              <span className="font-mono-data text-fg">{currentMission.landingYear}</span>
+              <span className="truncate">{currentMission.name}</span>
             </div>
           </div>
 
           {/* Active Mission HUD Floating Overlay Card */}
-          <div className="absolute bottom-6 left-6 right-6 md:left-6 md:right-auto md:max-w-md z-20 bg-[#0B1018]/90 border border-white/20 p-5 rounded-xl backdrop-blur-md shadow-2xl">
-            <div className="flex items-center justify-between gap-4 pb-2 border-b border-white/10">
-              <span className="text-xs font-mono-data text-[#62D9FF]">
-                {currentMission.artifactId}
-              </span>
-              <span
-                className={`text-[10px] font-hud px-2 py-0.5 rounded font-bold uppercase ${
-                  currentMission.destination === 'MARS'
-                    ? 'bg-[#B85C38]/20 text-[#B85C38] border border-[#B85C38]/40'
-                    : 'bg-[#D9DDE3]/20 text-[#D9DDE3] border border-white/20'
-                }`}
-              >
-                {currentMission.destination}
-              </span>
-            </div>
-
-            <div className="mt-3">
-              <h3 className="text-xl font-bold font-hud text-white leading-tight">
-                {currentMission.name}
-              </h3>
-              <p className="text-xs text-[#8D98A8] mt-0.5">
-                {currentMission.mission} · Landing: {currentMission.landingYear}
-              </p>
-            </div>
-
-            <p className="text-xs text-[#D9DDE3] line-clamp-2 mt-3 font-light leading-relaxed">
-              {currentMission.story}
+          <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md z-20 bg-card border border-line p-4 sm:p-5 rounded-xl">
+            <h3 className="font-serif text-xl sm:text-2xl text-fg leading-tight">{currentMission.name}</h3>
+            <p className="text-sm text-fg-2 mt-1">
+              {currentMission.mission} · {t(`body.name.${currentMission.destination}`)}
             </p>
-
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-              <span className="text-[11px] font-mono-data text-[#8D98A8]">
-                Coords: {currentMission.coordinates.lat}, {currentMission.coordinates.lng}
-              </span>
-              <button
-                onClick={() => onOpenDetails(currentMission)}
-                className="inline-flex items-center gap-1.5 text-xs font-hud font-semibold text-[#62D9FF] hover:text-white transition-colors cursor-pointer"
-              >
-                <Eye className="w-3.5 h-3.5" />
-                <span>Inspect Dossier</span>
-              </button>
-            </div>
+            <CatalogueTag artifact={currentMission} className="mt-2" />
+            <p className="hidden sm:block text-sm text-fg-2 line-clamp-2 mt-3">{tx(currentMission, 'story')}</p>
+            <button onClick={() => onOpenDetails(currentMission)} className="btn-secondary mt-3 sm:mt-4 py-2">
+              {t('timeline.inspect')}
+            </button>
           </div>
 
-          {/* Horizontal Scrubber / Timeline Bar at Bottom Right on Desktop */}
-          <div className="hidden lg:flex absolute bottom-6 right-6 z-20 bg-[#05070B]/85 border border-white/15 p-2 rounded-xl backdrop-blur-md items-center gap-2">
+          {/* Year scrubber, top-centre on desktop (kept clear of the mission card below) */}
+          <div className="hidden lg:flex absolute top-16 right-4 left-4 justify-center z-20 pointer-events-none">
+          <div className="pointer-events-auto bg-page/90 border border-line p-1 rounded-xl flex flex-wrap justify-center items-center gap-1">
             {sortedMissions.map((m, idx) => (
               <button
                 key={m.id}
                 onClick={() => handleSelectIndex(idx)}
                 title={`${m.landingYear}: ${m.name}`}
-                className={`px-2.5 py-1.5 rounded text-xs font-mono-data transition-all cursor-pointer ${
-                  selectedMissionIndex === idx
-                    ? 'bg-white text-black font-bold shadow-md'
-                    : 'text-[#8D98A8] hover:text-white hover:bg-white/5'
+                aria-label={`${m.landingYear}: ${m.name}`}
+                aria-current={selectedMissionIndex === idx ? 'step' : undefined}
+                className={`px-2 py-1 rounded text-xs font-mono-data transition-colors ${
+                  selectedMissionIndex === idx ? 'bg-raised text-accent' : 'text-fg-2 hover:text-fg hover:bg-raised'
                 }`}
               >
                 {m.landingYear}
               </button>
             ))}
+          </div>
           </div>
         </div>
       </div>

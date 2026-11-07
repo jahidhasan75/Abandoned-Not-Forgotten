@@ -1,9 +1,11 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Sliders, Sparkles, Clock } from 'lucide-react';
+import { ChevronsLeftRight } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
+import { useI18n } from '../i18n/I18nProvider';
 import { ASSET_IMAGES } from '../assets/images';
 
 export const BeforeAfterSlider: React.FC = () => {
+  const { t } = useI18n();
   const [sliderPosition, setSliderPosition] = useState<number>(50); // percentage 0 to 100
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -16,110 +18,120 @@ export const BeforeAfterSlider: React.FC = () => {
     setSliderPosition(pct);
   }, []);
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-      handleMove(e.touches[0].clientX);
-    }
+  // Pointer events cover mouse, touch and pen. Clicking anywhere jumps the divider there.
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+    handleMove(e.clientX);
+    spaceAudio.playTelemetryPing(850, 0.03);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
-      handleMove(e.clientX);
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDragging) handleMove(e.clientX);
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    setIsDragging(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = e.shiftKey ? 10 : 2;
+    let next: number | null = null;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = sliderPosition - step;
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = sliderPosition + step;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = 100;
+    if (next !== null) {
+      e.preventDefault();
+      setSliderPosition(Math.max(0, Math.min(100, next)));
     }
   };
 
   return (
-    <section className="relative py-24 bg-[#05070B] border-t border-white/10">
+    <section className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <div className="flex items-center gap-2 text-xs font-hud tracking-widest text-[#62D9FF] mb-2">
-              <Sliders className="w-3.5 h-3.5" />
-              <span>TEMPORAL MORPHOLOGY COMPARISON</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-hud uppercase tracking-tight text-white">
-              Before & After
+            <p className="section-label">{t('slider.kicker')}</p>
+            <h2 className="mt-2 text-2xl sm:text-3xl text-fg">
+              {t('slider.title')}
             </h2>
-            <p className="mt-2 text-base text-[#8D98A8] max-w-xl font-light">
-              Drag the dividing line to inspect how the harsh extraterrestrial environment transforms
-              gleaming human engineering into an archaeological monument.
+            <p className="mt-3 text-base text-fg-2 max-w-xl">
+              {t('slider.intro')}
             </p>
           </div>
 
-          <div className="text-right">
-            <span className="text-xs font-mono-data text-[#F3B562] block">
-              SLIDER POSITION: {Math.round(sliderPosition)}% DAY 1 / {100 - Math.round(sliderPosition)}% YEARS LATER
+          <div className="md:text-right">
+            <span className="text-xs font-mono-data text-fg-2 block">
+              {t('slider.position', { a: Math.round(sliderPosition), b: 100 - Math.round(sliderPosition) })}
             </span>
-            <span className="text-xs text-[#8D98A8]">Drag cursor or touch to slide</span>
+            <span className="text-xs text-fg-2">{t('slider.hint')}</span>
           </div>
         </div>
 
         {/* Draggable Stage Container */}
         <div
           ref={containerRef}
-          onMouseDown={() => {
-            setIsDragging(true);
-            spaceAudio.playTelemetryPing(850, 0.03);
-          }}
-          onMouseUp={() => setIsDragging(false)}
-          onMouseLeave={() => setIsDragging(false)}
-          onMouseMove={handleMouseMove}
-          onTouchMove={handleTouchMove}
-          className="relative w-full h-[380px] sm:h-[480px] md:h-[560px] rounded-2xl overflow-hidden border border-white/20 select-none shadow-2xl cursor-ew-resize bg-[#0B1018]"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="slider"
+          aria-label="Compare mission day one with years later"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(sliderPosition)}
+          aria-valuetext={`${Math.round(sliderPosition)}% mission day one`}
+          className="relative w-full h-96 sm:h-120 md:h-140 rounded-2xl overflow-hidden select-none touch-pan-y cursor-ew-resize bg-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-fg"
         >
-          {/* Base Layer: YEARS LATER (Right side / background) */}
+          {/* Base layer: InSight final selfie, April 2022 (right side) */}
           <div className="absolute inset-0">
             <img
-              src={ASSET_IMAGES.roverYearsLater}
-              alt="Weathered robotic Mars rover years later covered in dust"
+              src={ASSET_IMAGES.insightFinal}
+              alt={t('slider.afterAlt')}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover pointer-events-none"
+                loading="lazy"
+                decoding="async"
+              className="w-full h-full object-cover object-top pointer-events-none"
             />
-            {/* Dark Scrim */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#05070B]/80 via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink/80 to-transparent pointer-events-none" />
 
             {/* Right Side Annotation Label */}
-            <div className="absolute bottom-6 right-6 z-10 text-right pointer-events-none bg-[#05070B]/80 p-4 rounded-xl border border-white/10 backdrop-blur-md max-w-xs">
-              <div className="flex items-center justify-end gap-1.5 text-xs font-hud font-bold text-[#B85C38] tracking-widest uppercase mb-1">
-                <Clock className="w-3.5 h-3.5" />
-                <span>YEARS LATER</span>
-              </div>
-              <p className="text-xs text-[#D9DDE3] font-light">
-                Solar arrays coated in Martian iron oxide dust, joints cold-welded in vacuum, silent
-                monument to human exploration.
+            <div className="absolute bottom-4 right-4 z-10 text-right pointer-events-none bg-page/90 p-3 rounded-lg max-w-xs">
+              <p className="font-mono-data text-xs text-fg mb-1">{t('slider.after')}</p>
+              <p className="text-xs text-fg-2">
+                {t('slider.afterText')}
               </p>
             </div>
           </div>
 
-          {/* Top Layer: MISSION DAY 1 (Clipped to sliderPosition) */}
+          {/* Top layer: InSight first selfie, Dec 2018 (clipped to sliderPosition) */}
           <div
             className="absolute inset-0 overflow-hidden"
-            style={{ width: `${sliderPosition}%` }}
+            style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
           >
-            <div
-              className="relative h-full"
-              style={{
-                width: containerRef.current ? `${containerRef.current.clientWidth}px` : '100vw',
-              }}
-            >
+            <div className="relative h-full w-full">
               <img
-                src={ASSET_IMAGES.roverDayOne}
-                alt="Pristine robotic explorer on landing day"
+                src={ASSET_IMAGES.insightFirst}
+                alt={t('slider.beforeAlt')}
                 referrerPolicy="no-referrer"
-                className="w-full h-full object-cover pointer-events-none"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover object-top pointer-events-none"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#05070B]/80 via-transparent to-black/30 pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink/80 to-transparent pointer-events-none" />
 
               {/* Left Side Annotation Label */}
-              <div className="absolute bottom-6 left-6 z-10 pointer-events-none bg-[#05070B]/80 p-4 rounded-xl border border-white/10 backdrop-blur-md max-w-xs">
-                <div className="flex items-center gap-1.5 text-xs font-hud font-bold text-[#62D9FF] tracking-widest uppercase mb-1">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>MISSION DAY 1</span>
-                </div>
-                <p className="text-xs text-[#D9DDE3] font-light">
-                  Spotless gallium arsenide solar cells, pristine gold Kapton thermal foil, and sharp
-                  aluminum wheel treads.
+              <div className="absolute bottom-4 left-4 z-10 pointer-events-none bg-page/90 p-3 rounded-lg max-w-xs">
+                <p className="font-mono-data text-xs text-fg mb-1">{t('slider.before')}</p>
+                <p className="text-xs text-fg-2">
+                  {t('slider.beforeText')}
                 </p>
               </div>
             </div>
@@ -127,27 +139,25 @@ export const BeforeAfterSlider: React.FC = () => {
 
           {/* Dividing Draggable Handle Line */}
           <div
-            className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.7)] z-20 pointer-events-none"
+            className="absolute top-0 bottom-0 w-px -translate-x-1/2 bg-fg z-20 pointer-events-none"
             style={{ left: `${sliderPosition}%` }}
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#05070B] border-2 border-white flex items-center justify-center text-white shadow-2xl">
-              <Sliders className="w-4 h-4 text-[#62D9FF]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-fg text-ink flex items-center justify-center">
+              <ChevronsLeftRight className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
             </div>
           </div>
 
           {/* Top Center Pill-free Badge */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-[#05070B]/80 px-4 py-1.5 rounded-full border border-white/15 text-xs font-mono-data text-[#8D98A8] backdrop-blur-sm pointer-events-none">
-            DRAG TO INSPECT SURVIVAL ARTIFACTS
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-page/90 px-3 py-1 rounded text-xs text-fg-2 pointer-events-none">
+            {t('slider.badge')}
           </div>
         </div>
 
         {/* Poetic Center Caption */}
-        <div className="mt-8 text-center max-w-xl mx-auto space-y-1">
-          <p className="text-lg font-light text-white italic">
-            “Technology changes. The scientific legacy remains.”
-          </p>
-          <p className="text-xs text-[#8D98A8] font-mono-data">
-            ARTIFACT FORENSICS · NASA SPACE APPS CHALLENGE 2026
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+          <p className="font-serif text-xl text-fg">{t('slider.quote')}</p>
+          <p className="catalogue-tag">
+            {t('slider.credit')}
           </p>
         </div>
       </div>

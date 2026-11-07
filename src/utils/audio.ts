@@ -79,6 +79,12 @@ class MissionControlAudioEngine {
     return this.analyser;
   }
 
+  /** Returns the analyser only if audio has already started. Never creates an AudioContext,
+   *  so it is safe to call before any user gesture (browsers block autoplay otherwise). */
+  public peekAnalyser(): AnalyserNode | null {
+    return this.analyser;
+  }
+
   public setVolume(vol: number) {
     this.volume = Math.max(0, Math.min(1, vol));
     if (this.masterGain && this.ctx) {

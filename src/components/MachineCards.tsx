@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Destination, MissionArtifact } from '../types/mission';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { spaceAudio } from '../utils/audio';
-import { ArrowUpRight, Cpu } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+import { STATUS_COLORS } from '../data/status';
+import { CatalogueTag } from './CatalogueTag';
 
 interface MachineCardsProps {
   onOpenDetails: (artifact: MissionArtifact) => void;
@@ -10,9 +12,15 @@ interface MachineCardsProps {
 }
 
 export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activePlanetFilter }) => {
-  const [filter, setFilter] = useState<'ALL' | 'MOON' | 'MARS' | 'ROVER' | 'LANDER' | 'INSTRUMENT'>(
+  const { t, tx, txScience } = useI18n();
+  const [filter, setFilter] = useState<'ALL' | 'MOON' | 'MARS' | 'ROVER' | 'LANDER' | 'INSTRUMENT' | 'PARTS'>(
     activePlanetFilter || 'ALL'
   );
+
+  // Follow the global Moon/Mars switch, while still allowing local filters afterwards
+  useEffect(() => {
+    if (activePlanetFilter) setFilter(activePlanetFilter);
+  }, [activePlanetFilter]);
 
   const filteredMachines = MISSIONS_DATA.filter((m) => {
     if (filter === 'ALL') return true;
@@ -21,6 +29,7 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
     if (filter === 'ROVER') return m.category === 'ROVER';
     if (filter === 'LANDER') return m.category === 'LANDER' || m.category === 'HISTORIC_SITE';
     if (filter === 'INSTRUMENT') return m.category === 'INSTRUMENT';
+    if (filter === 'PARTS') return m.category === 'ENTRY_HARDWARE' || m.category === 'IMPACT_SITE';
     return true;
   });
 
@@ -31,6 +40,7 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
     { id: 'ROVER', label: 'Rovers' },
     { id: 'LANDER', label: 'Landers' },
     { id: 'INSTRUMENT', label: 'Instruments' },
+    { id: 'PARTS', label: 'Discarded parts' },
   ] as const;
 
   const handleCardClick = (machine: MissionArtifact) => {
@@ -39,26 +49,16 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
   };
 
   return (
-    <section id="machines" className="relative py-24 bg-[#05070B] border-t border-white/10">
+    <section id="machines" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <div className="flex items-center gap-2 text-xs font-hud tracking-widest text-[#62D9FF] mb-2">
-              <Cpu className="w-3.5 h-3.5" />
-              <span>PRIMARY ARTIFACT REGISTRY</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-hud uppercase tracking-tight text-white">
-              Meet the Machines
-            </h2>
-            <p className="mt-2 text-base text-[#8D98A8] max-w-xl font-light">
-              Each machine was forged to test the boundary of human capability. Here is the hardware that
-              laid the cornerstone of solar system archaeology.
-            </p>
+            <p className="section-label">{t('cards.kicker')}</p>
+            <h2 className="mt-2 text-2xl sm:text-3xl text-fg">{t('cards.title')}</h2>
+            <p className="mt-3 text-base text-fg-2 max-w-xl">{t('cards.intro')}</p>
           </div>
 
-          {/* Interactive Filter Tabs (functional buttons) */}
-          <div className="flex items-center gap-1 p-1 bg-[#0B1018] border border-white/20 rounded-xl overflow-x-auto max-w-full">
+          <div className="flex items-center gap-1 p-1 border border-line rounded-xl overflow-x-auto max-w-full" role="group" aria-label={t('cards.kicker')}>
             {filterOptions.map((opt) => (
               <button
                 key={opt.id}
@@ -66,105 +66,65 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
                   spaceAudio.playTelemetryPing(850, 0.04);
                   setFilter(opt.id);
                 }}
-                className={`px-4 py-2 text-xs font-hud font-semibold rounded-lg transition-all whitespace-nowrap cursor-pointer ${
-                  filter === opt.id
-                    ? 'bg-white text-[#05070B] shadow-sm'
-                    : 'text-[#8D98A8] hover:text-white'
+                aria-pressed={filter === opt.id}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors whitespace-nowrap ${
+                  filter === opt.id ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
                 }`}
               >
-                {opt.label}
+                {t(`filter.${opt.id}`)}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Artifact Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Catalogue: photo, object name, catalogue tag, status. Like a museum wall label. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
           {filteredMachines.map((machine) => (
             <div
               key={machine.id}
               onClick={() => handleCardClick(machine)}
-              className="group relative rounded-xl border border-white/15 bg-[#0B1018] hover:border-white/40 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleCardClick(machine);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={t('cards.open', { name: machine.name })}
+              className="animate-fadeIn group rounded-xl p-2 -m-2 hover:bg-card transition-colors"
             >
-              {/* Top Image Preview Banner */}
-              <div className="relative h-52 sm:h-56 w-full overflow-hidden bg-[#07090e]">
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-ink">
                 <img
                   src={machine.image}
                   alt={machine.name}
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75 group-hover:opacity-90"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1018] via-transparent to-black/40" />
-
-                {/* Top Corner Unboxed Metadata Overlay */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-[11px] font-mono-data text-white/90">
-                  <span className="bg-[#05070B]/80 px-2 py-0.5 rounded border border-white/10 backdrop-blur-sm">
-                    {machine.artifactId}
-                  </span>
-                  <span className="bg-[#05070B]/80 px-2 py-0.5 rounded border border-white/10 backdrop-blur-sm">
-                    {machine.landingYear} CE
-                  </span>
-                </div>
-
-                {/* Demo Label badge as required by prompt */}
-                <div className="absolute bottom-2 left-3 text-[10px] font-mono-data text-[#8D98A8] bg-[#05070B]/80 px-2 py-0.5 rounded">
-                  DEMO ARCHAEOLOGICAL RECONSTRUCTION
-                </div>
               </div>
 
-              {/* Card Body */}
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  {/* Clean unboxed metadata kicker */}
-                  <div className="flex items-center gap-2 text-xs font-mono-data text-[#8D98A8] mb-1.5">
-                    <span className={machine.destination === 'MARS' ? 'text-[#B85C38]' : 'text-[#D9DDE3]'}>
-                      {machine.destination}
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    <span>{machine.mission}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{machine.role}</span>
-                  </div>
-
-                  {/* Machine Title */}
-                  <h3 className="text-xl font-bold font-hud text-white group-hover:text-[#62D9FF] transition-colors leading-snug">
-                    {machine.name}
-                  </h3>
-
-                  {/* Story Excerpt */}
-                  <p className="mt-3 text-xs text-[#8D98A8] leading-relaxed line-clamp-3 font-light">
-                    {machine.story}
+              <div className="pt-4 px-1">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-serif text-xl text-fg leading-snug">{machine.name}</h3>
+                  <span className="mt-1.5 flex items-center gap-2 text-xs text-fg-2 shrink-0">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS[machine.status] }} aria-hidden="true" />
+                    {t(`status.${machine.status}`)}
+                  </span>
+                </div>
+                <CatalogueTag artifact={machine} className="mt-1" />
+                <p className="mt-3 text-sm text-fg-2">
+                  {machine.mission} · {tx(machine, 'role')}
+                </p>
+                <p className="mt-2 text-sm text-fg-2 line-clamp-2">{tx(machine, 'story')}</p>
+                {txScience(machine)[0] && (
+                  <p className="mt-2 text-sm text-fg-2 line-clamp-1">
+                    <span className="text-fg-3">{t('cards.science')}: </span>
+                    {txScience(machine)[0]}
                   </p>
-                </div>
-
-                {/* Science Made Possible Highlights */}
-                <div className="pt-3 border-t border-white/10">
-                  <span className="text-[10px] font-hud uppercase tracking-wider text-[#62D9FF] block mb-1.5">
-                    Science Made Possible:
-                  </span>
-                  <ul className="space-y-1 text-xs text-[#D9DDE3] font-light">
-                    {machine.scienceContribution.slice(0, 2).map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-1.5 line-clamp-1">
-                        <span className="text-[#62D9FF]">›</span>
-                        <span className="truncate">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Bottom Card Footer */}
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                  {/* Status Indicator */}
-                  <div className="flex items-center gap-1.5 font-hud">
-                    <span className="w-2 h-2 rounded-full bg-[#F3B562]" />
-                    <span className="font-semibold text-white tracking-wider">{machine.status}</span>
-                  </div>
-
-                  <span className="inline-flex items-center gap-1 font-hud text-xs text-[#62D9FF] group-hover:text-white transition-colors">
-                    <span>EXPLORE DOSSIER</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </span>
-                </div>
+                )}
+                <p className="mt-3 catalogue-tag text-fg-3">{t('cards.photo', { id: machine.imageNasaId })}</p>
               </div>
             </div>
           ))}

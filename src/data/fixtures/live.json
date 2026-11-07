@@ -1,0 +1,56 @@
+{
+  "curiosity": {
+    "data": {
+      "rover": "curiosity",
+      "sol": 5066,
+      "takenUtc": "2026-11-06T08:01:39.000Z",
+      "instrument": "CHEMCAM_RMI",
+      "imageId": "CR0_847219723EDR_F1251326CCAM03065M_",
+      "imageUrl": "data/fixtures/curiosity-latest.jpg",
+      "pageUrl": "https://mars.nasa.gov/raw_images/1650723",
+      "credit": "NASA/JPL-Caltech/LANL/CNES/CNRS/IRAP/IAS/LPG",
+      "sourceUrl": "https://mars.nasa.gov/msl/multimedia/raw-images/"
+    },
+    "fetchedAt": "2026-11-06T19:27:27.880Z"
+  },
+  "perseverance": {
+    "data": {
+      "rover": "perseverance",
+      "sol": 2031,
+      "takenUtc": "2026-11-06T12:16:25.848Z",
+      "instrument": "SUPERCAM_RMI",
+      "imageId": "LRF_2031_0847237865_241EBY_N0930000SCAM01031_0100I4J",
+      "imageUrl": "data/fixtures/perseverance-latest.jpg",
+      "pageUrl": "https://mars.nasa.gov/mars2020/multimedia/raw-images/LRF_2031_0847237865_241EBY_N0930000SCAM01031_0100I4J",
+      "credit": "NASA/JPL-Caltech/LANL/CNES/IRAP",
+      "sourceUrl": "https://mars.nasa.gov/mars2020/multimedia/raw-images/"
+    },
+    "fetchedAt": "2026-11-06T19:27:27.880Z"
+  },
+  "moon": {
+    "data": {
+      "body": "moon",
+      "timeUtc": "2026-11-06T19:27:24.680Z",
+      "distanceKm": 389806.9414907624,
+      "lightTimeS": 1.3002559974032517,
+      "rangeRateKmS": 0.0391816,
+      "sourceUrl": "https://ssd.jpl.nasa.gov/horizons/"
+    },
+    "fetchedAt": "2026-11-06T19:27:27.880Z"
+  },
+  "mars": {
+    "data": {
+      "body": "mars",
+      "timeUtc": "2026-11-06T19:27:25.447Z",
+      "distanceKm": 207162626.43337688,
+      "lightTimeS": 691.0201404512214,
+      "rangeRateKmS": -14.381514,
+      "sourceUrl": "https://ssd.jpl.nasa.gov/horizons/"
+    },
+    "fetchedAt": "2026-11-06T19:27:27.880Z"
+  },
+  "apod": {
+    "data": null,
+    "fetchedAt": "2026-11-06T19:27:27.880Z"
+  }
+}

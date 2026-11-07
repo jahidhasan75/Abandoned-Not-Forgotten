@@ -1,0 +1,1000 @@
+{
+  "type": "FeatureCollection",
+  "name": "abandoned-not-forgotten-objects",
+  "generated": "2026-11-06",
+  "note": "Coordinates are planetocentric degrees on the body named in \"body\" (not Earth). Longitude is east-positive, -180..180.",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -33.55,
+          19.33
+        ]
+      },
+      "properties": {
+        "id": "sojourner",
+        "name": "Sojourner Rover",
+        "mission": "Mars Pathfinder",
+        "body": "mars",
+        "lat": 19.33,
+        "lon": -33.55,
+        "left_behind": "1997-07-04",
+        "last_contact": "1997-09-27",
+        "status": "SILENT",
+        "why_left": "Pathfinder was designed as a one-way technology demonstration: it carried no rocket to leave Mars again.",
+        "science_enabled": "First in-situ chemical analysis of Martian rocks using APXS",
+        "image": "src/assets/images/nasa/sojourner.webp",
+        "image_credit": "NASA/JPL",
+        "image_nasa_id": "PIA04318",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A",
+        "dataset_id": "NSSDCA 1996-068A",
+        "pds_lid": "urn:nasa:pds:context:investigation:mission.mars_pathfinder",
+        "ntrs_id": "20210003045",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20210003045",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Mars Pathfinder (1996-068A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA04318",
+            "url": "https://images.nasa.gov/details/PIA04318"
+          },
+          {
+            "label": "PDS context product: mission.mars_pathfinder",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:investigation:mission.mars_pathfinder"
+          },
+          {
+            "label": "NTRS 20210003045: The Mars Pathfinder Mission and Science Results",
+            "url": "https://ntrs.nasa.gov/citations/20210003045"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.23,
+          -2.28
+        ]
+      },
+      "properties": {
+        "id": "opportunity",
+        "name": "Opportunity Rover (MER-B)",
+        "mission": "Mars Exploration Rover",
+        "body": "mars",
+        "lat": -2.28,
+        "lon": -5.23,
+        "left_behind": "2004-01-25",
+        "last_contact": "2018-06-10",
+        "status": "SILENT",
+        "why_left": "Martian escape velocity is 5.03 km/s. Mars sample return requires dedicated ascent stages; Opportunity had no return propulsion.",
+        "science_enabled": "Discovered hematite-rich mineral spherules nicknamed \"blueberries\"",
+        "image": "src/assets/images/nasa/opportunity.webp",
+        "image_credit": "NASA/JPL-Caltech/Cornell/Arizona State Univ.",
+        "image_nasa_id": "PIA17759",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A",
+        "dataset_id": "NSSDCA 2003-032A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.mer1",
+        "ntrs_id": "20060030524",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20060030524",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Opportunity (2003-032A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA17759",
+            "url": "https://images.nasa.gov/details/PIA17759"
+          },
+          {
+            "label": "PDS context product: spacecraft.mer1",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.mer1"
+          },
+          {
+            "label": "NTRS 20060030524: Overview of the Mars Exploration Rover Mission",
+            "url": "https://ntrs.nasa.gov/citations/20060030524"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          175.478,
+          -14.572
+        ]
+      },
+      "properties": {
+        "id": "spirit",
+        "name": "Spirit Rover (MER-A)",
+        "mission": "Mars Exploration Rover",
+        "body": "mars",
+        "lat": -14.572,
+        "lon": 175.478,
+        "left_behind": "2004-01-04",
+        "last_contact": "2010-03-22",
+        "status": "SILENT",
+        "why_left": "Exploration rovers carry no launch propellant; they remain as monuments to human ingenuity at their final science coordinates.",
+        "science_enabled": "Discovered hydrothermal volcanic deposits (silica) in Home Plate",
+        "image": "src/assets/images/nasa/spirit.webp",
+        "image_credit": "NASA/JPL-Caltech",
+        "image_nasa_id": "PIA11804",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-027A",
+        "dataset_id": "NSSDCA 2003-027A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.mer2",
+        "ntrs_id": "20060030524",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20060030524",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Spirit (2003-027A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-027A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA11804",
+            "url": "https://images.nasa.gov/details/PIA11804"
+          },
+          {
+            "label": "PDS context product: spacecraft.mer2",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.mer2"
+          },
+          {
+            "label": "NTRS 20060030524: Overview of the Mars Exploration Rover Mission",
+            "url": "https://ntrs.nasa.gov/citations/20060030524"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -125.75,
+          68.22
+        ]
+      },
+      "properties": {
+        "id": "phoenix",
+        "name": "Phoenix Mars Lander",
+        "mission": "Mars Scout Program",
+        "body": "mars",
+        "lat": 68.22,
+        "lon": -125.75,
+        "left_behind": "2008-05-25",
+        "last_contact": "2008-11-02",
+        "status": "SILENT",
+        "why_left": "Stationary landers have no propulsion to lift off; northern Martian winter encapsulates the craft in frozen CO2.",
+        "science_enabled": "First direct sample and confirmation of subsurface water ice on Mars",
+        "image": "src/assets/images/nasa/phoenix.webp",
+        "image_credit": "NASA/JPL-Caltech/University of Arizona/Texas A&M University",
+        "image_nasa_id": "PIA10793",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2007-034A",
+        "dataset_id": "NSSDCA 2007-034A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.phx",
+        "ntrs_id": "20070034771",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20070034771",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Phoenix Mars Lander (2007-034A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2007-034A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA10793",
+            "url": "https://images.nasa.gov/details/PIA10793"
+          },
+          {
+            "label": "PDS context product: spacecraft.phx",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.phx"
+          },
+          {
+            "label": "NTRS 20070034771: Mission Design Overview for the Phoenix Mars Scout Mission",
+            "url": "https://ntrs.nasa.gov/citations/20070034771"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          135.62,
+          4.5
+        ]
+      },
+      "properties": {
+        "id": "insight",
+        "name": "InSight Lander",
+        "mission": "Discovery Program",
+        "body": "mars",
+        "lat": 4.5,
+        "lon": 135.62,
+        "left_behind": "2018-11-26",
+        "last_contact": "2022-12-15",
+        "status": "SILENT",
+        "why_left": "Geophysical observatories are built to permanently monitor tectonic and thermal activity until environmental wear stops them.",
+        "science_enabled": "Detected over 1,318 Marsquakes up to magnitude 5",
+        "image": "src/assets/images/nasa/insight.webp",
+        "image_credit": "NASA/JPL-Caltech",
+        "image_nasa_id": "PIA25287",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2018-042A",
+        "dataset_id": "NSSDCA 2018-042A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.insight",
+        "ntrs_id": "20190000333",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20190000333",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: InSight (2018-042A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2018-042A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA25287",
+            "url": "https://images.nasa.gov/details/PIA25287"
+          },
+          {
+            "label": "PDS context product: spacecraft.insight",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.insight"
+          },
+          {
+            "label": "NTRS 20190000333: 2018 Mars InSight Mission Design and Navigation Overview",
+            "url": "https://ntrs.nasa.gov/citations/20190000333"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -47.95,
+          22.27
+        ]
+      },
+      "properties": {
+        "id": "viking1",
+        "name": "Viking 1 Lander",
+        "mission": "Viking Project",
+        "body": "mars",
+        "lat": 22.27,
+        "lon": -47.95,
+        "left_behind": "1976-07-20",
+        "last_contact": "1982-11-11",
+        "status": "HISTORIC",
+        "why_left": "Viking 1 was a static science outpost with no ascent stage; it laid the foundation for every subsequent Mars rover.",
+        "science_enabled": "First high-resolution surface panoramas and color imaging of Mars",
+        "image": "src/assets/images/nasa/viking1.webp",
+        "image_credit": "NASA/JPL",
+        "image_nasa_id": "PIA00563",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-075C",
+        "dataset_id": "NSSDCA 1975-075C",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.vl1",
+        "ntrs_id": "19770022101",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19770022101",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Viking 1 Lander (1975-075C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-075C"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA00563",
+            "url": "https://images.nasa.gov/details/PIA00563"
+          },
+          {
+            "label": "PDS context product: spacecraft.vl1",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.vl1"
+          },
+          {
+            "label": "NTRS 19770022101: Viking 75 project: Viking lander system primary mission performance report",
+            "url": "https://ntrs.nasa.gov/citations/19770022101"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.47314,
+          0.67416
+        ]
+      },
+      "properties": {
+        "id": "apollo11-descent",
+        "name": "Apollo 11 Lunar Module Descent Stage (\"Eagle\")",
+        "mission": "Apollo 11",
+        "body": "moon",
+        "lat": 0.67416,
+        "lon": 23.47314,
+        "left_behind": "1969-07-21",
+        "last_contact": "1969-07-21",
+        "status": "HISTORIC",
+        "why_left": "Staging physics. Every kilogram lifted off the lunar surface requires exponentially more fuel; leaving the descent stage behind cut the ascent weight by half.",
+        "science_enabled": "Enabled humanity's first collection of pristine lunar rock and regolith samples (21.5 kg)",
+        "image": "src/assets/images/nasa/apollo11-descent.webp",
+        "image_credit": "NASA",
+        "image_nasa_id": "as11-40-5902",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C",
+        "dataset_id": "NSSDCA 1969-059C",
+        "pds_lid": "urn:nasa:pds:context:investigation:mission.apollo_11",
+        "ntrs_id": "19700008096",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19700008096",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Apollo 11 Lunar Module / EASEP (1969-059C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+          },
+          {
+            "label": "NASA Image and Video Library: as11-40-5902",
+            "url": "https://images.nasa.gov/details/as11-40-5902"
+          },
+          {
+            "label": "PDS context product: mission.apollo_11",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:investigation:mission.apollo_11"
+          },
+          {
+            "label": "NTRS 19700008096: Apollo 11 mission report",
+            "url": "https://ntrs.nasa.gov/citations/19700008096"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA12909",
+            "url": "https://images.nasa.gov/details/PIA12909"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.6333,
+          26.13239
+        ]
+      },
+      "properties": {
+        "id": "apollo15-lrv",
+        "name": "Lunar Roving Vehicle 1 (LRV-001)",
+        "mission": "Apollo 15",
+        "body": "moon",
+        "lat": 26.13239,
+        "lon": 3.6333,
+        "left_behind": "1971-08-02",
+        "last_contact": "1971-08-02",
+        "status": "HISTORIC",
+        "why_left": "The LRV weighed 210 kg on Earth (35 kg in Moon gravity); lifting it back into lunar orbit was impossible with Apollo mass budgets.",
+        "science_enabled": "Tripled the exploration radius of astronauts from 1 km to over 5 km",
+        "image": "src/assets/images/nasa/apollo15-lrv.webp",
+        "image_credit": "NASA",
+        "image_nasa_id": "as15-86-11602",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C",
+        "dataset_id": "NSSDCA 1971-063C",
+        "pds_lid": "urn:nasa:pds:context:investigation:mission.apollo_15",
+        "ntrs_id": "19720021182",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19720021182",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Apollo 15 Lunar Module / ALSEP (1971-063C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+          },
+          {
+            "label": "NASA Image and Video Library: as15-86-11602",
+            "url": "https://images.nasa.gov/details/as15-86-11602"
+          },
+          {
+            "label": "PDS context product: mission.apollo_15",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:investigation:mission.apollo_15"
+          },
+          {
+            "label": "NTRS 19720021182: Apollo 15 Mission Report",
+            "url": "https://ntrs.nasa.gov/citations/19720021182"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -23.4219,
+          -3.0128
+        ]
+      },
+      "properties": {
+        "id": "alsep-instruments",
+        "name": "Apollo ALSEP Science Stations",
+        "mission": "Apollo 12, 14, 15, 16, 17",
+        "body": "moon",
+        "lat": -3.0128,
+        "lon": -23.4219,
+        "left_behind": "1969-11-19",
+        "last_contact": "1977-09-30",
+        "status": "INACTIVE",
+        "why_left": "Designed specifically as long-term stationary monitoring stations to observe the Moon continuously over years.",
+        "science_enabled": "Discovered deep Moonquakes triggered by Earth tidal gravity forces",
+        "image": "src/assets/images/nasa/alsep-instruments.webp",
+        "image_credit": "NASA",
+        "image_nasa_id": "as12-47-6918",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C",
+        "dataset_id": "NSSDCA 1969-099C",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.a12a",
+        "ntrs_id": "19760072997",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19760072997",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Apollo 12 Lunar Module / ALSEP (1969-099C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+          },
+          {
+            "label": "NASA Image and Video Library: as12-47-6918",
+            "url": "https://images.nasa.gov/details/as12-47-6918"
+          },
+          {
+            "label": "PDS context product: spacecraft.a12a",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.a12a"
+          },
+          {
+            "label": "NTRS 19760072997: Apollo 12 Mission Report",
+            "url": "https://ntrs.nasa.gov/citations/19760072997"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA12922",
+            "url": "https://images.nasa.gov/details/PIA12922"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -23.42,
+          -3.01
+        ]
+      },
+      "properties": {
+        "id": "surveyor3",
+        "name": "Surveyor 3 Robot Lander",
+        "mission": "Surveyor Program",
+        "body": "moon",
+        "lat": -3.01,
+        "lon": -23.42,
+        "left_behind": "1967-04-20",
+        "last_contact": "1967-05-04",
+        "status": "HISTORIC",
+        "why_left": "Precursor missions were expendable scouts designed to prepare the path for the Apollo landings.",
+        "science_enabled": "Proved lunar regolith could support the weight of heavy manned landers",
+        "image": "src/assets/images/nasa/surveyor3.webp",
+        "image_credit": "NASA",
+        "image_nasa_id": "AS12-48-7133",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1967-035A",
+        "dataset_id": "NSSDCA 1967-035A",
+        "pds_lid": null,
+        "ntrs_id": "19670028267",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19670028267",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Surveyor 3 (1967-035A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1967-035A"
+          },
+          {
+            "label": "NASA Image and Video Library: AS12-48-7133",
+            "url": "https://images.nasa.gov/details/AS12-48-7133"
+          },
+          {
+            "label": "NTRS 19670028267: Surveyor III mission report. Part I - Mission description and performance",
+            "url": "https://ntrs.nasa.gov/citations/19670028267"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA12922",
+            "url": "https://images.nasa.gov/details/PIA12922"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.47314,
+          0.67416
+        ]
+      },
+      "properties": {
+        "id": "apollo11-lrrr",
+        "name": "Apollo 11 Laser Ranging Retroreflector",
+        "mission": "Apollo 11 (EASEP)",
+        "body": "moon",
+        "lat": 0.67416,
+        "lon": 23.47314,
+        "left_behind": "1969-07-21",
+        "last_contact": null,
+        "status": "ACTIVE",
+        "why_left": "It was designed to stay. A retroreflector only works where it is: on the Moon, pointed at Earth.",
+        "science_enabled": "Measures the Earth–Moon distance by timing laser echoes",
+        "image": "src/assets/images/nasa/apollo11-lrrr.webp",
+        "image_credit": "NASA",
+        "image_nasa_id": "as11-40-5948",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C",
+        "dataset_id": "NSSDCA 1969-059C",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.a11e",
+        "ntrs_id": "19700058647",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19700058647",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Apollo 11 Lunar Module / EASEP (1969-059C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+          },
+          {
+            "label": "NASA Image and Video Library: as11-40-5948",
+            "url": "https://images.nasa.gov/details/as11-40-5948"
+          },
+          {
+            "label": "PDS context product: spacecraft.a11e",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.a11e"
+          },
+          {
+            "label": "NTRS 19700058647: The Apollo 11 laser ranging retro-reflector array",
+            "url": "https://ntrs.nasa.gov/citations/19700058647"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA12909",
+            "url": "https://images.nasa.gov/details/PIA12909"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          137.44,
+          -4.59
+        ]
+      },
+      "properties": {
+        "id": "curiosity",
+        "name": "Curiosity Rover",
+        "mission": "Mars Science Laboratory",
+        "body": "mars",
+        "lat": -4.59,
+        "lon": 137.44,
+        "left_behind": "2012-08-06",
+        "last_contact": null,
+        "status": "ACTIVE",
+        "why_left": "Not left behind yet. Like every Mars rover, it carries no return rocket and will one day become a silent monument where it stops.",
+        "science_enabled": "Showed that Gale Crater once held a long-lived lake that could have supported microbial life",
+        "image": "src/assets/images/nasa/curiosity.webp",
+        "image_credit": "NASA/JPL-Caltech/MSSS",
+        "image_nasa_id": "PIA24173",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-070A",
+        "dataset_id": "NSSDCA 2011-070A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.msl",
+        "ntrs_id": "20120009875",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20120009875",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Mars Science Laboratory (MSL) (2011-070A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2011-070A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA24173",
+            "url": "https://images.nasa.gov/details/PIA24173"
+          },
+          {
+            "label": "PDS context product: spacecraft.msl",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.msl"
+          },
+          {
+            "label": "NTRS 20120009875: An Overview of NASA's Mars Science Laboratory",
+            "url": "https://ntrs.nasa.gov/citations/20120009875"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.45,
+          18.44
+        ]
+      },
+      "properties": {
+        "id": "perseverance",
+        "name": "Perseverance Rover",
+        "mission": "Mars 2020",
+        "body": "mars",
+        "lat": 18.44,
+        "lon": 77.45,
+        "left_behind": "2021-02-18",
+        "last_contact": null,
+        "status": "ACTIVE",
+        "why_left": "Not left behind yet. Its samples may come home, but the rover itself will stay on Mars.",
+        "science_enabled": "Collected sealed rock and soil cores for possible return to Earth",
+        "image": "src/assets/images/nasa/perseverance.webp",
+        "image_credit": "NASA/JPL-Caltech/MSSS",
+        "image_nasa_id": "PIA24542",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2020-052A",
+        "dataset_id": "NSSDCA 2020-052A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.mars2020",
+        "ntrs_id": "20190000332",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20190000332",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Mars 2020 (2020-052A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2020-052A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA24542",
+            "url": "https://images.nasa.gov/details/PIA24542"
+          },
+          {
+            "label": "PDS context product: spacecraft.mars2020",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.mars2020"
+          },
+          {
+            "label": "NTRS 20190000332: Mars 2020 Mission Design and Navigation Overview",
+            "url": "https://ntrs.nasa.gov/citations/20190000332"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          165,
+          -76
+        ]
+      },
+      "properties": {
+        "id": "mars-polar-lander",
+        "name": "Mars Polar Lander",
+        "mission": "Mars Surveyor 98",
+        "body": "mars",
+        "lat": -76,
+        "lon": 165,
+        "left_behind": "1999-12-03",
+        "last_contact": "1999-12-03",
+        "status": "LOST",
+        "why_left": "It was never meant to come back, and its loss means no one knows exactly where it lies or in what condition.",
+        "science_enabled": "Its loss led to stricter testing of landing software and touchdown sensors",
+        "image": "src/assets/images/nasa/mars-polar-lander.webp",
+        "image_credit": "NASA/KSC",
+        "image_nasa_id": "KSC-98pc1212",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1999-001A",
+        "dataset_id": "NSSDCA 1999-001A",
+        "pds_lid": null,
+        "ntrs_id": "20000061966",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20000061966",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Mars Polar Lander (1999-001A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1999-001A"
+          },
+          {
+            "label": "NASA Image and Video Library: KSC-98pc1212",
+            "url": "https://images.nasa.gov/details/KSC-98pc1212"
+          },
+          {
+            "label": "NTRS 20000061966: Report on the Loss of the Mars Polar Lander and Deep Space 2 Missions",
+            "url": "https://ntrs.nasa.gov/citations/20000061966"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          134.2809,
+          47.6673
+        ]
+      },
+      "properties": {
+        "id": "viking2",
+        "name": "Viking 2 Lander",
+        "mission": "Viking Project",
+        "body": "mars",
+        "lat": 47.6673,
+        "lon": 134.2809,
+        "left_behind": "1976-09-03",
+        "last_contact": "1980-04-11",
+        "status": "SILENT",
+        "why_left": "Like Viking 1, it was a stationary science station with no rocket to leave Mars.",
+        "science_enabled": "Photographed seasonal water frost on the Martian surface",
+        "image": "src/assets/images/nasa/viking2.webp",
+        "image_credit": "NASA/JPL",
+        "image_nasa_id": "PIA00571",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C",
+        "dataset_id": "NSSDCA 1975-083C",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.vl2",
+        "ntrs_id": "19770022101",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19770022101",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Viking 2 Lander (1975-083C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-083C"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA00571",
+            "url": "https://images.nasa.gov/details/PIA00571"
+          },
+          {
+            "label": "PDS context product: spacecraft.vl2",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.vl2"
+          },
+          {
+            "label": "NTRS 19770022101: Viking 75 project: Viking lander system primary mission performance report",
+            "url": "https://ntrs.nasa.gov/citations/19770022101"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.53,
+          -1.95
+        ]
+      },
+      "properties": {
+        "id": "opportunity-heatshield",
+        "name": "Opportunity's Heat Shield",
+        "mission": "Mars Exploration Rover",
+        "body": "mars",
+        "lat": -1.95,
+        "lon": -5.53,
+        "left_behind": "2004-01-25",
+        "last_contact": "2004-01-25",
+        "status": "HISTORIC",
+        "why_left": "A heat shield is designed to be thrown away: once entry is over it is dead weight, so it is released in mid-air.",
+        "science_enabled": "Gave engineers a close look at how a heat shield survives Mars entry",
+        "image": "src/assets/images/nasa/opportunity-heatshield.webp",
+        "image_credit": "NASA/JPL/Cornell",
+        "image_nasa_id": "PIA07223",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A",
+        "dataset_id": "NSSDCA 2003-032A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.mer1",
+        "ntrs_id": "20060030524",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20060030524",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Opportunity (2003-032A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA07223",
+            "url": "https://images.nasa.gov/details/PIA07223"
+          },
+          {
+            "label": "PDS context product: spacecraft.mer1",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.mer1"
+          },
+          {
+            "label": "NTRS 20060030524: Overview of the Mars Exploration Rover Mission",
+            "url": "https://ntrs.nasa.gov/citations/20060030524"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.45,
+          18.44
+        ]
+      },
+      "properties": {
+        "id": "perseverance-backshell",
+        "name": "Perseverance's Backshell and Parachute",
+        "mission": "Mars 2020",
+        "body": "mars",
+        "lat": 18.44,
+        "lon": 77.45,
+        "left_behind": "2021-02-18",
+        "last_contact": "2021-02-18",
+        "status": "HISTORIC",
+        "why_left": "Entry hardware only has to work for a few minutes. Once the rover is safely down, the backshell and parachute are no longer needed.",
+        "science_enabled": "First aerial photographs of landing hardware on another planet",
+        "image": "src/assets/images/nasa/perseverance-backshell.webp",
+        "image_credit": "NASA/JPL-Caltech",
+        "image_nasa_id": "PIA25219",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2020-052A",
+        "dataset_id": "NSSDCA 2020-052A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.mars2020",
+        "ntrs_id": "20210006842",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20210006842",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Mars 2020 (2020-052A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2020-052A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA25219",
+            "url": "https://images.nasa.gov/details/PIA25219"
+          },
+          {
+            "label": "PDS context product: spacecraft.mars2020",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.mars2020"
+          },
+          {
+            "label": "NTRS 20210006842: Mars 2020 Entry, Descent, and Landing system overview",
+            "url": "https://ntrs.nasa.gov/citations/20210006842"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.45,
+          18.44
+        ]
+      },
+      "properties": {
+        "id": "ingenuity",
+        "name": "Ingenuity Mars Helicopter",
+        "mission": "Mars 2020",
+        "body": "mars",
+        "lat": 18.44,
+        "lon": 77.45,
+        "left_behind": "2024-01-18",
+        "last_contact": null,
+        "status": "INACTIVE",
+        "why_left": "Ingenuity was a technology demonstration with no way to leave Mars. With damaged blades it can no longer fly, so it stays where it last landed.",
+        "science_enabled": "Proved powered, controlled flight is possible on Mars",
+        "image": "src/assets/images/nasa/ingenuity.webp",
+        "image_credit": "NASA/JPL-Caltech/ASU/MSSS",
+        "image_nasa_id": "PIA26237",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2020-052A",
+        "dataset_id": "NSSDCA 2020-052A",
+        "pds_lid": "urn:nasa:pds:context:instrument_host:spacecraft.mars2020",
+        "ntrs_id": "20220001219",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/20220001219",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Mars 2020 (2020-052A)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2020-052A"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA26237",
+            "url": "https://images.nasa.gov/details/PIA26237"
+          },
+          {
+            "label": "PDS context product: spacecraft.mars2020",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:instrument_host:spacecraft.mars2020"
+          },
+          {
+            "label": "NTRS 20220001219: Ingenuity Mars Helicopter Technology Demonstration",
+            "url": "https://ntrs.nasa.gov/citations/20220001219"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7723,
+          20.1911
+        ]
+      },
+      "properties": {
+        "id": "apollo17-challenger",
+        "name": "Apollo 17 Challenger Descent Stage and Rover",
+        "mission": "Apollo 17",
+        "body": "moon",
+        "lat": 20.1911,
+        "lon": 30.7723,
+        "left_behind": "1972-12-14",
+        "last_contact": "1972-12-14",
+        "status": "HISTORIC",
+        "why_left": "As on every Apollo landing, the descent stage served as the launch pad, and the rover was far too heavy to bring home.",
+        "science_enabled": "Discovered orange volcanic glass soil at Shorty crater",
+        "image": "src/assets/images/nasa/apollo17.webp",
+        "image_credit": "NASA",
+        "image_nasa_id": "as17-134-20382",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1972-096C",
+        "dataset_id": "NSSDCA 1972-096C",
+        "pds_lid": "urn:nasa:pds:context:investigation:mission.apollo_17",
+        "ntrs_id": "19730015117",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19730015117",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Apollo 17 Lunar Module /ALSEP (1972-096C)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1972-096C"
+          },
+          {
+            "label": "NASA Image and Video Library: as17-134-20382",
+            "url": "https://images.nasa.gov/details/as17-134-20382"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA12920",
+            "url": "https://images.nasa.gov/details/PIA12920"
+          },
+          {
+            "label": "PDS context product: mission.apollo_17",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:investigation:mission.apollo_17"
+          },
+          {
+            "label": "NTRS 19730015117: Apollo 17 Mission Report",
+            "url": "https://ntrs.nasa.gov/citations/19730015117"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -26.0305,
+          -8.181
+        ]
+      },
+      "properties": {
+        "id": "apollo14-sivb",
+        "name": "Apollo 14 S-IVB Impact Crater",
+        "mission": "Apollo 14",
+        "body": "moon",
+        "lat": -8.181,
+        "lon": -26.0305,
+        "left_behind": "1971-02-04",
+        "last_contact": "1971-02-04",
+        "status": "HISTORIC",
+        "why_left": "It was sent to the Moon on purpose: a spent rocket stage turned into a scientific instrument.",
+        "science_enabled": "Gave a known, timed seismic source for the Apollo seismometers",
+        "image": "src/assets/images/nasa/apollo14-sivb.webp",
+        "image_credit": "NASA/GSFC/Arizona State University",
+        "image_nasa_id": "PIA12911",
+        "source_url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-008B",
+        "dataset_id": "NSSDCA 1971-008B",
+        "pds_lid": "urn:nasa:pds:context:investigation:mission.apollo_14",
+        "ntrs_id": "19720037340",
+        "ntrs_url": "https://ntrs.nasa.gov/citations/19720037340",
+        "sources": [
+          {
+            "label": "NSSDCA catalogue: Apollo 14 Saturn IVB (1971-008B)",
+            "url": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-008B"
+          },
+          {
+            "label": "NASA Image and Video Library: PIA12911",
+            "url": "https://images.nasa.gov/details/PIA12911"
+          },
+          {
+            "label": "PDS context product: mission.apollo_14",
+            "url": "https://pds.nasa.gov/api/search/1/products/urn:nasa:pds:context:investigation:mission.apollo_14"
+          },
+          {
+            "label": "NTRS 19720037340: Apollo 14 mission report.",
+            "url": "https://ntrs.nasa.gov/citations/19720037340"
+          }
+        ]
+      }
+    }
+  ]
+}

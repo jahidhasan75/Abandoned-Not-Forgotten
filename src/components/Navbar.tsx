@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Destination } from '../types/mission';
 import { spaceAudio } from '../utils/audio';
-import { Volume2, VolumeX, Menu, X } from 'lucide-react';
+import { Volume2, VolumeX, Menu, X, Languages } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+
+const navLinks = [
+  { key: 'nav.explore', target: 'explore' },
+  { key: 'nav.map', target: 'archaeology-map' },
+  { key: 'nav.timeline', target: 'timeline-3d' },
+  { key: 'nav.machines', target: 'machines' },
+  { key: 'nav.science', target: 'science' },
+  { key: 'nav.archive', target: 'archive' },
+  { key: 'nav.sources', target: 'data-sources' },
+  { key: 'nav.explorers', target: 'explorers' },
+] as const;
 
 interface NavbarProps {
   activePlanet: Destination;
@@ -14,17 +26,57 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectPlanet,
   onNavigate,
 }) => {
+  const { t, lang, toggleLang } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [audioActive, setAudioActive] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('hero');
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      const next = window.scrollY > 40;
+      setScrolled((prev) => (prev === next ? prev : next));
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Highlight the nav link for the section in the middle of the viewport
+  useEffect(() => {
+    const ids = ['hero', ...navLinks.map((l) => l.target)];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+    const observeAll = () => {
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+    };
+    observeAll();
+    // The 3D timeline section is lazy-loaded, so observe again once it has mounted
+    const retry = window.setTimeout(observeAll, 1500);
+    return () => {
+      window.clearTimeout(retry);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Close the mobile drawer with Escape
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const unsubscribe = spaceAudio.subscribe((state) => {
@@ -37,16 +89,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     spaceAudio.togglePlay();
   };
 
-  const navLinks = [
-    { label: 'Explore', target: 'explore' },
-    { label: 'Map', target: 'archaeology-map' },
-    { label: '3D Timeline', target: 'timeline-3d' },
-    { label: 'Machines', target: 'machines' },
-    { label: 'Science', target: 'science' },
-    { label: 'Archive', target: 'archive' },
-    { label: 'Young Explorers', target: 'explorers' },
-  ];
-
   const handleLinkClick = (target: string) => {
     spaceAudio.playTelemetryPing(1200, 0.05);
     onNavigate(target);
@@ -55,9 +97,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
         scrolled
-          ? 'bg-[#05070B]/90 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl'
+          ? 'bg-page border-b border-line py-3'
           : 'bg-transparent py-5 border-b border-transparent'
       }`}
     >
@@ -65,97 +107,143 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Zone 1: Single text element wordmark */}
         <button
           onClick={() => handleLinkClick('hero')}
-          className="text-left font-hud text-lg sm:text-xl font-bold tracking-wider text-white hover:text-[#62D9FF] transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#62D9FF]"
+          className="text-left text-sm sm:text-base font-medium text-fg whitespace-nowrap"
         >
-          ABANDONED <span className="text-white/30">//</span> NOT FORGOTTEN
+          Abandoned <span className="text-fg-3">//</span> Not Forgotten
         </button>
 
         {/* Zone 2: 4-6 clean text navigation links */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium text-[#8D98A8]">
-          {navLinks.map((link) => (
-            <button
-              key={link.target}
-              onClick={() => handleLinkClick(link.target)}
-              className="hover:text-white transition-colors cursor-pointer py-1 relative group whitespace-nowrap focus:outline-none focus-visible:ring-1 focus-visible:ring-[#62D9FF]"
-            >
-              {link.label}
-              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#62D9FF] transition-all duration-200 group-hover:w-full" />
-            </button>
-          ))}
+        <nav
+          aria-label="Primary"
+          className="hidden xl:flex items-center gap-6 text-sm text-fg-2"
+        >
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.target;
+            return (
+              <button
+                key={link.target}
+                onClick={() => handleLinkClick(link.target)}
+                aria-current={isActive ? 'location' : undefined}
+                className={`transition-colors py-2 relative whitespace-nowrap ${
+                  isActive ? 'text-fg' : 'hover:text-fg'
+                }`}
+              >
+                {t(link.key)}
+                {isActive && <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-accent" aria-hidden="true" />}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Zone 3: Primary Actions (Segmented Planet Switcher & Telemetry Audio) */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Planet Switcher Segmented Control */}
-          <div className="flex items-center p-1 bg-[#0B1018] border border-white/15 rounded-lg">
+          <div className="hidden sm:flex items-center p-1 border border-line rounded-lg">
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(800, 0.05);
                 onSelectPlanet('MOON');
               }}
-              className={`px-3 py-1 text-xs font-hud font-semibold rounded-md transition-all whitespace-nowrap ${
-                activePlanet === 'MOON'
-                  ? 'bg-[#D9DDE3] text-[#05070B] shadow-sm'
-                  : 'text-[#8D98A8] hover:text-white'
+              className={`px-3 py-1 text-xs rounded transition-colors whitespace-nowrap ${
+                activePlanet === 'MOON' ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
               }`}
             >
-              MOON
+              {t('body.MOON')}
             </button>
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(950, 0.05);
                 onSelectPlanet('MARS');
               }}
-              className={`px-3 py-1 text-xs font-hud font-semibold rounded-md transition-all whitespace-nowrap ${
-                activePlanet === 'MARS'
-                  ? 'bg-[#B85C38] text-white shadow-sm'
-                  : 'text-[#8D98A8] hover:text-white'
+              className={`px-3 py-1 text-xs rounded transition-colors whitespace-nowrap ${
+                activePlanet === 'MARS' ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
               }`}
             >
-              MARS
+              {t('body.MARS')}
             </button>
           </div>
+
+          {/* Language toggle: English <-> Bangla */}
+          <button
+            onClick={() => {
+              spaceAudio.playTelemetryPing(1150, 0.05);
+              toggleLang();
+            }}
+            aria-label={t('lang.toggleAria')}
+            title={t('lang.toggleAria')}
+            lang={lang === 'en' ? 'bn' : 'en'}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-line text-sm text-fg-2 hover:text-fg hover:bg-raised transition-colors"
+          >
+            <Languages className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
+            {t('lang.toggle')}
+          </button>
 
           {/* Audio Telemetry Toggle */}
           <button
             onClick={toggleSound}
-            title={audioActive ? 'Mute space telemetry audio' : 'Enable ambient space audio'}
-            aria-label={audioActive ? 'Mute space telemetry audio' : 'Enable ambient space audio'}
-            className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+            title={audioActive ? t('nav.audioOff') : t('nav.audioOn')}
+            aria-label={audioActive ? t('nav.audioOff') : t('nav.audioOn')}
+            className={`hidden sm:inline-flex p-2 rounded-lg border transition-colors cursor-pointer ${
               audioActive
-                ? 'bg-[#62D9FF]/15 border-[#62D9FF]/40 text-[#62D9FF]'
-                : 'bg-[#0B1018] border-white/15 text-[#8D98A8] hover:text-white hover:border-white/30'
+                ? 'bg-raised border-line-strong text-fg'
+                : 'border-line text-fg-2 hover:text-fg hover:bg-raised'
             }`}
           >
-            {audioActive ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            {audioActive ? <Volume2 className="w-4 h-4" strokeWidth={1.5} /> : <VolumeX className="w-4 h-4" strokeWidth={1.5} />}
           </button>
 
           {/* Mobile Menu Trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg bg-[#0B1018] border border-white/15 text-white"
-            aria-label="Toggle Navigation Menu"
+            className="xl:hidden p-2 rounded-lg border border-line text-fg hover:bg-raised transition-colors"
+            aria-label={t('nav.menu')}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" strokeWidth={1.5} /> : <Menu className="w-5 h-5" strokeWidth={1.5} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#0B1018]/95 border-b border-white/10 px-6 py-4 space-y-3 backdrop-blur-xl animate-fadeIn">
+        <div
+          id="mobile-nav"
+          className="xl:hidden bg-page border-b border-line px-6 py-4 animate-fadeIn max-h-[calc(100vh-72px)] overflow-y-auto"
+        >
           {navLinks.map((link) => (
             <button
               key={link.target}
               onClick={() => handleLinkClick(link.target)}
-              className="block w-full text-left py-2 text-base font-medium text-[#F5F7FA] hover:text-[#62D9FF] border-b border-white/5"
+              aria-current={activeSection === link.target ? 'location' : undefined}
+              className={`block w-full text-left py-3 text-base border-b border-line transition-colors ${
+                activeSection === link.target ? 'text-fg' : 'text-fg-2 hover:text-fg'
+              }`}
             >
-              {link.label}
+              {t(link.key)}
             </button>
           ))}
-          <div className="pt-2 text-xs text-[#8D98A8] flex items-center justify-between">
-            <span>NASA Space Apps Challenge 2026</span>
-            <span className="font-hud uppercase text-[#62D9FF]">{activePlanet} ARCHIVE</span>
+          {/* Planet switch lives inside the drawer on phones */}
+          <div className="sm:hidden grid grid-cols-2 gap-2 pt-4">
+            {(['MOON', 'MARS'] as const).map((planet) => (
+              <button
+                key={planet}
+                onClick={() => {
+                  spaceAudio.playTelemetryPing(planet === 'MOON' ? 800 : 950, 0.05);
+                  onSelectPlanet(planet);
+                }}
+                aria-pressed={activePlanet === planet}
+                className={`py-2 rounded-lg text-sm border transition-colors ${
+                  activePlanet === planet ? 'bg-raised text-fg border-line-strong' : 'text-fg-2 border-line'
+                }`}
+              >
+                {t(`body.${planet}`)}
+              </button>
+            ))}
+          </div>
+          <div className="pt-4 text-xs text-fg-2 flex items-center justify-between">
+            <span>{t('nav.challenge')}</span>
+            <span className="text-fg">{t('nav.archiveOf', { planet: t(`body.${activePlanet}`) })}</span>
           </div>
         </div>
       )}

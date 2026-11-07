@@ -3,77 +3,119 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Destination, MissionArtifact } from './types/mission';
 import { MISSIONS_DATA } from './data/missionsData';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PlanetSelector } from './components/PlanetSelector';
 import { ArchaeologyMap } from './components/ArchaeologyMap';
-import { Timeline3D } from './components/Timeline3D';
 import { MachineCards } from './components/MachineCards';
 import { StatusSystem } from './components/StatusSystem';
 import { OneMachineJourney } from './components/OneMachineJourney';
-import { WhatDidItTeachUs } from './components/WhatDidItTeachUs';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import { ScienceConstellation } from './components/ScienceConstellation';
-import { HardwareAnatomy } from './components/HardwareAnatomy';
-import { WhyLeaveItBehind } from './components/WhyLeaveItBehind';
 import { ArchaeologyArchive } from './components/ArchaeologyArchive';
-import { DidYouKnow } from './components/DidYouKnow';
+import { DataSources } from './components/DataSources';
+import { LiveBand } from './components/LiveBand';
+import { ImpactStrip } from './components/ImpactStrip';
+import { useI18n } from './i18n/I18nProvider';
 import { YoungExplorers } from './components/YoungExplorers';
 import { Footer } from './components/Footer';
 import { MachineDetailModal } from './components/MachineDetailModal';
 import { SoundscapeController } from './components/SoundscapeController';
 
-export default function App() {
-  const [activePlanet, setActivePlanet] = useState<Destination>('MARS');
-  const [selectedArtifact, setSelectedArtifact] = useState<MissionArtifact | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+// Three.js is large (~500 kB), so the 3D timeline loads in its own chunk.
+const Timeline3D = lazy(() =>
+  import('./components/Timeline3D').then((m) => ({ default: m.Timeline3D }))
+);
+
+const TimelinePlaceholder = () => (
+  <section
+    id="timeline-3d"
+    className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line"
+    aria-busy="true"
+  >
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="h-184 rounded-2xl border border-line bg-card/60" />
+    </div>
+  </section>
+);
+
+/**
+ * Thin fixed gradient bar tracking scroll depth. It lives in its own component and updates the DOM
+ * directly, so scrolling no longer re-renders the whole page.
+ */
+const ScrollProgressBar: React.FC = () => {
+  const barRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        const progress = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
-        setScrollProgress(progress);
-      }
+      const progress = totalHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / totalHeight)) : 0;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, []);
 
-  const handleNavigate = (sectionId: string) => {
+  return (
+    <div
+      className="fixed top-0 left-0 right-0 h-0.5 z-[60] bg-raised pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
+      <div
+        ref={barRef}
+        className="h-full origin-left bg-fg-3 will-change-transform"
+        style={{ transform: 'scaleX(0)' }}
+      />
+    </div>
+  );
+};
+
+export default function App() {
+  const { t } = useI18n();
+  const [activePlanet, setActivePlanet] = useState<Destination>('MARS');
+  const [selectedArtifact, setSelectedArtifact] = useState<MissionArtifact | null>(null);
+
+  const handleNavigate = useCallback((sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
     }
-  };
+  }, []);
 
-  const handleSelectMachineById = (id: string) => {
+  const handleSelectMachineById = useCallback((id: string) => {
     const found = MISSIONS_DATA.find((m) => m.id === id);
     if (found) {
       setSelectedArtifact(found);
     }
-  };
+  }, []);
+
+  const handleCloseModal = useCallback(() => setSelectedArtifact(null), []);
 
   return (
-    <div className="min-h-screen bg-[#05070B] text-[#F5F7FA] selection:bg-[#B85C38] selection:text-white relative">
-      {/* Thin fixed gradient progress bar tracking scroll depth (#62D9FF to #B85C38) */}
-      <div
-        className="fixed top-0 left-0 right-0 h-[2.5px] z-[100] bg-white/5 pointer-events-none overflow-hidden"
-        role="progressbar"
-        aria-valuenow={Math.round(scrollProgress)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label="Scroll depth indicator"
+    <div className="min-h-screen bg-page text-fg selection:bg-accent selection:text-ink relative">
+      <a
+        href="#explore"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[110] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-fg focus:text-ink focus: focus:text-xs"
       >
-        <div
-          className="h-full bg-gradient-to-r from-[#62D9FF] to-[#B85C38] shadow-[0_0_8px_rgba(98,217,255,0.6)] transition-[width] duration-100 ease-out will-change-[width]"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
+        {t('skip')}
+      </a>
+
+      <ScrollProgressBar />
 
       {/* Global Navbar */}
       <Navbar
@@ -90,11 +132,17 @@ export default function App() {
           onOpenMap={() => handleNavigate('archaeology-map')}
         />
 
+        {/* Who it is for, how it is used, how it grows */}
+        <ImpactStrip />
+
+        {/* Live NASA data: rovers still working, live Earth-Moon and Earth-Mars range */}
+        <LiveBand />
+
         {/* 2. Interactive Planet Selector ("WHERE STORIES REMAIN") */}
         <PlanetSelector
           activePlanet={activePlanet}
           onSelectPlanet={setActivePlanet}
-          onExplorePlanet={() => handleNavigate('archaeology-map')}
+          onOpenDetails={setSelectedArtifact}
         />
 
         {/* 3. Space Archaeology Surface Map */}
@@ -105,7 +153,9 @@ export default function App() {
         />
 
         {/* 4. Immersive 3D Flight Timeline Feature (Three.js) */}
-        <Timeline3D onOpenDetails={setSelectedArtifact} />
+        <Suspense fallback={<TimelinePlaceholder />}>
+          <Timeline3D onOpenDetails={setSelectedArtifact} />
+        </Suspense>
 
         {/* 5. "Meet the Machines" Story Cards */}
         <MachineCards
@@ -119,26 +169,17 @@ export default function App() {
         {/* 7. "One Machine. One Journey." Cinematic Timeline */}
         <OneMachineJourney />
 
-        {/* 8. "What Did It Teach Us?" (Engineering, Science, Humanity) */}
-        <WhatDidItTeachUs />
-
         {/* 9. Before & After Draggable Comparison Slider */}
         <BeforeAfterSlider />
 
         {/* 10. Science Impact Constellation */}
         <ScienceConstellation />
 
-        {/* 11. Hardware Anatomy Interactive Subsystems */}
-        <HardwareAnatomy />
-
-        {/* 12. Why Leave It Behind? */}
-        <WhyLeaveItBehind />
-
         {/* 13. Space Archaeology Master Archive */}
         <ArchaeologyArchive onOpenDetails={setSelectedArtifact} />
 
-        {/* 14. Did You Know? Educational Fact Cards */}
-        <DidYouKnow />
+        {/* NASA data provenance: every dataset and what it is used for */}
+        <DataSources />
 
         {/* 15. For Young Explorers (Quiz, Match, Build a Mission) */}
         <YoungExplorers />
@@ -153,7 +194,7 @@ export default function App() {
       {/* Full Archaeological Dossier Dialog Modal */}
       <MachineDetailModal
         artifact={selectedArtifact}
-        onClose={() => setSelectedArtifact(null)}
+        onClose={handleCloseModal}
       />
 
       {/* Mission Control Ambient Soundscape Controller */}
