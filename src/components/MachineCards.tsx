@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Destination, MissionArtifact } from '../types/mission';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { spaceAudio } from '../utils/audio';
@@ -22,6 +22,19 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
   useEffect(() => {
     if (activePlanetFilter) setFilter(activePlanetFilter);
   }, [activePlanetFilter]);
+
+  // Six cards first (two rows); the rest on request. A new filter starts collapsed again.
+  const PREVIEW = 6;
+  const [expanded, setExpanded] = useState(false);
+  const firstHiddenRef = useRef<HTMLDivElement | null>(null);
+  const focusFirstHidden = useRef(false);
+  useEffect(() => setExpanded(false), [filter]);
+  useEffect(() => {
+    if (expanded && focusFirstHidden.current) {
+      focusFirstHidden.current = false;
+      firstHiddenRef.current?.focus();
+    }
+  }, [expanded]);
 
   const filteredMachines = MISSIONS_DATA.filter((m) => {
     if (filter === 'ALL') return true;
@@ -80,9 +93,10 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
 
         {/* Catalogue: photo, object name, catalogue tag, status. Like a museum wall label. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-          {filteredMachines.map((machine) => (
+          {(expanded ? filteredMachines : filteredMachines.slice(0, PREVIEW)).map((machine, i) => (
             <div
               key={machine.id}
+              ref={i === PREVIEW ? firstHiddenRef : undefined}
               onClick={() => handleCardClick(machine)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -130,6 +144,24 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
             </div>
           ))}
         </div>
+
+        {filteredMachines.length > PREVIEW && (
+          <div className="mt-10 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                spaceAudio.playTelemetryPing(900, 0.05);
+                if (!expanded) focusFirstHidden.current = true;
+                else document.getElementById('machines')?.scrollIntoView({ block: 'start' });
+                setExpanded((v) => !v);
+              }}
+              aria-expanded={expanded}
+              className="btn-secondary"
+            >
+              {expanded ? t('cards.showFewer') : t('cards.showAll', { n: filteredMachines.length })}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -40,6 +40,11 @@ Keep this file current as you build. Match the wording to the official Project S
   already in each dossier. **TODO (team): read the 20 hooks once, especially the Bangla.** Status list
   uses the team's violet palette; the journey timeline gets a scroll progress light (blue light theme,
   green dark theme), both at the team's request.
+- 7 Nov 2026: "One machine, one journey" moved to `src/data/journeys.ts`, translated into Bangla and
+  extended with InSight and Ingenuity, written by the AI only from those objects' dossier entries; each
+  journey now lists that object's sources. Claims not in the dossier (Pathfinder's bounce count and
+  impact speed) were dropped. Page trimmed (catalogue and data sources show a first set, then "Show
+  all"; Three.js loads late). **TODO (team): read the Bangla journey text once.**
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

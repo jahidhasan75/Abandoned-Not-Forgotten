@@ -61,7 +61,7 @@ export const StatusSystem: React.FC<StatusSystemProps> = ({ onSelectMachineId })
   const matchingMissions = MISSIONS_DATA.filter((m) => m.status === activeTab);
 
   return (
-    <section className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
+    <section id="status" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
           <p className="section-label">{t('status.kicker')}</p>

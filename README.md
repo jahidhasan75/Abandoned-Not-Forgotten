@@ -130,7 +130,7 @@ src/
 | 5 | `Timeline3D` | `timeline-3d` | Three.js fly-through of missions by year, auto-cruise | `MISSIONS_DATA` |
 | 6 | `MachineCards` | `machines` | Filterable card grid | `MISSIONS_DATA` |
 | 7 | `StatusSystem` | — | 5 status tabs (ACTIVE/SILENT/INACTIVE/LOST/HISTORIC) + matching artifacts | inline + `MISSIONS_DATA` |
-| 8 | `OneMachineJourney` | — | 6-step vertical biography, Sojourner or Opportunity | inline `JOURNEYS` |
+| 8 | `OneMachineJourney` | `journey` | 6-step biography of Sojourner, Opportunity, InSight or Ingenuity (en + bn), with that object's sources and a dossier link | `src/data/journeys.ts` |
 | 10 | `BeforeAfterSlider` | — | Drag slider: InSight's first selfie (2018, PIA22876) vs final selfie (2022, PIA25287) | `ASSET_IMAGES` |
 | 11 | `ScienceConstellation` | `science` | SVG graph linking machines to discoveries | `CONSTELLATION_*` |
 | 14 | `ArchaeologyArchive` | `archive` | Searchable, filterable table of all artifacts | `MISSIONS_DATA` |
@@ -280,15 +280,16 @@ Data and credibility
     coordinates. On the 3D globe, Apollo 11's descent stage and retroreflector share one point.
 11. Curiosity and Perseverance use their landing coordinates and fixed "5,000+ sols" style counts;
     live position and sol come in Phase 3.
-12. Constellation nodes, quiz and "One Machine, One Journey" do not yet include the 4 new artifacts.
+12. Constellation nodes do not yet include the newer artifacts. ("One Machine, One Journey" now has InSight and Ingenuity.)
 13. Removed in v0.7.0: the AI-generated images (replaced by NASA photos), four unsourced sections (Hardware
     Anatomy, Why Leave It Behind, Did You Know, What Did It Teach Us), AI Studio leftovers, and several
     unverifiable claims and quotes.
 
 Other
 14. (removed) AI Studio leftovers are gone.
-15. Nine of the 17 sections still have no anchor id, and the page is very long (about 17,600 px).
-    Consider merging or trimming sections.
+15. Every section has an anchor id. The page is about 15,300 px at 1280 px wide (was 17,600): the
+    catalogue shows 6 cards and the data sources 5 rows until "Show all", and Three.js loads only when
+    the 3D timeline is about a screen away.
 
 ---
 

@@ -30,8 +30,9 @@ const Timeline3D = lazy(() =>
   import('./components/Timeline3D').then((m) => ({ default: m.Timeline3D }))
 );
 
-const TimelinePlaceholder = () => (
+const TimelinePlaceholder = React.forwardRef<HTMLElement>((_, ref) => (
   <section
+    ref={ref}
     id="timeline-3d"
     className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line"
     aria-busy="true"
@@ -40,7 +41,29 @@ const TimelinePlaceholder = () => (
       <div className="h-184 rounded-2xl border border-line bg-card/60" />
     </div>
   </section>
-);
+));
+
+/** Three.js is only fetched once the timeline is about a screen away, so the first page load stays light. */
+const DeferredTimeline3D: React.FC<{ onOpenDetails: (a: MissionArtifact) => void }> = ({ onOpenDetails }) => {
+  const ref = useRef<HTMLElement | null>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: '800px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  if (!near) return <TimelinePlaceholder ref={ref} />;
+  return (
+    <Suspense fallback={<TimelinePlaceholder />}>
+      <Timeline3D onOpenDetails={onOpenDetails} />
+    </Suspense>
+  );
+};
 
 /**
  * Thin fixed gradient bar tracking scroll depth. It lives in its own component and updates the DOM
@@ -154,9 +177,7 @@ export default function App() {
         />
 
         {/* 4. Immersive 3D Flight Timeline Feature (Three.js) */}
-        <Suspense fallback={<TimelinePlaceholder />}>
-          <Timeline3D onOpenDetails={setSelectedArtifact} />
-        </Suspense>
+        <DeferredTimeline3D onOpenDetails={setSelectedArtifact} />
 
         {/* 5. "Meet the Machines" Story Cards */}
         <MachineCards
@@ -168,7 +189,7 @@ export default function App() {
         <StatusSystem onSelectMachineId={handleSelectMachineById} />
 
         {/* 7. "One Machine. One Journey." Cinematic Timeline */}
-        <OneMachineJourney />
+        <OneMachineJourney onOpenMachine={handleSelectMachineById} />
 
         {/* 9. Before & After Draggable Comparison Slider */}
         <BeforeAfterSlider />

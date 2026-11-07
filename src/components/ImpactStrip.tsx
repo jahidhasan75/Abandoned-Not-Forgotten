@@ -10,7 +10,7 @@ export const ImpactStrip: React.FC = () => {
     { title: t('impact.open.title'), body: t('impact.open.body') },
   ];
   return (
-    <section aria-labelledby="impact-title" className="relative bg-page border-t border-line py-12 sm:py-16">
+    <section id="who" aria-labelledby="impact-title" className="relative bg-page border-t border-line py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 id="impact-title" className="section-label font-sans mb-6">
           {t('impact.kicker')}

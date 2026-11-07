@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { MISSIONS_DATA } from '../data/missionsData';
 import pdsCatalog from '../data/pdsCatalog.json';
 import { useI18n } from '../i18n/I18nProvider';
+import { spaceAudio } from '../utils/audio';
 
 type SourceStatus = 'USED' | 'PLANNED' | 'RETIRED';
 
@@ -120,9 +121,14 @@ const STATUS_DOT: Record<SourceStatus, string> = {
   RETIRED: '#FF6B6B',
 };
 
+/** Rows shown before "Show all": the sources in use come first in SOURCES. */
+const PREVIEW = 5;
+
 export const DataSources: React.FC = () => {
   const { t } = useI18n();
   const ds = pdsCatalog.dataset;
+  const [expanded, setExpanded] = useState(false);
+  const rows = expanded ? SOURCES : SOURCES.slice(0, PREVIEW);
   return (
     <section id="data-sources" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -181,7 +187,7 @@ export const DataSources: React.FC = () => {
 
         {/* A references list: one dataset per row, like a bibliography */}
         <ol className="border-t border-line divide-y divide-line">
-          {SOURCES.map((src, i) => (
+          {rows.map((src, i) => (
             <li key={src.name} className="py-5 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-2">
               <span className="md:col-span-1 font-mono-data text-xs text-fg-3 pt-1">{String(i + 1).padStart(2, '0')}</span>
               <div className="md:col-span-4">
@@ -218,6 +224,21 @@ export const DataSources: React.FC = () => {
             </li>
           ))}
         </ol>
+        {SOURCES.length > PREVIEW && (
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={() => {
+                spaceAudio.playTelemetryPing(900, 0.05);
+                setExpanded((v) => !v);
+              }}
+              aria-expanded={expanded}
+              className="btn-secondary"
+            >
+              {expanded ? t('sources.showFewer') : t('sources.showAll', { n: SOURCES.length })}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

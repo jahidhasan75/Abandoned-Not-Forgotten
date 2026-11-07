@@ -51,7 +51,7 @@ export const BeforeAfterSlider: React.FC = () => {
   };
 
   return (
-    <section className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
+    <section id="before-after" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">

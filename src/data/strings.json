@@ -316,7 +316,16 @@
     "live.detail.how1.moon": "NASA JPL’s Horizons service gives the distance from the centre of the Earth to the centre of the Moon at {time} UTC.",
     "live.detail.how1.mars": "NASA JPL’s Horizons service gives the distance from the centre of the Earth to the centre of Mars at {time} UTC.",
     "live.detail.how2": "This page divides that distance by the speed of light (299,792.458 km/s) to get how long a radio signal takes.",
-    "live.detail.how3": "The speed is how fast that distance is changing at the same moment. It also comes from Horizons."
+    "live.detail.how3": "The speed is how fast that distance is changing at the same moment. It also comes from Horizons.",
+    "journey.stages": "{n} stages",
+    "journey.fact": "Fact",
+    "journey.sources": "Sources for this journey",
+    "journey.dossier": "Open the full dossier",
+    "journey.switch": "Choose a machine",
+    "cards.showAll": "Show all {n} machines",
+    "cards.showFewer": "Show fewer",
+    "sources.showAll": "Show all {n} data sources",
+    "sources.showFewer": "Show fewer"
   },
   "bn": {
     "lang.toggle": "EN",
@@ -635,6 +644,15 @@
     "live.detail.how1.moon": "নাসা জেপিএল-এর Horizons সেবা থেকে {time} UTC সময়ে পৃথিবীর কেন্দ্র থেকে চাঁদের কেন্দ্রের দূরত্ব নেওয়া হয়।",
     "live.detail.how1.mars": "নাসা জেপিএল-এর Horizons সেবা থেকে {time} UTC সময়ে পৃথিবীর কেন্দ্র থেকে মঙ্গলের কেন্দ্রের দূরত্ব নেওয়া হয়।",
     "live.detail.how2": "সেই দূরত্বকে আলোর গতি (সেকেন্ডে ২,৯৯,৭৯২.৪৫৮ কিমি) দিয়ে ভাগ করে এই পেজ হিসাব করে রেডিও সংকেত পৌঁছাতে কত সময় লাগে।",
-    "live.detail.how3": "গতি মানে সেই মুহূর্তে দূরত্বটা কত দ্রুত বদলাচ্ছে। এটাও Horizons থেকে আসে।"
+    "live.detail.how3": "গতি মানে সেই মুহূর্তে দূরত্বটা কত দ্রুত বদলাচ্ছে। এটাও Horizons থেকে আসে।",
+    "journey.stages": "{n}টি ধাপ",
+    "journey.fact": "তথ্য",
+    "journey.sources": "এই যাত্রার তথ্যসূত্র",
+    "journey.dossier": "পুরো ডসিয়ার খুলুন",
+    "journey.switch": "একটি যন্ত্র বেছে নিন",
+    "cards.showAll": "সবগুলো {n}টি যন্ত্র দেখুন",
+    "cards.showFewer": "কম দেখান",
+    "sources.showAll": "সবগুলো {n}টি তথ্যসূত্র দেখুন",
+    "sources.showFewer": "কম দেখান"
   }
 }

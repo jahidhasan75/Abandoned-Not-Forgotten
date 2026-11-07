@@ -1,129 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { ExternalLink } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
+import { JOURNEYS } from '../data/journeys';
+import { MISSIONS_DATA } from '../data/missionsData';
+import type { MissionArtifact } from '../types/mission';
 
-interface JourneyStep {
-  year: string;
-  badge: string;
-  title: string;
-  description: string;
-  technicalFact?: string;
+interface OneMachineJourneyProps {
+  onOpenMachine: (id: string) => void;
 }
 
-interface MachineJourneyData {
-  id: string;
-  name: string;
-  destination: 'MOON' | 'MARS';
-  subtitle: string;
-  steps: JourneyStep[];
-}
+const artifactOf = (id: string) => MISSIONS_DATA.find((m) => m.id === id) as MissionArtifact;
 
-const JOURNEYS: MachineJourneyData[] = [
-  {
-    id: 'sojourner',
-    name: 'Sojourner Rover',
-    destination: 'MARS',
-    subtitle: 'The 11.5-kg, microwave-sized rover of Mars Pathfinder',
-    steps: [
-      {
-        year: 'December 1996',
-        badge: 'Launch',
-        title: 'Liftoff from Cape Canaveral',
-        description: 'Stowed inside the tetrahedral petals of the Mars Pathfinder lander, Sojourner launched atop a McDonnell Douglas Delta II rocket on a 7-month interplanetary cruise.',
-        technicalFact: 'Rover mass: about 11.5 kg.',
-      },
-      {
-        year: 'July 4, 1997',
-        badge: 'Touchdown',
-        title: 'Airbag Bouncing at Ares Vallis',
-        description: 'Pathfinder entered the Martian atmosphere without orbit insertion, deploying parachutes, retro-rockets, and giant 24-lobe Kevlar airbags that bounced 15 times before resting.',
-        technicalFact: 'First airbag impact at about 14 m/s (50 km/h).',
-      },
-      {
-        year: 'July 5, 1997',
-        badge: 'First movement',
-        title: 'Wheels on an Alien World',
-        description: 'Petals unfolded and Sojourner rolled down the lander deployment ramp onto Martian soil, becoming the first wheeled rover to drive on Mars.',
-        technicalFact: 'Top speed: 1.0 cm per second to ensure real-time autonomous obstacle detection.',
-      },
-      {
-        year: 'Sols 3–83',
-        badge: 'Science discovery',
-        title: 'Tasting Rocks Barnacle Bill & Yogi',
-        description: 'Sojourner pressed its Alpha Particle X-ray Spectrometer against volcanic boulders, to measure what the rocks around Ares Vallis are made of.',
-        technicalFact: 'The rover returned about 550 images and more than 15 chemical analyses of rocks and soil.',
-      },
-      {
-        year: 'September 27, 1997',
-        badge: 'Mission concludes',
-        title: 'The Final Radio Silence',
-        description: 'Contact with the Pathfinder lander, Sojourner’s only link to Earth, was lost. The cause was never confirmed; the lander’s battery is the most likely suspect.',
-        technicalFact: 'Worked about 12 times longer than its 7-sol design life (83 sols).',
-      },
-      {
-        year: 'Present day',
-        badge: 'Archaeological monument',
-        title: 'A Solitary Sentinel at Ares Vallis',
-        description: 'Sojourner rests somewhere near the Carl Sagan Memorial Station (the Pathfinder lander), the pioneer that paved the way for Spirit, Opportunity, Curiosity and Perseverance.',
-        technicalFact: 'Coordinates: 19.33° N, 33.55° W.',
-      },
-    ],
-  },
-  {
-    id: 'opportunity',
-    name: 'Opportunity (MER-B)',
-    destination: 'MARS',
-    subtitle: 'Built for 90 sols, it drove 45.16 kilometers',
-    steps: [
-      {
-        year: 'July 7, 2003',
-        badge: 'Launch',
-        title: 'Launch from Cape Canaveral',
-        description: 'Launched on a Delta II Heavy, carrying high-resolution panoramic stereo cameras and rock abrasion tools to Meridiani Planum.',
-        technicalFact: 'About six and a half months of cruise to Mars.',
-      },
-      {
-        year: 'January 25, 2004',
-        badge: 'Interplanetary hole-in-one',
-        title: 'Bouncing into Eagle Crater',
-        description: 'Airbags bounced into a 22-meter-wide crater, landing right in front of a layered bedrock outcrop of ancient Martian sediment.',
-      },
-      {
-        year: 'Sols 30–1000',
-        badge: 'Signs of water',
-        title: 'Discovery of Hematite "Blueberries"',
-        description: 'Discovered millimeter-sized iron-rich spherules and jarosite sulfate minerals that form only in the presence of acidic liquid water.',
-      },
-      {
-        year: 'Sols 1000–5000',
-        badge: 'The long expedition',
-        title: 'Endurance, Victoria & Endeavour Craters',
-        description: 'Drove on to Endurance, Victoria and Endeavour craters, exploring their rims and walls; wind gusts occasionally cleared dust from its solar panels.',
-        technicalFact: 'In March 2015 its odometer passed a full marathon distance (42.195 km).',
-      },
-      {
-        year: 'June 10, 2018',
-        badge: 'Final telemetry',
-        title: 'The Great Dust Storm of 2018',
-        description: 'A planet-encircling dust storm blotted out the sun over Endeavour Crater, plunging solar power output below survival thresholds.',
-        technicalFact: 'Last transmission: Sol 5111. Over 1,000 recovery commands went unanswered.',
-      },
-      {
-        year: 'Present day',
-        badge: 'Enduring legacy',
-        title: 'Resting on Perseverance Valley',
-        description: 'Opportunity rests silently overlooking Endeavour Crater, holding the record for the longest distance driven on another world.',
-        technicalFact: 'Total distance: 45.16 km (28.06 mi). 217,594 raw images transmitted.',
-      },
-    ],
-  },
-];
+export const OneMachineJourney: React.FC<OneMachineJourneyProps> = ({ onOpenMachine }) => {
+  const { t, lang } = useI18n();
+  const [selectedId, setSelectedId] = useState<string>(JOURNEYS[0].artifactId);
 
-export const OneMachineJourney: React.FC = () => {
-  const { t } = useI18n();
-  const [selectedMachine, setSelectedMachine] = useState<string>('sojourner');
-
-  const currentJourney = JOURNEYS.find((j) => j.id === selectedMachine) || JOURNEYS[0];
+  const journey = JOURNEYS.find((j) => j.artifactId === selectedId) || JOURNEYS[0];
+  const artifact = artifactOf(journey.artifactId);
+  const num = (n: number) => n.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US');
 
   // Scroll progress: a light runs down the timeline as the middle of the screen passes each
   // stage (blue in the light theme, green in the dark one: the --color-journey token).
@@ -163,10 +58,10 @@ export const OneMachineJourney: React.FC = () => {
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
     };
-  }, [selectedMachine]);
+  }, [selectedId, lang]);
 
   return (
-    <section className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
+    <section id="journey" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
@@ -175,33 +70,65 @@ export const OneMachineJourney: React.FC = () => {
             <p className="mt-3 text-base text-fg-2 max-w-xl">{t('journey.intro')}</p>
           </div>
 
-          <div className="flex items-center p-1 border border-line rounded-xl" role="group" aria-label={t('journey.title')}>
+          <div
+            className="flex flex-wrap items-center gap-1 p-1 border border-line rounded-xl max-w-full self-start md:self-auto"
+            role="group"
+            aria-label={t('journey.switch')}
+          >
             {JOURNEYS.map((j) => (
               <button
-                key={j.id}
+                key={j.artifactId}
                 onClick={() => {
                   spaceAudio.playTelemetryPing(920, 0.05);
-                  setSelectedMachine(j.id);
+                  setSelectedId(j.artifactId);
                 }}
-                aria-pressed={selectedMachine === j.id}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  selectedMachine === j.id ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
+                aria-pressed={selectedId === j.artifactId}
+                className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                  selectedId === j.artifactId ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
                 }`}
               >
-                {j.name.split(' ')[0]}
+                {j.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* A typeset chronology: date in the margin, the event beside it */}
+        {/* A typeset chronology: the machine on the left (it stays in view), the stages beside it */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-4">
-            <h3 className="font-serif text-2xl text-fg">{currentJourney.name}</h3>
-            <p className="mt-2 text-base text-fg-2">{currentJourney.subtitle}</p>
+          <div className="lg:col-span-4 lg:sticky lg:top-28 self-start">
+            <h3 className="font-serif text-2xl text-fg">{artifact.name}</h3>
+            <p className="mt-2 text-base text-fg-2">{journey.subtitle[lang]}</p>
             <p className="mt-3 catalogue-tag">
-              {t(`body.name.${currentJourney.destination}`)} · {currentJourney.steps.length} stages
+              {t(`body.name.${artifact.destination}`)} · {t('journey.stages', { n: num(journey.steps.length) })}
             </p>
+            <button
+              type="button"
+              onClick={() => {
+                spaceAudio.playTelemetryPing(1080, 0.07);
+                onOpenMachine(artifact.id);
+              }}
+              className="btn-secondary mt-5"
+            >
+              {t('journey.dossier')}
+            </button>
+
+            <h4 className="mt-8 text-sm text-fg-2">{t('journey.sources')}</h4>
+            <ul className="mt-2 space-y-1.5">
+              {artifact.sources.map((s) => (
+                <li key={s.url}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-start gap-1.5 text-xs text-fg-2 hover:text-fg underline decoration-line-strong underline-offset-2"
+                  >
+                    <span>{s.label}</span>
+                    <ExternalLink className="w-3 h-3 mt-0.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span className="sr-only">{t('modal.newTab')}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <ol ref={listRef} className="relative lg:col-span-8 border-l border-line">
@@ -211,28 +138,35 @@ export const OneMachineJourney: React.FC = () => {
               className="absolute top-0 -left-[1.5px] w-0.5 h-0 bg-journey transition-[height] duration-150 ease-out motion-reduce:transition-none"
               aria-hidden="true"
             />
-            {currentJourney.steps.map((step, idx) => (
-              <li key={idx} className="relative pl-6 sm:pl-8 pb-10 last:pb-0" aria-current={idx === reached ? 'step' : undefined}>
-                <span
-                  data-journey-dot
-                  className={`absolute -left-1 top-2 w-2 h-2 rounded-full transition-[background-color,transform,box-shadow] duration-300 motion-reduce:transition-none ${
-                    idx <= reached ? 'bg-journey scale-125' : 'bg-fg-3'
-                  } ${idx === reached ? 'journey-dot-current' : ''}`}
-                  aria-hidden="true"
-                />
-                <p className="font-mono-data text-xs text-fg-2">
-                  {String(idx + 1).padStart(2, '0')} · {step.year} · {step.badge}
-                </p>
-                <h4 className="mt-2 text-lg text-fg font-medium">{step.title}</h4>
-                <p className="mt-2 text-base text-fg-2 leading-relaxed max-w-2xl">{step.description}</p>
-                {step.technicalFact && (
-                  <p className="mt-2 text-sm text-fg-2 max-w-2xl">
-                    <span className="text-fg">Fact: </span>
-                    {step.technicalFact}
+            {journey.steps.map((step, idx) => {
+              const s = step[lang];
+              return (
+                <li
+                  key={`${journey.artifactId}-${idx}`}
+                  className="relative pl-6 sm:pl-8 pb-10 last:pb-0"
+                  aria-current={idx === reached ? 'step' : undefined}
+                >
+                  <span
+                    data-journey-dot
+                    className={`absolute -left-1 top-2 w-2 h-2 rounded-full transition-[background-color,transform,box-shadow] duration-300 motion-reduce:transition-none ${
+                      idx <= reached ? 'bg-journey scale-125' : 'bg-fg-3'
+                    } ${idx === reached ? 'journey-dot-current' : ''}`}
+                    aria-hidden="true"
+                  />
+                  <p className="font-mono-data text-xs text-fg-2">
+                    {num(idx + 1).padStart(2, lang === 'bn' ? '০' : '0')} · {s.when} · {s.badge}
                   </p>
-                )}
-              </li>
-            ))}
+                  <h4 className="mt-2 text-lg text-fg font-medium">{s.title}</h4>
+                  <p className="mt-2 text-base text-fg-2 leading-relaxed max-w-2xl">{s.text}</p>
+                  {s.fact && (
+                    <p className="mt-2 text-sm text-fg-2 max-w-2xl">
+                      <span className="text-fg">{t('journey.fact')}: </span>
+                      {s.fact}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         </div>
       </div>
