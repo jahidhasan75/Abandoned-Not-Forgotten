@@ -61,3 +61,24 @@ export const parseHorizonsRange = (result: string): { time: string; deltaAu: num
   if (!Number.isFinite(deltaAu)) throw new Error(`Cannot read delta from row: ${row}`);
   return { time: cols[0], deltaAu, deldotKmS };
 };
+
+/** Mean radii in km (NASA planetary fact sheets): used for distances on the surface. */
+export const BODY_RADIUS_KM = { MOON: 1737.4, MARS: 3389.5 } as const;
+
+/** Great-circle distance between two points on a sphere (haversine), in km. */
+export const greatCircleKm = (lat1: number, lon1: number, lat2: number, lon2: number, radiusKm: number): number => {
+  const rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad;
+  const dLon = (lon2 - lon1) * rad;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * radiusKm * Math.asin(Math.min(1, Math.sqrt(a)));
+};
+
+/**
+ * Points for a landing-site guess: 100 on the spot, falling linearly to 0 at a quarter of the way
+ * round the world (so a guess on the wrong side scores nothing).
+ */
+export const guessPoints = (distanceKm: number, radiusKm: number): number => {
+  const quarter = (Math.PI * radiusKm) / 2;
+  return Math.max(0, Math.round(100 * (1 - distanceKm / quarter)));
+};

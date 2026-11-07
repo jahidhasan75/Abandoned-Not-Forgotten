@@ -5,15 +5,19 @@ import { MISSIONS_DATA } from '../data/missionsData';
 import { QuizPanel } from './Quiz';
 import { TeacherKit } from './TeacherKit';
 import { MatchGame } from './MatchGame';
+import { LandingGuess } from './LandingGuess';
+import { SignalSend } from './SignalSend';
 
 interface YoungExplorersProps {
   onOpenMachine: (id: string) => void;
 }
 
-type Tab = 'QUIZ' | 'MATCH' | 'BUILDER' | 'TEACHERS';
+type Tab = 'QUIZ' | 'MATCH' | 'LANDING' | 'SIGNAL' | 'BUILDER' | 'TEACHERS';
 const TABS = [
   { id: 'QUIZ', key: 'explorers.tab.quiz' },
   { id: 'MATCH', key: 'explorers.tab.match' },
+  { id: 'LANDING', key: 'explorers.tab.landing' },
+  { id: 'SIGNAL', key: 'explorers.tab.signal' },
   { id: 'BUILDER', key: 'explorers.tab.builder' },
   { id: 'TEACHERS', key: 'explorers.tab.teachers' },
 ] as const satisfies readonly { id: Tab; key: string }[];
@@ -98,6 +102,14 @@ export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine })
 
         <div hidden={activeTab !== 'MATCH'}>
           <MatchGame onOpenMachine={onOpenMachine} />
+        </div>
+
+        <div hidden={activeTab !== 'LANDING'}>
+          <LandingGuess onOpenMachine={onOpenMachine} />
+        </div>
+
+        <div hidden={activeTab !== 'SIGNAL'}>
+          <SignalSend active={activeTab === 'SIGNAL'} onOpenMachine={onOpenMachine} />
         </div>
 
         <div hidden={activeTab !== 'BUILDER'}>

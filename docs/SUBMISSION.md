@@ -60,13 +60,15 @@ and committed offline fixtures; all derived numbers come from unit-tested functi
 
 **Community and features.** [TODO: who tested it, e.g. classmates or a teacher, and what changed].
 Highlights: Earth → Moon → Mars flight, then-and-now orbital photos, source badges on every live
-number, one-click Bangla.
+number, one-click Bangla, a landing-site guessing game on NASA basemaps, and a "send a signal"
+activity timed with today's JPL Horizons distance.
 
 **Tools.** React 19, Vite, TypeScript, Tailwind CSS, Three.js, lucide-react, Bun, Python/Pillow
 (texture and image processing). [TODO: design tools, video tools].
 
-### Use of AI
-See `docs/AI_USE.md`. [TODO: complete the team sections there first, then summarise here: which
+### Use of Super Intelligence (SI) tools
+The 2026 Space Apps rules use the term "Super Intelligence (SI)" for what was called AI, and every
+submission must describe how SI tools were used. See `docs/AI_USE.md`. [TODO: complete the team sections there first, then summarise here: which
 tools, why, the key prompts, and what the team did themselves.]
 
 ### NASA data sources used

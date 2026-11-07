@@ -1,7 +1,9 @@
-# Use of AI in this project
+# Use of AI (Super Intelligence, SI) in this project
 
 Keep this file current as you build. Match the wording to the official Project Submission Guide
-(published 13 November 2026).
+(published 13 November 2026). The 2026 Space Apps FAQ uses the term "Super Intelligence (SI)" in place
+of "Artificial Intelligence (AI)", and each submission must describe how SI tools were used; this file
+is that description.
 
 ## Tools
 - Google AI Studio (Gemini): initial scaffold of the app. **TODO (team): confirm what it generated and
@@ -61,6 +63,11 @@ Keep this file current as you build. Match the wording to the official Project S
 - 7 Nov 2026: a "Our challenge" section names the official challenge and maps each part of its brief
   (paraphrased by the AI from the challenge page) to the section that answers it; the footer links the
   challenge, and docs/SUBMISSION.md now carries the challenge name.
+- 7 Nov 2026: two new Young Explorers activities. "Where did it land?" places 5 objects per round on the
+  NASA Moon/Mars basemaps and scores the guess by great-circle distance (tested functions in
+  `src/lib/compute.ts`). "Send a signal" times a message at the speed of light with today's JPL Horizons
+  distance and says what the machine would do next (reply, laser echo, or silence). Text written by the
+  AI from the dossiers.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

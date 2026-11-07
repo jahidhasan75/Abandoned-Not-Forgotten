@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import {
   AU_KM,
+  BODY_RADIUS_KM,
+  greatCircleKm,
+  guessPoints,
   auToKm,
   daysSince,
   lightTimeSeconds,
@@ -79,5 +82,25 @@ footer`;
 
   test('throws without an ephemeris block', () => {
     expect(() => parseHorizonsRange('no data')).toThrow();
+  });
+});
+
+describe('distances on the surface', () => {
+  test('a quarter of the way round the Moon', () => {
+    expect(greatCircleKm(0, 0, 0, 90, BODY_RADIUS_KM.MOON)).toBeCloseTo((Math.PI * 1737.4) / 2, 6);
+  });
+
+  test('pole to pole on Mars is half the circumference', () => {
+    expect(greatCircleKm(90, 0, -90, 0, BODY_RADIUS_KM.MARS)).toBeCloseTo(Math.PI * 3389.5, 6);
+  });
+
+  test('crossing the 180° meridian takes the short way', () => {
+    expect(greatCircleKm(0, 179, 0, -179, BODY_RADIUS_KM.MOON)).toBeCloseTo((2 * Math.PI * 1737.4 * 2) / 360, 6);
+  });
+
+  test('guess points: 100 on the spot, 0 a quarter of the way round or more', () => {
+    expect(guessPoints(0, BODY_RADIUS_KM.MOON)).toBe(100);
+    expect(guessPoints((Math.PI * 1737.4) / 4, BODY_RADIUS_KM.MOON)).toBe(50);
+    expect(guessPoints(5000, BODY_RADIUS_KM.MOON)).toBe(0);
   });
 });
