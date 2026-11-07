@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { QUIZ_QUESTIONS } from '../data/missionsData';
 import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
+import { QuizPanel } from './Quiz';
 
-export const YoungExplorers: React.FC = () => {
+interface YoungExplorersProps {
+  onOpenMachine: (id: string) => void;
+}
+
+export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine }) => {
   const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'QUIZ' | 'BUILDER' | 'MATCH'>('QUIZ');
-
-  // QUIZ STATE
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(0);
-  const [quizFinished, setQuizFinished] = useState<boolean>(false);
 
   // BUILD A MISSION STATE
   const [builderDestination, setBuilderDestination] = useState<'MOON' | 'MARS'>('MARS');
@@ -33,43 +30,6 @@ export const YoungExplorers: React.FC = () => {
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
   const [matchedPairs, setMatchedPairs] = useState<string[]>([]);
   const [matchError, setMatchError] = useState<boolean>(false);
-
-  // Quiz Handlers
-  const handleSelectOption = (idx: number) => {
-    if (isAnswerSubmitted) return;
-    spaceAudio.playTelemetryPing(900, 0.04);
-    setSelectedOption(idx);
-  };
-
-  const handleSubmitAnswer = () => {
-    if (selectedOption === null || isAnswerSubmitted) return;
-    setIsAnswerSubmitted(true);
-    const q = QUIZ_QUESTIONS[currentQuestionIdx];
-    if (selectedOption === q.correctIndex) {
-      spaceAudio.playTelemetryPing(1200, 0.08);
-      setScore((s) => s + 1);
-    } else {
-      spaceAudio.playTelemetryPing(400, 0.08);
-    }
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIdx < QUIZ_QUESTIONS.length - 1) {
-      setCurrentQuestionIdx((i) => i + 1);
-      setSelectedOption(null);
-      setIsAnswerSubmitted(false);
-    } else {
-      setQuizFinished(true);
-    }
-  };
-
-  const resetQuiz = () => {
-    setCurrentQuestionIdx(0);
-    setSelectedOption(null);
-    setIsAnswerSubmitted(false);
-    setScore(0);
-    setQuizFinished(false);
-  };
 
   // Match handler
   const handleSelectMatchMachine = (m: string) => {
@@ -93,8 +53,6 @@ export const YoungExplorers: React.FC = () => {
       setTimeout(() => setMatchError(false), 1200);
     }
   };
-
-  const currentQ = QUIZ_QUESTIONS[currentQuestionIdx];
 
   return (
     <section id="explorers" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
@@ -149,110 +107,8 @@ export const YoungExplorers: React.FC = () => {
           </div>
         </div>
 
-        {/* TAB 1: MISSION QUIZ */}
-        {activeTab === 'QUIZ' && (
-          <div className="rounded-2xl border border-line bg-card p-6 sm:p-10 max-w-3xl mx-auto">
-            {!quizFinished ? (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-line text-sm text-fg-2">
-                  <span className="text-fg">
-                    Question {currentQuestionIdx + 1} of {QUIZ_QUESTIONS.length}
-                  </span>
-                  <span className="text-fg-2">Score {score}</span>
-                </div>
-
-                <h3 className="font-serif text-2xl text-fg leading-snug">
-                  {currentQ.question}
-                </h3>
-
-                {/* Options */}
-                <div className="space-y-3 pt-2">
-                  {currentQ.options.map((opt, idx) => {
-                    const isSelected = selectedOption === idx;
-                    const isCorrect = isAnswerSubmitted && idx === currentQ.correctIndex;
-                    const isWrong = isAnswerSubmitted && isSelected && idx !== currentQ.correctIndex;
-
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => handleSelectOption(idx)}
-                        disabled={isAnswerSubmitted}
-                        className={`w-full p-4 rounded-xl border text-left text-sm transition-colors flex items-center justify-between cursor-pointer ${
-                          isCorrect
-                            ? 'border-emerald-400/70 text-fg'
-                            : isWrong
-                            ? 'border-rose-400/70 text-fg'
-                            : isSelected
-                            ? 'bg-raised border-line-strong text-fg'
-                            : 'border-line hover:bg-raised text-fg-2'
-                        }`}
-                      >
-                        <span>{opt}</span>
-                        {isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0 ml-2" strokeWidth={1.5} />}
-                        {isWrong && <XCircle className="w-5 h-5 text-rose-300 shrink-0 ml-2" strokeWidth={1.5} />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Explanation on submission */}
-                {isAnswerSubmitted && (
-                  <div className="pt-4 border-t border-line text-sm text-fg-2 leading-relaxed">
-                    <span className="text-fg block mb-1">
-                      Why
-                    </span>
-                    <p>{currentQ.explanation}</p>
-                  </div>
-                )}
-
-                {/* Action button */}
-                <div className="pt-4 flex items-center justify-end">
-                  {!isAnswerSubmitted ? (
-                    <button
-                      onClick={handleSubmitAnswer}
-                      disabled={selectedOption === null}
-                      className="btn-primary"
-                    >
-                      Check answer
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleNextQuestion}
-                      className="btn-primary"
-                    >
-                      {currentQuestionIdx < QUIZ_QUESTIONS.length - 1 ? 'Next question' : 'See your score'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8 space-y-6 animate-fadeIn">
-                <div>
-                  <h3 className="font-serif text-3xl text-fg">
-                    Quiz complete
-                  </h3>
-                  <p className="text-sm text-fg-2 mt-2">
-                    You scored <span className="text-fg font-mono-data">{score}</span> out of{' '}
-                    <span className="text-fg font-mono-data">{QUIZ_QUESTIONS.length}</span>
-                  </p>
-                </div>
-
-                <div className="text-sm text-fg-2 max-w-md mx-auto">
-                  {score >= 4
-                    ? 'You know this archive well.'
-                    : 'Read a few dossiers and try again.'}
-                </div>
-
-                <button
-                  onClick={resetQuiz}
-                  className="btn-primary"
-                >
-                  Retake the quiz
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        {/* TAB 1: MISSION QUIZ (5 questions per round from a bank of 50; no repeats for 5 rounds) */}
+        {activeTab === 'QUIZ' && <QuizPanel onOpenMachine={onOpenMachine} />}
 
         {/* TAB 2: MATCH THE MACHINE */}
         {activeTab === 'MATCH' && (

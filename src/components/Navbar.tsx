@@ -4,7 +4,7 @@ import { spaceAudio } from '../utils/audio';
 import { Volume2, VolumeX, Menu, X, Languages, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../lib/theme';
 import logo from '../assets/brand/exoarchive-logo.webp';
-import headerStrip from '../assets/images/nasa/header-earthrise-as11-44-6550.webp';
+import headerSky from '../assets/brand/header-earth-limb.webp';
 import { useI18n } from '../i18n/I18nProvider';
 
 const navLinks = [
@@ -16,7 +16,6 @@ const navLinks = [
   { key: 'nav.archive', target: 'archive' },
   { key: 'nav.sources', target: 'data-sources' },
   { key: 'nav.explorers', target: 'explorers' },
-  { key: 'nav.quiz', target: 'quiz' },
 ] as const;
 
 interface NavbarProps {
@@ -37,36 +36,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [activeSection, setActiveSection] = useState<string>('hero');
   const { theme, toggleTheme } = useTheme();
   const linkRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const logoRef = useRef<HTMLButtonElement | null>(null);
-  const navRef = useRef<HTMLElement | null>(null);
-  const controlsRef = useRef<HTMLDivElement | null>(null);
-  const stripRef = useRef<HTMLImageElement | null>(null);
-
-  // Keep the Earth (centre of the photo strip) in the empty gap before the controls, so it
-  // never sits behind a label: after the menu on wide screens, after the logo otherwise.
-  useLayoutEffect(() => {
-    const placeStrip = () => {
-      const strip = stripRef.current;
-      const controls = controlsRef.current;
-      const nav = navRef.current;
-      const before = nav && nav.offsetWidth > 0 ? nav : logoRef.current;
-      if (!strip || !controls || !before) return;
-      const left = before.getBoundingClientRect().right;
-      const right = controls.getBoundingClientRect().left;
-      strip.style.left = `${(left + right) / 2 - strip.offsetWidth / 2}px`;
-    };
-    placeStrip();
-    const img = stripRef.current;
-    img?.addEventListener('load', placeStrip);
-    window.addEventListener('resize', placeStrip);
-    // the header changes height (and the strip its width) when scrolling starts
-    const timer = window.setTimeout(placeStrip, 320);
-    return () => {
-      img?.removeEventListener('load', placeStrip);
-      window.removeEventListener('resize', placeStrip);
-      window.clearTimeout(timer);
-    };
-  }, [scrolled, lang]);
   const [indicator, setIndicator] = useState<{ x: number; w: number } | null>(null);
 
   // The accent underline slides from the old link to the new one instead of jumping.
@@ -158,22 +127,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         scrolled ? 'border-line py-2' : 'border-transparent py-3 sm:py-4'
       }`}
     >
-      {/* AS11-44-6550: Earth over the lunar horizon, photographed from Apollo 11 (NASA, public domain).
-          A window onto the photo, faded at both ends; decoration only. */}
+      {/* Earth's limb against the stars (the team's artwork, cropped to a thin band so the glowing
+          horizon runs along the bottom of the header). A neutral scrim keeps the menu readable.
+          Decoration only. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <img
-          src={headerStrip}
-          alt=""
-          decoding="async"
-          ref={stripRef}
-          className="header-strip absolute top-0 left-1/2 h-full w-auto max-w-none opacity-80"
-        />
+        <img src={headerSky} alt="" decoding="async" className="w-full h-full object-cover object-top" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/60 to-ink/20" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Zone 1: logo */}
         <button
-          ref={logoRef}
           onClick={() => handleLinkClick('hero')}
           className="flex flex-col items-start shrink-0 rounded"
           aria-label={t('brand.home')}
@@ -192,9 +156,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Zone 2: 4-6 clean text navigation links */}
         <nav
-          ref={navRef}
           aria-label="Primary"
-          className="hidden xl:flex relative items-center gap-5 text-sm text-fg-2"
+          className="hidden xl:flex relative items-center gap-5 text-sm text-fg"
         >
           {navLinks.map((link) => {
             const isActive = activeSection === link.target;
@@ -206,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 onClick={() => handleLinkClick(link.target)}
                 aria-current={isActive ? 'location' : undefined}
-                className={`nav-link transition-colors py-2 whitespace-nowrap ${isActive ? 'text-fg' : 'hover:text-fg'}`}
+                className="nav-link transition-colors py-2 whitespace-nowrap text-fg"
               >
                 {t(link.key)}
               </button>
@@ -224,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Zone 3: Primary Actions (Segmented Planet Switcher & Telemetry Audio) */}
-        <div ref={controlsRef} className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Planet Switcher Segmented Control */}
           <div className="hidden sm:flex items-center p-1 border border-line rounded-lg">
             <button

@@ -21,7 +21,6 @@ import { LiveBand } from './components/LiveBand';
 import { ImpactStrip } from './components/ImpactStrip';
 import { useI18n } from './i18n/I18nProvider';
 import { YoungExplorers } from './components/YoungExplorers';
-import { Quiz } from './components/Quiz';
 import { Footer } from './components/Footer';
 import { MachineDetailModal } from './components/MachineDetailModal';
 import { SoundscapeController } from './components/SoundscapeController';
@@ -73,7 +72,7 @@ const ScrollProgressBar: React.FC = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 h-0.5 z-[60] bg-raised pointer-events-none overflow-hidden"
+      className="theme-dark fixed top-0 left-0 right-0 h-0.5 z-[60] pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
       <div
@@ -131,6 +130,7 @@ export default function App() {
         <Hero
           onStartExploring={() => handleNavigate('explore')}
           onOpenMap={() => handleNavigate('archaeology-map')}
+          onOpenMachine={handleSelectMachineById}
         />
 
         {/* Who it is for, how it is used, how it grows */}
@@ -183,10 +183,7 @@ export default function App() {
         <DataSources />
 
         {/* 15. For Young Explorers (Quiz, Match, Build a Mission) */}
-        <YoungExplorers />
-
-        {/* 16. Quiz: five questions per round from a bank of fifty */}
-        <Quiz onOpenMachine={handleSelectMachineById} />
+        <YoungExplorers onOpenMachine={handleSelectMachineById} />
       </main>
 
       {/* 16. Final Cinematic Section & Institutional Footer */}

@@ -43,8 +43,8 @@ const RoverTile: React.FC<{ name: string; result: LiveResult<RoverLatest> | null
   const { t, lang } = useI18n();
   return (
     <Card>
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between gap-2">
-        <h3 className="text-base text-fg flex items-center gap-2">
+      <div className="px-4 pt-4 pb-3 h-22 flex flex-col items-start justify-between gap-2">
+        <h3 className="text-base text-fg truncate max-w-full">
           {name}
         </h3>
         {result && <SourceBadge source={result.source} fetchedAt={result.fetchedAt} />}
@@ -66,7 +66,7 @@ const RoverTile: React.FC<{ name: string; result: LiveResult<RoverLatest> | null
             </span>
           </div>
           <div className="p-4 space-y-1 text-xs flex-1">
-            <div className="text-2xl font-mono-data text-fg">
+            <div className="text-xl font-mono-data text-fg whitespace-nowrap">
               {t('live.rover.sol', { sol: result.data.sol.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US') })}
             </div>
             <div className="text-fg-2 font-mono-data">
@@ -96,8 +96,8 @@ const RangeTile: React.FC<{ body: 'moon' | 'mars'; result: LiveResult<BodyRange>
   const loc = lang === 'bn' ? 'bn-BD' : 'en-US';
   return (
     <Card>
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between gap-2">
-        <h3 className="text-base text-fg flex items-center gap-2">
+      <div className="px-4 pt-4 pb-3 h-22 flex flex-col items-start justify-between gap-2">
+        <h3 className="text-base text-fg truncate max-w-full">
           {t(`live.range.title.${body}`)}
         </h3>
         {result && <SourceBadge source={result.source} fetchedAt={result.fetchedAt} />}
@@ -118,7 +118,7 @@ const RangeTile: React.FC<{ body: 'moon' | 'mars'; result: LiveResult<BodyRange>
         <Pending state={result as undefined | null} />
       ) : (
         <div className="p-4 space-y-2 flex-1 flex flex-col">
-          <div className="text-2xl font-mono-data text-fg">
+          <div className="text-xl font-mono-data text-fg whitespace-nowrap">
             {body === 'moon'
               ? t('live.range.km', { km: Math.round(result.data.distanceKm).toLocaleString(loc) })
               : t('live.range.mkm', {

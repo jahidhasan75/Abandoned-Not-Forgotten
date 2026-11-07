@@ -105,7 +105,7 @@ src/
 ├─ index.css                   Tailwind import, fonts, glow/scanline helper classes
 ├─ types/mission.ts            MissionArtifact, ConstellationNode/Link, QuizQuestion types
 ├─ data/missionsData.ts        THE DATA: MISSIONS_DATA (10 artifacts), CONSTELLATION_NODES/LINKS,
-│                              QUIZ_QUESTIONS (5), WHY_LEAVE_IT_REASONS (4)
+│                              QUIZ_QUESTIONS (5, no longer shown), WHY_LEAVE_IT_REASONS (4)
 ├─ assets/images.ts            ASSET_IMAGES map -> 5 illustrative WebP images in src/assets/images/
 ├─ utils/audio.ts              spaceAudio singleton: ambient Moon/Mars soundscapes, Quindar tone, UI pings
 └─ components/                 one file per page section (order = App.tsx order)
@@ -135,8 +135,8 @@ src/
 | 11 | `ScienceConstellation` | `science` | SVG graph linking machines to discoveries | `CONSTELLATION_*` |
 | 14 | `ArchaeologyArchive` | `archive` | Searchable, filterable table of all artifacts | `MISSIONS_DATA` |
 | 14b | `DataSources` | `data-sources` | Every NASA dataset and what it is used for; featured LROC dataset read from the local PDS catalog; GeoJSON download | `pdsCatalog.json`, `MISSIONS_DATA` |
-| 16 | `YoungExplorers` | `explorers` | Quiz, Match-the-Machine game, Build-a-Mission configurator | `QUIZ_QUESTIONS` + inline |
-| 17 | `Quiz` | `quiz` | 5 questions per round from a bank of 50 (en + bn); a question does not return for the next 5 rounds (history in `localStorage`, `exoarchive-quiz-history`); each answer links to its dossier | `src/data/quiz.ts`, `src/lib/quizPick.ts` (tested) |
+| 16 | `YoungExplorers` | `explorers` | Mission quiz (the 50-question `QuizPanel`), Match-the-Machine game, Build-a-Mission configurator | `src/data/quiz.ts` + inline |
+| 16a | `QuizPanel` (the Mission quiz tab inside `YoungExplorers`) | `quiz` | 5 questions per round from a bank of 50 (en + bn); a question does not return for the next 5 rounds (history in `localStorage`, `exoarchive-quiz-history`); each answer links to its dossier | `src/data/quiz.ts`, `src/lib/quizPick.ts` (tested) |
 | 17 | `Footer` | — | Closing message, data accuracy notice | inline |
 | — | `MachineDetailModal` | — | Full dossier dialog (Esc to close) | the selected artifact |
 | — | `SoundscapeController` | — | Fixed bottom-right audio widget with live waveform | `spaceAudio` |
@@ -219,8 +219,12 @@ for the ambient sound and the clicks).
 setting decides, and `index.html` applies it before the first paint.
 
 **Brand.** Logo: `src/assets/brand/exoarchive-logo.webp` (the team's EXOARCHIVE wordmark, black
-background removed). Header photo strip: AS11-44-6550, Earth over the lunar horizon from Apollo 11
-(NASA, public domain), placed in the gap before the header controls so it never sits behind a label.
+background removed). Header background: `src/assets/brand/header-earth-limb.webp`, a thin band
+cropped from the team's Earth-limb artwork (not a NASA photograph; the footer says so), under a neutral
+scrim so the menu stays readable. The hero is a split page: text on
+the page colour (so it follows the theme) and two photo plates from the archive, Apollo 15's rover
+(AS15-86-11602) and Curiosity (PIA24173); each plate opens that object's dossier. Light theme: the map
+section uses `bg-deep` (ink in dark, a deeper paper in light); only the map well itself stays dark.
 
 ---
 

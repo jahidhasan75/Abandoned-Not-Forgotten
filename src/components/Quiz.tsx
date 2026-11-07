@@ -35,11 +35,12 @@ interface Asked {
   order: number[];
 }
 
-interface QuizProps {
+interface QuizPanelProps {
   onOpenMachine: (id: string) => void;
 }
 
-export const Quiz: React.FC<QuizProps> = ({ onOpenMachine }) => {
+/** The "Mission quiz" tab of Young Explorers: 5 questions per round from the bank of 50. */
+export const QuizPanel: React.FC<QuizPanelProps> = ({ onOpenMachine }) => {
   const { t, lang } = useI18n();
   const [round, setRound] = useState<Asked[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -97,22 +98,19 @@ export const Quiz: React.FC<QuizProps> = ({ onOpenMachine }) => {
   };
 
   return (
-    <section id="quiz" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-        <div>
-          <p className="section-label">{t('quiz.kicker')}</p>
-          <h2 className="mt-2 text-2xl sm:text-3xl text-fg">{t('quiz.title')}</h2>
-          <p className="mt-3 text-base text-fg-2">{t('quiz.intro', { size: num(ROUND_SIZE), total: num(QUIZ_BANK.length) })}</p>
-          <p className="mt-3 text-xs text-fg-2">{t('quiz.device')}</p>
-        </div>
-
-        <div className="lg:col-span-2 rounded-xl border border-line bg-card p-5 sm:p-8">
+        <div id="quiz" className="rounded-2xl border border-line bg-card p-6 sm:p-10 max-w-3xl mx-auto">
           {!round && (
-            <div className="flex flex-col items-start gap-4">
-              <p className="text-base text-fg-2">{t('quiz.ready', { size: num(ROUND_SIZE) })}</p>
-              <button onClick={startRound} className="btn-primary">
+            <div className="flex flex-col items-start">
+              <p className="section-label">{t('quiz.kicker')}</p>
+              <h3 className="mt-2 font-serif text-2xl sm:text-3xl text-fg">{t('quiz.title')}</h3>
+              <p className="mt-4 text-base text-fg-2 max-w-xl">
+                {t('quiz.intro', { size: num(ROUND_SIZE), total: num(QUIZ_BANK.length) })}
+              </p>
+              <p className="mt-2 text-sm text-fg-2">{t('quiz.ready', { size: num(ROUND_SIZE) })}</p>
+              <button onClick={startRound} className="btn-primary mt-6">
                 {t('quiz.start')}
               </button>
+              <p className="mt-4 text-xs text-fg-2">{t('quiz.device')}</p>
             </div>
           )}
 
@@ -210,7 +208,5 @@ export const Quiz: React.FC<QuizProps> = ({ onOpenMachine }) => {
             </div>
           )}
         </div>
-      </div>
-    </section>
   );
 };

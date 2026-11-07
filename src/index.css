@@ -10,6 +10,7 @@
   --color-page: #0b0d14;     /* page */
   --color-card: #11141c;     /* cards, panels */
   --color-raised: #1a1e28;   /* raised controls, hover and active surfaces */
+  --color-deep: #07080d;     /* a whole section one step deeper than the page (the map) */
 
   /* text roles */
   --color-fg: #eef0f5;       /* primary */
@@ -56,6 +57,7 @@
   --color-page: #f3f1ea;
   --color-card: #faf9f5;
   --color-raised: #e7e4da;
+  --color-deep: #ebe8df;
   --color-fg: #15171d;
   --color-fg-2: #474d5c;
   --color-fg-3: #5c6375;
@@ -71,6 +73,7 @@
   --color-page: #0b0d14;
   --color-card: #11141c;
   --color-raised: #1a1e28;
+  --color-deep: #07080d;
   --color-fg: #eef0f5;
   --color-fg-2: #a3a9b8;
   --color-fg-3: #7a8296;
@@ -178,11 +181,6 @@ button:disabled {
 
 /* ---------- Header ---------- */
 
-/* The Earthrise photo strip fades into the header at both ends. */
-.header-strip {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
-}
 
 /* The active-link underline slides between links. */
 .nav-indicator {

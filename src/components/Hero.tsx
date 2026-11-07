@@ -1,73 +1,76 @@
 import React, { useEffect, useRef } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
-import { ASSET_IMAGES } from '../assets/images';
 import { useI18n } from '../i18n/I18nProvider';
+import { useTheme } from '../lib/theme';
+import { MISSIONS_DATA } from '../data/missionsData';
+import { CatalogueTag } from './CatalogueTag';
+import type { MissionArtifact } from '../types/mission';
 
 interface HeroProps {
   onStartExploring: () => void;
   onOpenMap: () => void;
+  onOpenMachine: (id: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
-  const { t } = useI18n();
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+/** The two objects on the cover: one left on the Moon, one still working on Mars. */
+const MOON_ID = 'apollo15-lrv';
+const MARS_ID = 'curiosity';
+const byId = (id: string) => MISSIONS_DATA.find((m) => m.id === id) as MissionArtifact;
 
-  // A still, sparse starfield in the dark sky above the photo. Drawn once per resize: no drift,
-  // no animation loop.
+export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap, onOpenMachine }) => {
+  const { t, tx } = useI18n();
+  const { theme } = useTheme();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const moon = byId(MOON_ID);
+  const mars = byId(MARS_ID);
+
+  // Dark theme only: a still, sparse starfield behind the page. Drawn once per resize.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     const draw = () => {
-      const width = (canvas.width = window.innerWidth);
-      const height = (canvas.height = window.innerHeight);
+      const width = (canvas.width = canvas.offsetWidth);
+      const height = (canvas.height = canvas.offsetHeight);
       ctx.clearRect(0, 0, width, height);
-      for (let i = 0; i < 70; i++) {
-        const x = Math.random() * width;
-        const y = Math.random() * height * 0.6;
-        ctx.fillStyle = `rgba(238, 240, 245, ${Math.random() * 0.35 + 0.1})`;
+      if (theme !== 'dark') return;
+      for (let i = 0; i < 90; i++) {
+        ctx.fillStyle = `rgba(238, 240, 245, ${Math.random() * 0.3 + 0.08})`;
         ctx.beginPath();
-        ctx.arc(x, y, Math.random() * 0.9 + 0.3, 0, Math.PI * 2);
+        ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 0.9 + 0.3, 0, Math.PI * 2);
         ctx.fill();
       }
     };
     draw();
     window.addEventListener('resize', draw);
     return () => window.removeEventListener('resize', draw);
-  }, []);
+  }, [theme]);
+
+  const open = (a: MissionArtifact) => {
+    spaceAudio.playTelemetryPing(1080, 0.07);
+    onOpenMachine(a.id);
+  };
+
+  const plateLabel = (a: MissionArtifact) => `${t(`body.${a.destination}`)} · ${a.mission}, ${a.landingYear}`;
 
   return (
-    <section id="hero" className="theme-dark relative min-h-screen flex flex-col justify-between pt-24 pb-8 overflow-hidden bg-page">
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" aria-hidden="true" />
+    <section id="hero" className="relative overflow-hidden bg-page pt-28 sm:pt-32 pb-8 lg:min-h-screen flex flex-col">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />
 
-      {/* The Apollo 11 photo: the lunar module's shadow falls on the right, the calm regolith on the
-          left carries the text. A neutral scrim keeps the text at AA contrast. */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <img
-          src={ASSET_IMAGES.hero}
-          alt={t('hero.imageAlt')}
-          fetchPriority="high"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-[70%_center] opacity-50"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-page via-page/80 to-page/20" />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-page to-transparent" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto py-12">
-        <div className="max-w-2xl">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
+        {/* Text */}
+        <div className="lg:col-span-6">
           <p className="section-label">
             {t('hero.kicker1')} <span className="text-fg-3">·</span> {t('hero.kicker2')}
           </p>
 
-          <h1 className="mt-5 text-4xl sm:text-6xl lg:text-7xl text-fg leading-[1.05] tracking-tight">
+          <h1 className="mt-5 text-5xl sm:text-6xl xl:text-7xl text-fg leading-[1.02] tracking-tight">
             {t('hero.title1')} {t('hero.title2')} {t('hero.title3')}
           </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-fg leading-snug">
+          <p className="mt-6 text-lg sm:text-xl text-fg leading-snug max-w-xl">
             {t('hero.quote1')} {t('hero.quote2')}
           </p>
 
@@ -93,28 +96,72 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
               {t('hero.map')}
             </button>
           </div>
-
-          <dl className="mt-12 pt-6 border-t border-line grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5 max-w-3xl">
-            {(['stat1', 'stat2', 'stat3', 'stat4'] as const).map((k) => (
-              <div key={k} className="flex flex-col-reverse">
-                <dt className="mt-1 text-xs text-fg-2">{t(`hero.${k}`)}</dt>
-                <dd className="font-mono-data text-lg text-fg">{t(`hero.${k}.value`)}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
+
+        {/* Two catalogue plates: real NASA photographs of objects in the archive */}
+        <figure className="lg:col-span-6 relative pb-24 sm:pb-20">
+          <button
+            onClick={() => open(moon)}
+            aria-label={t('hero.open', { name: moon.name })}
+            className="group relative block w-full aspect-[5/4] rounded-2xl overflow-hidden bg-ink border border-line"
+          >
+            <img
+              src={moon.image}
+              alt={tx(moon, 'imageCaption')}
+              fetchPriority="high"
+              decoding="async"
+              className="w-full h-full object-cover object-[62%_50%]"
+            />
+            <span className="absolute top-3 left-3 text-xs bg-page/90 text-fg px-2 py-1 rounded-md">
+              {plateLabel(moon)}
+            </span>
+            <span className="absolute top-3 right-3 text-xs text-fg bg-page/90 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+              {t('quiz.dossier')}
+            </span>
+          </button>
+
+          <button
+            onClick={() => open(mars)}
+            aria-label={t('hero.open', { name: mars.name })}
+            className="group absolute bottom-0 left-4 sm:-left-6 w-[38%] sm:w-[34%] aspect-[3/4] rounded-xl overflow-hidden bg-ink border-4 border-page"
+          >
+            <img
+              src={mars.image}
+              alt={tx(mars, 'imageCaption')}
+              decoding="async"
+              className="w-full h-full object-cover object-[70%_40%]"
+            />
+            <span className="absolute bottom-2 left-2 right-2 text-xs bg-page/90 text-fg px-2 py-1 rounded-md text-left leading-snug">
+              {plateLabel(mars)}
+            </span>
+          </button>
+
+          <figcaption className="absolute bottom-0 right-0 w-[56%] sm:w-[58%] text-right space-y-1">
+            <CatalogueTag artifact={moon} className="block" />
+            <span className="block text-xs text-fg-2">
+              {moon.imageNasaId} · {moon.imageCredit} — {mars.imageNasaId} · {mars.imageCredit}
+            </span>
+          </figcaption>
+        </figure>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-fg-2">
-        <span>{t('hero.tagline')}</span>
-        <span className="hidden md:block catalogue-tag">{t('hero.imageCredit')}</span>
-        <button
-          onClick={onStartExploring}
-          className="flex items-center gap-2 text-fg-2 hover:text-fg transition-colors"
-        >
-          <span>{t('hero.scroll')}</span>
-          <ArrowDown className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
-        </button>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12">
+        <dl className="pt-6 border-t border-line grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
+          {(['stat1', 'stat2', 'stat3', 'stat4'] as const).map((k) => (
+            <div key={k} className="flex flex-col-reverse">
+              <dt className="mt-1 text-xs text-fg-2">{t(`hero.${k}`)}</dt>
+              <dd className="font-mono-data text-lg text-fg">{t(`hero.${k}.value`)}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-fg-2">
+          <span>{t('hero.tagline')}</span>
+          <button onClick={onStartExploring} className="flex items-center gap-2 text-fg-2 hover:text-fg transition-colors">
+            <span>{t('hero.scroll')}</span>
+            <ArrowDown className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </section>
   );

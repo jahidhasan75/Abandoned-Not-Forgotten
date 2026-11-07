@@ -28,6 +28,12 @@ Keep this file current as you build. Match the wording to the official Project S
   and the drones were below what small speakers can play); a 50-question quiz drawn from the archive's
   own facts, 5 per round with no repeats for 5 rounds. The quiz questions were written by the AI from
   `src/data/missionsData.ts`. **TODO (team): read all 50 questions once before submission.**
+- 7 Nov 2026: hero redesigned as a split page with two archive photos (Apollo 15 rover, Curiosity)
+  that follows the light/dark theme; header background changed to the Hubble Ultra Deep Field; live
+  tiles aligned; removed the light progress-bar track that showed as a white line in light theme.
+- 7 Nov 2026: merged the 50-question quiz into Young Explorers as its Mission quiz tab (one section
+  instead of two; the separate Quiz section and its menu link are gone); header background replaced
+  with a crop of the team's Earth-limb artwork, and the footer notice now says it is artwork.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

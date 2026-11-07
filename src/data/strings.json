@@ -212,7 +212,7 @@
     "footer.again": "Back to the archive",
     "footer.top": "Scroll back to top",
     "footer.about": "A 2026 NASA Space Apps Challenge project: an interactive digital museum and space archaeology learning tool for students, teachers and space enthusiasts.",
-    "footer.notice": "Data accuracy: mission facts and landing coordinates are cross-checked against the NASA Space Science Data Coordinated Archive (NSSDCA); each dossier lists its sources. Every photograph on this site is a public-domain NASA image, credited where it appears.",
+    "footer.notice": "Data accuracy: mission facts and landing coordinates are cross-checked against the NASA Space Science Data Coordinated Archive (NSSDCA); each dossier lists its sources. Every mission photograph on this site is a public-domain NASA image, credited where it appears; the space backdrop behind the header is decorative artwork.",
     "footer.repo": "Moon and Mars archive",
     "audio.title": "Ambient sound",
     "audio.offline": "Off",
@@ -282,7 +282,6 @@
     "live.dossier.restingFor": "At rest for {days} days since its final flight",
     "brand.home": "EXOARCHIVE, back to the top",
     "brand.tagline": "Abandoned, not forgotten",
-    "nav.quiz": "Quiz",
     "theme.toLight": "Switch to the light theme",
     "theme.toDark": "Switch to the dark theme",
     "live.range.photoAlt.moon": "The near side of the Moon, a mosaic from NASA’s Lunar Reconnaissance Orbiter",
@@ -305,7 +304,8 @@
     "quiz.resultLabel": "Your score",
     "quiz.score": "{score} of {total} correct",
     "quiz.after": "These questions will not come back for the next {rounds} rounds. A new round brings five you have not just seen.",
-    "quiz.again": "New round"
+    "quiz.again": "New round",
+    "hero.open": "Open the dossier: {name}"
   },
   "bn": {
     "lang.toggle": "EN",
@@ -520,7 +520,7 @@
     "footer.again": "আবার আর্কাইভ ঘুরে দেখুন",
     "footer.top": "উপরে ফিরে যান",
     "footer.about": "নাসা স্পেস অ্যাপস চ্যালেঞ্জ ২০২৬-এর একটি প্রকল্প: শিক্ষার্থী, শিক্ষক ও মহাকাশপ্রেমীদের জন্য একটি ইন্টারঅ্যাক্টিভ ডিজিটাল জাদুঘর ও মহাকাশ প্রত্নতত্ত্ব শেখার মাধ্যম।",
-    "footer.notice": "তথ্যের নির্ভুলতা: মিশনের তথ্য ও অবতরণের স্থানাঙ্ক নাসার Space Science Data Coordinated Archive (NSSDCA)-এর সাথে মিলিয়ে দেখা হয়েছে; প্রতিটি বিবরণে উৎস দেওয়া আছে। এই সাইটের প্রতিটি ছবি নাসার পাবলিক ডোমেইন ছবি, যেখানে আছে সেখানেই কৃতিত্ব দেওয়া হয়েছে।",
+    "footer.notice": "তথ্যের নির্ভুলতা: মিশনের তথ্য ও অবতরণের স্থানাঙ্ক নাসার Space Science Data Coordinated Archive (NSSDCA)-এর সাথে মিলিয়ে দেখা হয়েছে; প্রতিটি বিবরণে উৎস দেওয়া আছে। এই সাইটের প্রতিটি মিশনের ছবি নাসার পাবলিক ডোমেইন ছবি, যেখানে আছে সেখানেই কৃতিত্ব দেওয়া হয়েছে; হেডারের পেছনের মহাকাশের ছবিটি শুধু সাজসজ্জার জন্য আঁকা।",
     "footer.repo": "চাঁদ ও মঙ্গলের সংগ্রহ",
     "audio.title": "পরিবেশের শব্দ",
     "audio.offline": "বন্ধ",
@@ -590,7 +590,6 @@
     "live.dossier.restingFor": "শেষ উড্ডয়নের পর থেকে {days} দিন ধরে স্থির",
     "brand.home": "EXOARCHIVE, একদম ওপরে ফিরে যান",
     "brand.tagline": "পরিত্যক্ত, তবু ভোলা নয়",
-    "nav.quiz": "কুইজ",
     "theme.toLight": "হালকা থিমে যান",
     "theme.toDark": "গাঢ় থিমে যান",
     "live.range.photoAlt.moon": "চাঁদের কাছের দিক, নাসার লুনার রিকনেসান্স অরবিটারের ছবি জোড়া দিয়ে তৈরি",
@@ -613,6 +612,7 @@
     "quiz.resultLabel": "আপনার ফলাফল",
     "quiz.score": "{total}টির মধ্যে {score}টি সঠিক",
     "quiz.after": "এই প্রশ্নগুলো পরের {rounds} রাউন্ডে আর আসবে না। নতুন রাউন্ডে এমন পাঁচটি প্রশ্ন আসবে যা এইমাত্র দেখেননি।",
-    "quiz.again": "নতুন রাউন্ড"
+    "quiz.again": "নতুন রাউন্ড",
+    "hero.open": "ডসিয়ার খুলুন: {name}"
   }
 }
