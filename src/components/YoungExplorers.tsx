@@ -133,9 +133,13 @@ export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine })
           </div>
         </div>
 
-        {activeTab === 'QUIZ' && <QuizPanel onOpenMachine={onOpenMachine} />}
+        {/* Every tab stays mounted (only hidden), so a quiz round or a half-built mission survives
+            switching tabs; it resets only when the page is reloaded. Mission quiz is the default. */}
+        <div hidden={activeTab !== 'QUIZ'}>
+          <QuizPanel onOpenMachine={onOpenMachine} />
+        </div>
 
-        {activeTab === 'MATCH' && (
+        <div hidden={activeTab !== 'MATCH'}>
           <div className="rounded-2xl border border-line bg-card p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-line text-sm text-fg-2">
               <span className="text-fg">{t('match.title')}</span>
@@ -199,9 +203,9 @@ export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine })
               </div>
             )}
           </div>
-        )}
+        </div>
 
-        {activeTab === 'BUILDER' && (
+        <div hidden={activeTab !== 'BUILDER'}>
           <div className="rounded-2xl border border-line bg-card p-6 sm:p-10 max-w-4xl mx-auto space-y-8">
             <div>
               <p className="section-label">{t('explorers.tab.builder')}</p>
@@ -316,9 +320,11 @@ export const YoungExplorers: React.FC<YoungExplorersProps> = ({ onOpenMachine })
               </div>
             )}
           </div>
-        )}
+        </div>
 
-        {activeTab === 'TEACHERS' && <TeacherKit />}
+        <div hidden={activeTab !== 'TEACHERS'}>
+          <TeacherKit />
+        </div>
       </div>
     </section>
   );

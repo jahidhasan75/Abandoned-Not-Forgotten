@@ -27,7 +27,7 @@ hardware left on the Moon and Mars. React 19 + Vite 8 + Tailwind v4 + Three.js, 
   token classes (`bg-page`, `text-fg-2`, `border-line`, `accent` …), not new hex values. One accent
   (rust), no glows, gradients, tracked uppercase or bold weights; sentence case everywhere.
   Two team-requested exceptions: the violet `state-*` tokens (Status list) and the `journey` progress
-  colour (blue light / green dark); see README "Brand".
+  colour (blue light / green dark), and the quiz's `ok` / `bad` (green / red) answer colours; see README "Brand".
 - Catalogue card copy is the artifact's `hook` (en + bn): facts from its own dossier only, no clamp.
 - Every interactive click plays `spaceAudio.playTelemetryPing(freq, duration)` (silent until the visitor turns sound on).
 - Both themes must pass AA: dark stages use `bg-ink` (or `.theme-dark`), which keeps dark tokens in light theme.

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MissionArtifact, Destination, MachineStatus } from '../types/mission';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { spaceAudio } from '../utils/audio';
@@ -44,6 +44,13 @@ export const ArchaeologyArchive: React.FC<ArchaeologyArchiveProps> = ({ onOpenDe
       return matchesFilter && matchesSearch;
     });
   }, [searchQuery, activeFilter]);
+
+  // Six rows first; a search or "Show all" shows every match. A new filter starts collapsed again.
+  const PREVIEW = 6;
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => setExpanded(false), [activeFilter]);
+  const searching = searchQuery.trim() !== '';
+  const rows = expanded || searching ? filteredArtifacts : filteredArtifacts.slice(0, PREVIEW);
 
   const filterButtons = [
     { id: 'ALL', label: 'All Artifacts' },
@@ -136,7 +143,7 @@ export const ArchaeologyArchive: React.FC<ArchaeologyArchiveProps> = ({ onOpenDe
               </thead>
               <tbody className="divide-y divide-line text-sm">
                 {filteredArtifacts.length > 0 ? (
-                  filteredArtifacts.map((item) => (
+                  rows.map((item) => (
                     <tr
                       key={item.id}
                       onClick={() => {
@@ -189,6 +196,23 @@ export const ArchaeologyArchive: React.FC<ArchaeologyArchiveProps> = ({ onOpenDe
             </table>
           </div>
         </div>
+
+        {!searching && filteredArtifacts.length > PREVIEW && (
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                spaceAudio.playTelemetryPing(900, 0.05);
+                if (expanded) document.getElementById('archive')?.scrollIntoView({ block: 'start' });
+                setExpanded((v) => !v);
+              }}
+              aria-expanded={expanded}
+              className="btn-secondary"
+            >
+              {expanded ? t('archive.showFewer') : t('archive.showAll', { n: filteredArtifacts.length })}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

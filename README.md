@@ -284,6 +284,10 @@ Data and credibility
 12. (fixed) The constellation and "One Machine, One Journey" now include the newer artifacts.
 16. Deep links: `#machine=<id>` opens that dossier, and the dossier has a Copy link button. Sections below
     the status list load as separate chunks right after first paint (main chunk 625 kB → 306 kB).
+18. Quiz: right and wrong answers use the `ok` (green) and `bad` (red) tokens in both themes, the
+    progress bar records each answer, and a perfect round gets a short confetti burst (off with reduced
+    motion). Young Explorers keeps every tab mounted, so a round in progress survives a tab switch
+    until the page is reloaded. The archive table shows 6 rows until "Show all" (a search shows all matches).
 17. Check against the Apollo 12 mission report: the English Surveyor 3 story, hook and quiz say Apollo 12
     landed 160 m away, the Bangla story says 180 m.
 13. Removed in v0.7.0: the AI-generated images (replaced by NASA photos), four unsourced sections (Hardware

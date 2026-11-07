@@ -53,6 +53,8 @@ Keep this file current as you build. Match the wording to the official Project S
   lesson plan and all new Bangla text were written by the AI. **TODO (team): a teacher should read the
   lesson plan; check the Surveyor 3 distance (160 m in English, 180 m in Bangla) against the Apollo 12
   mission report.**
+- 7 Nov 2026: archive table shortened with "Show all"; quiz answers shown in bold green/red with a
+  confetti burst for a perfect round; Young Explorers keeps quiz progress across tab switches.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

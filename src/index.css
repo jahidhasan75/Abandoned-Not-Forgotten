@@ -29,6 +29,8 @@
   --color-state-hover: rgb(42 30 77 / 0.5);
   --color-state-bar: #8b7cc7;
   --color-journey: #4ade80;
+  --color-ok: #4ade80;       /* quiz: right answer (green) */
+  --color-bad: #f87171;      /* quiz: wrong answer (red) */
 
   /* type: Public Sans (the US government's open typeface) for the interface, Newsreader for
      headlines, IBM Plex Mono for figures and catalogue tags. Bangla: Hind Siliguri for text,
@@ -74,6 +76,8 @@
   --color-state-hover: rgb(201 194 227 / 0.45);
   --color-state-bar: #5a3b8c;
   --color-journey: #2563eb;  /* blue on light */
+  --color-ok: #15803d;
+  --color-bad: #b91c1c;
 }
 
 /* Dark stages: the header, the hero photo, the globes, the map and the 3D timeline stay night
@@ -94,6 +98,8 @@
   --color-state-hover: rgb(42 30 77 / 0.5);
   --color-state-bar: #8b7cc7;
   --color-journey: #4ade80;
+  --color-ok: #4ade80;       /* quiz: right answer (green) */
+  --color-bad: #f87171;      /* quiz: wrong answer (red) */
   color: var(--color-fg);
 }
 
@@ -378,4 +384,30 @@ html.theme-fading * {
   #print-root .print-questions ul { list-style: none; margin: 3pt 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2pt 16pt; }
   #print-root .print-key { break-before: page; }
   #print-root .print-key h2 { font-size: 16pt; margin: 0 0 8pt; }
+}
+
+/* Quiz: a short confetti burst for a perfect round (team request). Off with reduced motion. */
+.confetti-piece {
+  position: absolute;
+  top: -14px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  animation: confettiFall 1.9s cubic-bezier(0.2, 0.6, 0.4, 1) var(--d) forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translate3d(var(--dx), 440px, 0) rotate(var(--r)); opacity: 0; }
+}
+.animate-pop { animation: pop 0.45s var(--ease-archive) both; }
+@keyframes pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece { display: none; }
+  .animate-pop { animation: none; }
 }

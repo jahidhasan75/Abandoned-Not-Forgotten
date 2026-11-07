@@ -414,7 +414,12 @@
     "constellation.legend.discovery": "What it taught us",
     "constellation.links": "{n} links",
     "hero.demo.kicker": "Then and now:",
-    "hero.demo.body": "Surveyor 3, visited by the Apollo 12 crew in 1969, and the same site seen from orbit in 2009."
+    "hero.demo.body": "Surveyor 3, visited by the Apollo 12 crew in 1969, and the same site seen from orbit in 2009.",
+    "archive.showAll": "Show all {n} records",
+    "archive.showFewer": "Show fewer",
+    "quiz.perfect": "A perfect round",
+    "quiz.perfectBody": "Every answer right. The archive is in good hands.",
+    "quiz.wrongShort": "Wrong"
   },
   "bn": {
     "lang.toggle": "EN",
@@ -831,6 +836,11 @@
     "constellation.legend.discovery": "যা শিখিয়েছে",
     "constellation.links": "{n}টি সংযোগ",
     "hero.demo.kicker": "তখন ও এখন:",
-    "hero.demo.body": "সার্ভেয়ার ৩, যার কাছে ১৯৬৯ সালে অ্যাপোলো ১২-এর নভোচারীরা গিয়েছিলেন, আর ২০০৯ সালে কক্ষপথ থেকে তোলা সেই একই জায়গা।"
+    "hero.demo.body": "সার্ভেয়ার ৩, যার কাছে ১৯৬৯ সালে অ্যাপোলো ১২-এর নভোচারীরা গিয়েছিলেন, আর ২০০৯ সালে কক্ষপথ থেকে তোলা সেই একই জায়গা।",
+    "archive.showAll": "সবগুলো {n}টি রেকর্ড দেখুন",
+    "archive.showFewer": "কম দেখান",
+    "quiz.perfect": "নিখুঁত রাউন্ড",
+    "quiz.perfectBody": "সব উত্তর সঠিক। আর্কাইভ ভালো হাতেই আছে।",
+    "quiz.wrongShort": "ভুল"
   }
 }
