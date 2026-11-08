@@ -497,7 +497,11 @@
     "timeline.next": "Next mission",
     "timeline.stageAria": "3D timeline on NASA maps of the Moon and Mars. Left and right arrow keys move between missions.",
     "timeline.notToScale": "Sizes and distances not to scale",
-    "timeline.noWebgl": "3D is not available on this device, so the flat NASA map shows the site."
+    "timeline.noWebgl": "3D is not available on this device, so the flat NASA map shows the site.",
+    "video.kicker": "NASA video",
+    "video.offline": "This NASA video streams from images.nasa.gov and needs an internet connection.",
+    "video.page": "Watch on images.nasa.gov",
+    "cards.video": "Video"
   },
   "bn": {
     "lang.toggle": "EN",
@@ -997,6 +1001,10 @@
     "timeline.next": "পরের মিশন",
     "timeline.stageAria": "চাঁদ ও মঙ্গলের নাসা মানচিত্রে ৩ডি টাইমলাইন। বাম ও ডান অ্যারো কি দিয়ে মিশন বদলান।",
     "timeline.notToScale": "আকার ও দূরত্ব মাপমতো নয়",
-    "timeline.noWebgl": "এই ডিভাইসে ৩ডি চলে না, তাই সমতল নাসা মানচিত্রে জায়গাটি দেখানো হলো।"
+    "timeline.noWebgl": "এই ডিভাইসে ৩ডি চলে না, তাই সমতল নাসা মানচিত্রে জায়গাটি দেখানো হলো।",
+    "video.kicker": "নাসার ভিডিও",
+    "video.offline": "এই নাসা ভিডিওটি images.nasa.gov থেকে চলে, তাই ইন্টারনেট সংযোগ লাগবে।",
+    "video.page": "images.nasa.gov-এ দেখুন",
+    "cards.video": "ভিডিও"
   }
 }

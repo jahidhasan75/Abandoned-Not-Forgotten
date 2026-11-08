@@ -71,6 +71,10 @@ is that description.
   section): each mission turns its world to the catalogued landing site with a pin, Moon ↔ Mars flights pass
   Earth, and a photo plate shows the NASA photograph (and the LRO orbital view where one exists). Surveyor 3
   distance corrected to about 180 m from NSSDCA 1967-035A.
+- 8 Nov 2026: NASA videos found by the AI in the NASA Image and Video Library API and checked against
+  each video's description (10 dossiers; none forced where no video fits); timeline card smaller, globe
+  centred, 2.5 s per stop; card hover changed to a gentle scale. A teammate's hero colour change was kept
+  and made theme-aware (`var(--color-fg)`), since fixed black disappeared in the dark theme.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;

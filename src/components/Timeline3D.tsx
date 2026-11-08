@@ -20,7 +20,7 @@ type Body = 'EARTH' | 'MOON' | 'MARS';
 
 // Missions in landing order (static data, so sorted once)
 const sortedMissions = [...MISSIONS_DATA].sort((a, b) => a.landingYear - b.landingYear);
-const CRUISE_SECONDS = 5;
+const CRUISE_SECONDS = 2.5;
 
 // Same layout as the globes higher up the page; sizes and distances are for storytelling, not to scale.
 // Surfaces: Earth from NASA GIBS Blue Marble, the Moon from the LRO LROC WAC mosaic (Moon Trek),
@@ -159,9 +159,10 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
       const { radius, pos } = BODIES[body];
       const narrow = container.clientWidth < 640;
       return {
-        pos: pos.clone().add(new THREE.Vector3(0, radius * 0.1, radius * (narrow ? 6.2 : 4.9))),
-        // Aim a little below the centre so the globe sits above the mission card
-        look: pos.clone().add(new THREE.Vector3(0, -radius * (narrow ? 0.7 : 0.35), 0)),
+        pos: pos.clone().add(new THREE.Vector3(0, radius * 0.1, radius * (narrow ? 6.2 : 5.8))),
+        // Desktop: aim slightly above the centre, so the globe sits in the middle of the open space
+        // below the year chips. Phone: aim below it, so the globe stays above the mission card.
+        look: pos.clone().add(new THREE.Vector3(0, radius * (narrow ? -0.7 : 0.3), 0)),
       };
     };
 
@@ -436,25 +437,25 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
           </div>
 
           {/* The mission card */}
-          <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-sm lg:max-w-md z-20 bg-card border border-line p-4 sm:p-5 rounded-xl">
+          <div className="absolute bottom-3 left-3 right-3 md:right-auto md:max-w-xs lg:max-w-sm z-20 bg-card/95 border border-line p-3 sm:p-4 rounded-xl">
             <div className="flex items-start gap-3">
-              <img src={m.image} alt="" className="lg:hidden w-14 h-14 rounded-md object-cover bg-ink shrink-0" />
+              <img src={m.image} alt="" className="lg:hidden w-12 h-12 rounded-md object-cover bg-ink shrink-0" />
               <div className="min-w-0">
-                <h3 className="font-serif text-xl sm:text-2xl text-fg leading-tight">{m.name}</h3>
-                <p className="text-sm text-fg-2 mt-1">
+                <h3 className="font-serif text-lg sm:text-xl text-fg leading-tight">{m.name}</h3>
+                <p className="text-xs text-fg-2 mt-0.5">
                   {m.mission} · {bodyName}
                 </p>
               </div>
             </div>
-            <CatalogueTag artifact={m} className="mt-2" />
-            <p className="hidden sm:block text-sm text-fg-2 mt-3 leading-relaxed">{tx(m, 'hook')}</p>
-            <button onClick={() => onOpenDetails(m)} className="btn-secondary mt-3 sm:mt-4 py-2">
+            <CatalogueTag artifact={m} className="mt-1.5" />
+            <p className="hidden sm:block text-sm text-fg-2 mt-2 leading-snug">{tx(m, 'hook')}</p>
+            <button onClick={() => onOpenDetails(m)} className="btn-secondary mt-2.5 px-3 py-1.5 text-sm">
               {t('timeline.inspect')}
             </button>
           </div>
 
           {/* The photo plate (large screens) */}
-          <div className="hidden lg:block absolute bottom-4 right-4 w-72 z-20 bg-card border border-line p-3 rounded-xl">{plate}</div>
+          <div className="hidden lg:block absolute bottom-3 right-3 w-64 z-20 bg-card/95 border border-line p-3 rounded-xl">{plate}</div>
 
           {/* Year chips */}
           <div className="hidden lg:flex absolute top-16 right-4 left-4 justify-center z-20 pointer-events-none">

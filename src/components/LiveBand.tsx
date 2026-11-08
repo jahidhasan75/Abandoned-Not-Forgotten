@@ -52,7 +52,7 @@ const Card: React.FC<{ children: React.ReactNode; onOpen?: () => void; openLabel
   <div
     className={`group relative rounded-xl border border-line bg-card overflow-hidden flex flex-col ${
       onOpen
-        ? 'transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-line-strong focus-within:border-line-strong motion-reduce:transition-none motion-reduce:hover:translate-y-0'
+        ? 'card-pop hover:border-line-strong focus-within:border-line-strong'
         : ''
     }`}
   >

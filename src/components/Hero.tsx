@@ -72,7 +72,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap, onOpenM
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
         {/* Text */}
         <div className="lg:col-span-6">
-          <p className="section-label" style={{ color: '#000000' }}>
+          <p className="section-label" style={{ color: 'var(--color-fg)' }}>
             {t('hero.kicker1')} <span className="text-fg-3">·</span> {t('hero.kicker2')}
           </p>
 

@@ -411,3 +411,32 @@ html.theme-fading * {
   .confetti-piece { display: none; }
   .animate-pop { animation: none; }
 }
+
+/* Card hover: a gentle "opening" pop instead of a lift. Scaling keeps the pointer inside the card,
+   so the hover never flickers on and off at the edge (a lift moved the card away from the cursor).
+   The photo inside eases in a little further, like a print being lifted towards you. */
+.card-pop {
+  transition: transform 280ms var(--ease-archive), background-color 200ms ease, border-color 200ms ease;
+  transform-origin: center;
+}
+.card-pop:hover,
+.card-pop:focus-visible,
+.card-pop:focus-within {
+  transform: scale(1.015);
+}
+.card-pop-image {
+  transition: transform 600ms var(--ease-archive);
+}
+.card-pop:hover .card-pop-image,
+.card-pop:focus-visible .card-pop-image {
+  transform: scale(1.05);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-pop,
+  .card-pop-image { transition: none; }
+  .card-pop:hover,
+  .card-pop:focus-visible,
+  .card-pop:focus-within,
+  .card-pop:hover .card-pop-image,
+  .card-pop:focus-visible .card-pop-image { transform: none; }
+}

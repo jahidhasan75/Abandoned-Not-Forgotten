@@ -5,6 +5,8 @@ import { useI18n } from '../i18n/I18nProvider';
 import { DossierLive } from './DossierLive';
 import { X, ExternalLink, Link2, Check } from 'lucide-react';
 import { CatalogueTag } from './CatalogueTag';
+import { NasaVideoFigure } from './NasaVideoFigure';
+import { VIDEOS } from '../data/videos';
 import { STATUS_COLORS } from '../data/status';
 
 interface MachineDetailModalProps {
@@ -194,6 +196,9 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({ artifact
               </figcaption>
             </figure>
           )}
+
+          {/* NASA video about this object, when the library has one */}
+          {VIDEOS[artifact.id] && <NasaVideoFigure key={artifact.id} video={VIDEOS[artifact.id]} />}
 
           {/* Story beside the key facts */}
           <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">

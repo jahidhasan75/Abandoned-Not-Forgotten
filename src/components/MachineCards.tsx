@@ -5,7 +5,8 @@ import { spaceAudio } from '../utils/audio';
 import { useI18n } from '../i18n/I18nProvider';
 import { STATUS_COLORS } from '../data/status';
 import { CatalogueTag } from './CatalogueTag';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, PlayCircle } from 'lucide-react';
+import { VIDEOS } from '../data/videos';
 
 interface MachineCardsProps {
   onOpenDetails: (artifact: MissionArtifact) => void;
@@ -107,16 +108,22 @@ export const MachineCards: React.FC<MachineCardsProps> = ({ onOpenDetails, activ
               role="button"
               tabIndex={0}
               aria-label={t('cards.open', { name: machine.name })}
-              className="animate-fadeIn group cursor-pointer rounded-xl p-2 -m-2 transition-[background-color,transform] duration-200 hover:bg-card hover:-translate-y-0.5 focus-visible:bg-card focus-visible:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0"
+              className="animate-fadeIn group card-pop cursor-pointer rounded-xl p-2 -m-2 hover:bg-card focus-visible:bg-card"
             >
-              <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-ink">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-ink">
+                {VIDEOS[machine.id] && (
+                  <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 rounded-md bg-ink/80 px-2 py-0.5 text-xs text-fg theme-dark">
+                    <PlayCircle className="w-3.5 h-3.5" strokeWidth={1.5} aria-hidden="true" />
+                    {t('cards.video')}
+                  </span>
+                )}
                 <img
                   src={machine.image}
                   alt={machine.name}
                   loading="lazy"
                   decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02] group-focus-visible:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  className="card-pop-image w-full h-full object-cover"
                 />
               </div>
 

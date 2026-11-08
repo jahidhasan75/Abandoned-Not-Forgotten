@@ -292,6 +292,11 @@ Data and credibility
     progress bar records each answer, and a perfect round gets a short confetti burst (off with reduced
     motion). Young Explorers keeps every tab mounted, so a round in progress survives a tab switch
     until the page is reloaded. The archive table shows 6 rows until "Show all" (a search shows all matches).
+19. NASA videos: 10 dossiers show a NASA video (`src/data/videos.ts`, each checked against its images.nasa.gov
+    description; objects with no clearly matching video have none). Videos stream only when played
+    (`preload="none"`); offline, the dossier says they need internet. Catalogue cards with a video carry a
+    "Video" badge. Card hover is a gentle scale (`.card-pop` in `index.css`) instead of a lift, which
+    flickered at the card edge.
 17. (fixed) Surveyor 3: Apollo 12 landed within about 180 m of it (NSSDCA 1967-035A); story, hook and quiz
     now say 180 m in both languages.
 13. Removed in v0.7.0: the AI-generated images (replaced by NASA photos), four unsourced sections (Hardware
