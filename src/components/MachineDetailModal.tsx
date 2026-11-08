@@ -5,8 +5,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { DossierLive } from './DossierLive';
 import { X, ExternalLink, Link2, Check } from 'lucide-react';
 import { CatalogueTag } from './CatalogueTag';
-import { NasaVideoFigure } from './NasaVideoFigure';
-import { VIDEOS } from '../data/videos';
+import { DossierMedia } from './DossierMedia';
 import { STATUS_COLORS } from '../data/status';
 
 interface MachineDetailModalProps {
@@ -155,50 +154,8 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({ artifact
             </p>
           </header>
 
-          {/* The visual centre: then and now when LRO has photographed the site, else the surface photo */}
-          {artifact.orbitalView ? (
-            <section className="mt-8 scroll-mt-20" aria-labelledby="then-now">
-              <h3 id="then-now" className="sr-only">{t('modal.orbitTitle')}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <figure>
-                  <div className="rounded-xl overflow-hidden bg-ink aspect-square">
-                    <img src={artifact.image} alt={tx(artifact, 'imageCaption')} loading="lazy" className="w-full h-full object-cover" />
-                  </div>
-                  <figcaption className="mt-2">
-                    <span className="block text-sm text-fg">{t('modal.thenLabel')}</span>
-                    <span className="block text-xs text-fg-2 mt-1">{tx(artifact, 'imageCaption')}</span>
-                    <span className="block catalogue-tag mt-1">{t('modal.photo', { id: artifact.imageNasaId })}</span>
-                  </figcaption>
-                </figure>
-                <figure>
-                  <div className="rounded-xl overflow-hidden bg-ink aspect-square">
-                    <img src={artifact.orbitalView.image} alt={tx(artifact, 'orbitalCaption')} loading="lazy" className="w-full h-full object-cover" />
-                  </div>
-                  <figcaption className="mt-2">
-                    <span className="block text-sm text-fg">{t('modal.nowLabel')}</span>
-                    <span className="block text-xs text-fg-2 mt-1">{tx(artifact, 'orbitalCaption')}</span>
-                    <span className="block catalogue-tag mt-1">
-                      {artifact.orbitalView.credit} · {artifact.orbitalView.nasaId}
-                    </span>
-                  </figcaption>
-                </figure>
-              </div>
-              <p className="mt-3 text-xs text-fg-2">{t('modal.orbitNote')}</p>
-            </section>
-          ) : (
-            <figure className="mt-8">
-              <div className="rounded-xl overflow-hidden bg-ink aspect-[16/9]">
-                <img src={artifact.image} alt={artifact.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-              </div>
-              <figcaption className="mt-2 flex flex-col sm:flex-row sm:justify-between gap-1">
-                <span className="text-xs text-fg-2">{tx(artifact, 'imageCaption')}</span>
-                <span className="catalogue-tag shrink-0">{t('modal.photo', { id: artifact.imageNasaId })}</span>
-              </figcaption>
-            </figure>
-          )}
-
-          {/* NASA video about this object, when the library has one */}
-          {VIDEOS[artifact.id] && <NasaVideoFigure key={artifact.id} video={VIDEOS[artifact.id]} />}
+          {/* The visual centre: the NASA photo (and the site from orbit); a NASA video plays in its place */}
+          <DossierMedia artifact={artifact} />
 
           {/* Story beside the key facts */}
           <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">

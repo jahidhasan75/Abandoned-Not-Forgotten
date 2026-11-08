@@ -501,7 +501,10 @@
     "video.kicker": "NASA video",
     "video.offline": "This NASA video streams from images.nasa.gov and needs an internet connection.",
     "video.page": "Watch on images.nasa.gov",
-    "cards.video": "Video"
+    "cards.video": "Video",
+    "video.play": "Play NASA video",
+    "video.photos": "Back to the photos",
+    "live.rover.archive": "Archive photo · {id}"
   },
   "bn": {
     "lang.toggle": "EN",
@@ -1005,6 +1008,9 @@
     "video.kicker": "নাসার ভিডিও",
     "video.offline": "এই নাসা ভিডিওটি images.nasa.gov থেকে চলে, তাই ইন্টারনেট সংযোগ লাগবে।",
     "video.page": "images.nasa.gov-এ দেখুন",
-    "cards.video": "ভিডিও"
+    "cards.video": "ভিডিও",
+    "video.play": "নাসার ভিডিও চালান",
+    "video.photos": "ছবিতে ফিরে যান",
+    "live.rover.archive": "আর্কাইভের ছবি · {id}"
   }
 }

@@ -157,12 +157,18 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
     // ---------- Camera: frame a world, fly between worlds via Earth ----------
     const frame = (body: Body) => {
       const { radius, pos } = BODIES[body];
-      const narrow = container.clientWidth < 640;
+      // Framing by stage width. Wide: the globe fills the open space between the year chips and the
+      // bottom edge, clear of the card (left) and the photo plate (right). Medium: a little further
+      // away, beside the narrower card. Phone: above the card.
+      const w = container.clientWidth;
+      const tier = w < 640 ? 'narrow' : w < 1024 ? 'medium' : 'wide';
+      const distance = { narrow: 6.2, medium: 5.4, wide: 4.75 }[tier];
+      const lookUp = { narrow: -0.7, medium: -0.25, wide: 0.32 }[tier];
+      // Medium screens have no year chips but a card on the left, so the globe sits right of centre
+      const lookSide = { narrow: 0, medium: -0.95, wide: 0 }[tier];
       return {
-        pos: pos.clone().add(new THREE.Vector3(0, radius * 0.1, radius * (narrow ? 6.2 : 5.8))),
-        // Desktop: aim slightly above the centre, so the globe sits in the middle of the open space
-        // below the year chips. Phone: aim below it, so the globe stays above the mission card.
-        look: pos.clone().add(new THREE.Vector3(0, radius * (narrow ? -0.7 : 0.3), 0)),
+        pos: pos.clone().add(new THREE.Vector3(radius * lookSide, radius * 0.1, radius * distance)),
+        look: pos.clone().add(new THREE.Vector3(radius * lookSide, radius * lookUp, 0)),
       };
     };
 

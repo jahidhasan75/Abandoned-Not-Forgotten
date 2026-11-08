@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChevronRight, ExternalLink, X } from 'lucide-react';
+import { ChevronRight, ExternalLink, PlayCircle, X } from 'lucide-react';
+import { MISSIONS_DATA } from '../data/missionsData';
+import { VIDEOS } from '../data/videos';
 import { useI18n } from '../i18n/I18nProvider';
 import { useLive } from '../lib/live/useLive';
 import { splitLightTime } from '../lib/compute';
@@ -100,11 +102,16 @@ const RoverTile: React.FC<{
   result: LiveResult<RoverLatest> | null | undefined;
   onOpenMachine: (id: string) => void;
 }> = ({ id, name, result, onOpenMachine }) => {
-  const { t, lang } = useI18n();
+  const { t, tx, lang } = useI18n();
   const open = () => {
     spaceAudio.playTelemetryPing(1080, 0.07);
     onOpenMachine(id);
   };
+  // If today's raw image will not load, show the rover's archive photo instead (and say so)
+  const archive = MISSIONS_DATA.find((m) => m.id === id);
+  const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [result?.data.imageUrl]);
+  const showArchive = broken && !!archive;
   return (
     <Card onOpen={open} openLabel={t('cards.open', { name })}>
       <TileHead title={name} opens badge={result && <SourceBadge source={result.source} fetchedAt={result.fetchedAt} />} />
@@ -114,14 +121,21 @@ const RoverTile: React.FC<{
         <>
           <div className="relative h-40 bg-ink">
             <img
-              src={result.data.imageUrl}
-              alt={`${name}: ${t('live.rover.latest')}, ${result.data.instrument}`}
+              src={showArchive ? archive!.image : result.data.imageUrl}
+              alt={showArchive ? tx(archive!, 'imageCaption') : `${name}: ${t('live.rover.latest')}, ${result.data.instrument}`}
               loading="lazy"
               decoding="async"
+              onError={() => setBroken(true)}
               className="w-full h-full object-cover"
             />
+            {VIDEOS[id] && (
+              <span className="theme-dark absolute top-2 left-2 inline-flex items-center gap-1 rounded-md bg-ink/80 px-2 py-0.5 text-xs text-fg">
+                <PlayCircle className="w-3.5 h-3.5" strokeWidth={1.5} aria-hidden="true" />
+                {t('cards.video')}
+              </span>
+            )}
             <span className="absolute bottom-2 left-2 text-xs font-mono-data bg-page/90 text-fg px-2 py-0.5 rounded">
-              {result.data.instrument}
+              {showArchive ? t('live.rover.archive', { id: archive!.imageNasaId }) : result.data.instrument}
             </span>
           </div>
           <div className="p-4 space-y-1 text-xs flex-1">

@@ -75,6 +75,10 @@ is that description.
   each video's description (10 dossiers; none forced where no video fits); timeline card smaller, globe
   centred, 2.5 s per stop; card hover changed to a gentle scale. A teammate's hero colour change was kept
   and made theme-aware (`var(--color-fg)`), since fixed black disappeared in the dark theme.
+- 8 Nov 2026: dossier photo now turns into its NASA video on click (no photo shown twice); rover tiles ask
+  the feeds for the newest navigation-camera frame when the latest sol has only close-up or calibration
+  frames, and fall back to the archive photo if an image fails; timeline globe enlarged with framing per
+  screen width.
 
 ## What the AI did not do
 - **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;
