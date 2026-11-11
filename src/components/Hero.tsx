@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Compass, MapPin, ArrowDown } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
@@ -27,6 +28,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
+
     window.addEventListener('resize', handleResize);
 
     const stars = Array.from({ length: 90 }, () => ({
@@ -43,6 +45,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
       // Render drifting stars
       stars.forEach((star) => {
         star.y -= star.velocity;
+
         if (star.y < 0) {
           star.y = height;
           star.x = Math.random() * width;
@@ -66,7 +69,10 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
   }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col justify-between pt-28 pb-12 overflow-hidden bg-[#05070B]">
+    <section
+      id="hero"
+      className="relative min-h-screen flex flex-col justify-between pt-28 pb-12 overflow-hidden bg-[#05070B]"
+    >
       {/* Background Starfield Canvas */}
       <canvas
         ref={canvasRef}
@@ -81,7 +87,8 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center opacity-30 scale-105 transition-transform duration-1000 ease-out"
         />
-        {/* Layered cinematic radial scrims for 100% text readability */}
+
+        {/* Layered cinematic radial scrims */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#05070B] via-[#05070B]/75 to-[#05070B]/50" />
         <div className="absolute inset-0 space-radial-glow opacity-80" />
       </div>
@@ -89,20 +96,21 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
       {/* Main Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto py-12">
         <div className="max-w-4xl space-y-6">
+
           {/* Scientific Archive Kicker */}
           <div className="flex items-center gap-3 text-xs sm:text-sm font-hud tracking-widest text-[#62D9FF]">
             <span className="w-2 h-2 rounded-full bg-[#62D9FF] animate-pulse" />
             <span>NASA SPACE APPS CHALLENGE 2026</span>
             <span className="text-white/20">|</span>
-            <span className="text-[#8D98A8]">SPACE ARCHAEOLOGY EXPEDITION</span>
+            <span className="text-[#8D98A8]">
+              SPACE ARCHAEOLOGY EXPEDITION
+            </span>
           </div>
 
-          {/* Large Cinematic Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white uppercase leading-[0.95] font-hud text-balance">
-            Abandoned <br />
-            <span className="text-white/40">Not</span> <br />
+          {/* EXOARCHIVE Cinematic Headline */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight uppercase leading-[0.95] font-hud text-balance">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D9DDE3] via-[#62D9FF] to-[#B85C38]">
-              Forgotten
+              EXOARCHIVE
             </span>
           </h1>
 
@@ -146,20 +154,39 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
           {/* Key Quick Stats Bar */}
           <div className="pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl text-xs sm:text-sm">
             <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-white">55+ yrs</span>
-              <span className="text-[#8D98A8] text-xs font-sans">Lunar Artifact Heritage</span>
+              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-white">
+                55+ yrs
+              </span>
+              <span className="text-[#8D98A8] text-xs font-sans">
+                Lunar Artifact Heritage
+              </span>
             </div>
+
             <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#B85C38]">45.16 km</span>
-              <span className="text-[#8D98A8] text-xs font-sans">Opportunity Marathon Track</span>
+              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#B85C38]">
+                45.16 km
+              </span>
+              <span className="text-[#8D98A8] text-xs font-sans">
+                Opportunity Marathon Track
+              </span>
             </div>
+
             <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#62D9FF]">1,300+</span>
-              <span className="text-[#8D98A8] text-xs font-sans">InSight Marsquakes Mapped</span>
+              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#62D9FF]">
+                1,300+
+              </span>
+              <span className="text-[#8D98A8] text-xs font-sans">
+                InSight Marsquakes Mapped
+              </span>
             </div>
+
             <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#F3B562]">100% Active</span>
-              <span className="text-[#8D98A8] text-xs font-sans">Apollo Laser Reflectors</span>
+              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#F3B562]">
+                100% Active
+              </span>
+              <span className="text-[#8D98A8] text-xs font-sans">
+                Apollo Laser Reflectors
+              </span>
             </div>
           </div>
         </div>
@@ -169,7 +196,9 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8D98A8]">
         <div className="flex items-center gap-2 font-hud tracking-wider">
           <span className="text-[#62D9FF]">●</span>
-          <span>EVERY MACHINE LEFT A FOOTPRINT. EVERY FOOTPRINT TELLS A STORY.</span>
+          <span>
+            EVERY MACHINE LEFT A FOOTPRINT. EVERY FOOTPRINT TELLS A STORY.
+          </span>
         </div>
 
         <button

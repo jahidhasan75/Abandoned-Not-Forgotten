@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Destination } from '../types/mission';
 import { spaceAudio } from '../utils/audio';
@@ -22,14 +23,19 @@ export const Navbar: React.FC<NavbarProps> = ({
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
     const unsubscribe = spaceAudio.subscribe((state) => {
       setAudioActive(state.isPlaying);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -55,22 +61,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled
           ? 'bg-[#05070B]/90 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl'
-          : 'bg-transparent py-5 border-b border-transparent'
-      }`}
+          : 'bg-transparent py-5 border-b border-transparent',
+      ].join(' ')}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Zone 1: Single text element wordmark */}
+      {/* Main Navbar Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-start gap-6">
+
+        {/* Zone 1: EXOARCHIVE Wordmark */}
         <button
           onClick={() => handleLinkClick('hero')}
           className="text-left font-hud text-lg sm:text-xl font-bold tracking-wider text-white hover:text-[#62D9FF] transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#62D9FF]"
         >
-          ABANDONED <span className="text-white/30">//</span> NOT FORGOTTEN
+          EXOARCHIVE
         </button>
 
-        {/* Zone 2: 4-6 clean text navigation links */}
+        {/* Zone 2: Navigation Links */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium text-[#8D98A8]">
           {navLinks.map((link) => (
             <button
@@ -84,33 +93,37 @@ export const Navbar: React.FC<NavbarProps> = ({
           ))}
         </nav>
 
-        {/* Zone 3: Primary Actions (Segmented Planet Switcher & Telemetry Audio) */}
-        <div className="flex items-center gap-3">
-          {/* Planet Switcher Segmented Control */}
+        {/* Zone 3: Primary Actions */}
+        <div className="flex items-center gap-3 ml-auto">
+
+          {/* Planet Switcher */}
           <div className="flex items-center p-1 bg-[#0B1018] border border-white/15 rounded-lg">
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(800, 0.05);
                 onSelectPlanet('MOON');
               }}
-              className={`px-3 py-1 text-xs font-hud font-semibold rounded-md transition-all whitespace-nowrap ${
+              className={[
+                'px-3 py-1 text-xs font-hud font-semibold rounded-md transition-all whitespace-nowrap',
                 activePlanet === 'MOON'
                   ? 'bg-[#D9DDE3] text-[#05070B] shadow-sm'
-                  : 'text-[#8D98A8] hover:text-white'
-              }`}
+                  : 'text-[#8D98A8] hover:text-white',
+              ].join(' ')}
             >
               MOON
             </button>
+
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(950, 0.05);
                 onSelectPlanet('MARS');
               }}
-              className={`px-3 py-1 text-xs font-hud font-semibold rounded-md transition-all whitespace-nowrap ${
+              className={[
+                'px-3 py-1 text-xs font-hud font-semibold rounded-md transition-all whitespace-nowrap',
                 activePlanet === 'MARS'
                   ? 'bg-[#B85C38] text-white shadow-sm'
-                  : 'text-[#8D98A8] hover:text-white'
-              }`}
+                  : 'text-[#8D98A8] hover:text-white',
+              ].join(' ')}
             >
               MARS
             </button>
@@ -119,15 +132,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Audio Telemetry Toggle */}
           <button
             onClick={toggleSound}
-            title={audioActive ? 'Mute space telemetry audio' : 'Enable ambient space audio'}
-            aria-label={audioActive ? 'Mute space telemetry audio' : 'Enable ambient space audio'}
-            className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+            title={
+              audioActive
+                ? 'Mute space telemetry audio'
+                : 'Enable ambient space audio'
+            }
+            aria-label={
+              audioActive
+                ? 'Mute space telemetry audio'
+                : 'Enable ambient space audio'
+            }
+            className={[
+              'p-2 rounded-lg border transition-colors cursor-pointer',
               audioActive
                 ? 'bg-[#62D9FF]/15 border-[#62D9FF]/40 text-[#62D9FF]'
-                : 'bg-[#0B1018] border-white/15 text-[#8D98A8] hover:text-white hover:border-white/30'
-            }`}
+                : 'bg-[#0B1018] border-white/15 text-[#8D98A8] hover:text-white hover:border-white/30',
+            ].join(' ')}
           >
-            {audioActive ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            {audioActive ? (
+              <Volume2 className="w-4 h-4" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
           </button>
 
           {/* Mobile Menu Trigger */}
@@ -135,8 +161,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-2 rounded-lg bg-[#0B1018] border border-white/15 text-white"
             aria-label="Toggle Navigation Menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
         </div>
       </div>
@@ -153,9 +184,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               {link.label}
             </button>
           ))}
+
           <div className="pt-2 text-xs text-[#8D98A8] flex items-center justify-between">
             <span>NASA Space Apps Challenge 2026</span>
-            <span className="font-hud uppercase text-[#62D9FF]">{activePlanet} ARCHIVE</span>
+
+            <span className="font-hud uppercase text-[#62D9FF]">
+              {activePlanet} ARCHIVE
+            </span>
           </div>
         </div>
       )}
