@@ -1,21 +1,326 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-hud: 'Chakra Petch', 'Space Grotesk', sans-serif;
-  }
+/* ---------- Design tokens ----------
+   Direction: archival, exact, quietly elegiac. One neutral "ink" ramp, three text roles,
+   hairlines instead of shadows, and one accent (rust) for the primary selection only.
+   Status colours live in src/data/status.ts and are used for status dots only. */
+@theme {
+  /* ink ramp (dark) */
+  --color-ink: #07080d;      /* deepest: map wells, image backdrops, text on light buttons */
+  --color-page: #0b0d14;     /* page */
+  --color-card: #11141c;     /* cards, panels */
+  --color-raised: #1a1e28;   /* raised controls, hover and active surfaces */
+  --color-deep: #07080d;     /* a whole section one step deeper than the page (the map) */
 
+  /* text roles */
+  --color-fg: #eef0f5;       /* primary */
+  --color-fg-2: #a3a9b8;     /* secondary */
+  --color-fg-3: #7a8296;     /* muted: only on page or card, never on raised (4.33:1) */
+
+  /* hairline = primary text at 8% */
+  --color-line: rgb(238 240 245 / 0.08);
+  --color-line-strong: rgb(238 240 245 / 0.16);
+
+  /* the one accent: rust. 5.6:1 on page, 4.8:1 on raised. Dark text on it, never white. */
+  --color-accent: #d0704a;
+  /* Team palette (violet ramp #0E0B1D-#C9C2E3): the selected state in the status list.
+     Journey: the scroll progress light on the "One machine, one journey" timeline (green on dark). */
+  --color-state-sel: #2a1e4d;
+  --color-state-hover: rgb(42 30 77 / 0.5);
+  --color-state-bar: #8b7cc7;
+  --color-journey: #4ade80;
+  --color-ok: #4ade80;       /* quiz: right answer (green) */
+  --color-bad: #f87171;      /* quiz: wrong answer (red) */
+
+  /* type: Public Sans (the US government's open typeface) for the interface, Newsreader for
+     headlines, IBM Plex Mono for figures and catalogue tags. Bangla: Hind Siliguri for text,
+     Noto Serif Bengali for headlines, so both languages keep the same serif/sans rhythm. */
+  --font-sans: 'Public Sans', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Newsreader', 'Noto Serif Bengali', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', 'Hind Siliguri', ui-monospace, monospace;
+
+  /* scale: 12 / 14 / 15 / 18 / 28 / 36, hero 56–72 */
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.6;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 1.15;
+
+  /* radius: buttons 8, cards 12, panels and modal 16 */
+  --radius-btn: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+
+  /* motion: one easing, short */
+  --ease-archive: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Light theme ----------
+   Archival paper instead of night. The same roles, re-valued; contrast checked for AA:
+   fg 15.9:1, fg-2 7.5:1, fg-3 5.3:1 on page (4.7:1 on raised); accent 5.5:1 on page, 4.9:1 on raised. */
+:root[data-theme='light'] {
+  --color-page: #f3f1ea;
+  --color-card: #faf9f5;
+  --color-raised: #e7e4da;
+  --color-deep: #ebe8df;
+  --color-fg: #15171d;
+  --color-fg-2: #474d5c;
+  --color-fg-3: #5c6375;
+  --color-line: rgb(21 23 29 / 0.1);
+  --color-line-strong: rgb(21 23 29 / 0.2);
+  --color-accent: #9a4a27;
+  --color-state-sel: #c9c2e3;
+  --color-state-hover: rgb(201 194 227 / 0.45);
+  --color-state-bar: #5a3b8c;
+  --color-journey: #2563eb;  /* blue on light */
+  --color-ok: #15803d;
+  --color-bad: #b91c1c;
+}
+
+/* Dark stages: the header, the hero photo, the globes, the map and the 3D timeline stay night
+   in both themes (space is black). Inside them the dark values come back. */
+.theme-dark,
+:root[data-theme='light'] .bg-ink {
+  --color-page: #0b0d14;
+  --color-card: #11141c;
+  --color-raised: #1a1e28;
+  --color-deep: #07080d;
+  --color-fg: #eef0f5;
+  --color-fg-2: #a3a9b8;
+  --color-fg-3: #7a8296;
+  --color-line: rgb(238 240 245 / 0.08);
+  --color-line-strong: rgb(238 240 245 / 0.16);
+  --color-accent: #d0704a;
+  --color-state-sel: #2a1e4d;
+  --color-state-hover: rgb(42 30 77 / 0.5);
+  --color-state-bar: #8b7cc7;
+  --color-journey: #4ade80;
+  --color-ok: #4ade80;       /* quiz: right answer (green) */
+  --color-bad: #f87171;      /* quiz: wrong answer (red) */
+  color: var(--color-fg);
+}
+
+@layer base {
   body {
     font-family: var(--font-sans);
-    background-color: #05070B;
-    color: #F5F7FA;
+    font-size: var(--text-base);
+    background-color: var(--color-page);
+    color: var(--color-fg);
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    text-wrap: balance;
   }
 }
 
-.font-hud {
-  font-family: var(--font-hud);
+/* Anchored sections land below the fixed navbar */
+section[id] {
+  scroll-margin-top: 64px;
+}
+
+/* Keyboard focus is never hidden under the fixed navbar (top) or the audio widget (bottom).
+   WCAG 2.2 "Focus Not Obscured". */
+html {
+  scroll-padding-top: 80px;
+  scroll-padding-bottom: 96px;
+}
+
+/* Tailwind v4 preflight resets buttons to the default arrow cursor; restore the hand cursor
+   on everything clickable. */
+button:not(:disabled),
+[role='button'],
+[role='slider'],
+summary,
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* ---------- Shared pieces ---------- */
+
+/* The signature: a museum catalogue tag, mono, the same everywhere.
+   ARCH/MOON/001 · 0.67416° N 23.47314° E · 1969 → 1969 */
+.catalogue-tag {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-fg-2);
+  letter-spacing: 0;
+}
+
+/* Quiet section label above a headline: sentence case, secondary colour, no tracking */
+.section-label {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--color-fg-2);
+}
+
+/* Primary action: off-white with dark text (17.5:1). Secondary: hairline outline. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-btn);
+  background-color: var(--color-fg);
+  color: var(--color-page);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  transition: opacity 150ms var(--ease-archive);
+}
+.btn-primary:hover {
+  opacity: 0.88;
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-fg);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  transition: background-color 150ms var(--ease-archive), border-color 150ms var(--ease-archive);
+}
+.btn-secondary:hover {
+  background-color: var(--color-raised);
+}
+
+/* ---------- Header ---------- */
+
+
+/* The active-link underline slides between links. */
+.nav-indicator {
+  transition: transform 300ms var(--ease-archive), width 300ms var(--ease-archive), opacity 150ms var(--ease-archive);
+}
+
+/* A section reached from the menu draws one accent rule across its top, then fades. */
+section[data-arrive]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transform-origin: left;
+  animation: arriveRule 1.4s var(--ease-archive) both;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes arriveRule {
+  0% { transform: scaleX(0); opacity: 1; }
+  45% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* Theme change: colours cross-fade instead of snapping. */
+html.theme-fading,
+html.theme-fading * {
+  transition: background-color 200ms var(--ease-archive), border-color 200ms var(--ease-archive), color 200ms var(--ease-archive) !important;
+}
+
+/* ---------- Motion system ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%, 75% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sectionReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s var(--ease-archive) both;
+}
+
+.animate-shake {
+  animation: shake 0.3s var(--ease-archive);
+}
+
+.animate-modalIn {
+  animation: modalIn 0.25s var(--ease-archive) both;
+}
+
+.animate-backdropIn {
+  animation: backdropIn 0.2s var(--ease-archive) both;
+}
+
+/* Sections fade in as they scroll into view: opacity plus an 8px rise, nothing more.
+   Pure CSS, scroll-driven. Browsers without scroll timelines show the content immediately. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    main > section:not(#hero) > div {
+      animation: sectionReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 25%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 2px;
+}
+
+/* Bangla: Latin fonts fall back to Hind Siliguri glyph by glyph. Tight line-heights designed
+   for Latin break Bangla conjuncts, so relax them. */
+:lang(bn) body {
+  line-height: 1.7;
+}
+:lang(bn) [class*='tracking-'] {
+  letter-spacing: normal !important;
+}
+:lang(bn) h1 {
+  line-height: 1.4 !important;
+}
+:lang(bn) h2,
+:lang(bn) h3 {
+  line-height: 1.35 !important;
 }
 
 .font-mono-data {
@@ -23,39 +328,115 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Atmospheric Space Gradients & Textures */
-.space-radial-glow {
-  background: radial-gradient(circle at 50% 30%, rgba(98, 217, 255, 0.08) 0%, rgba(184, 92, 56, 0.04) 40%, rgba(5, 7, 11, 0) 70%);
-}
-
-.mars-radial-glow {
-  background: radial-gradient(circle at 50% 50%, rgba(184, 92, 56, 0.15) 0%, rgba(184, 92, 56, 0.03) 50%, transparent 75%);
-}
-
-.moon-radial-glow {
-  background: radial-gradient(circle at 50% 50%, rgba(217, 221, 227, 0.12) 0%, rgba(217, 221, 227, 0.02) 50%, transparent 75%);
-}
-
-.subtle-scanlines {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 100% 4px;
-}
-
-/* Custom Scrollbar for Archaeology Archive */
+/* Scrollbars: neutral */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #05070B;
+  background: var(--color-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  background: var(--color-line-strong);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(98, 217, 255, 0.35);
+  background: var(--color-fg-3);
+}
+
+/* Journey timeline: the stage the middle of the screen has just reached gets a soft ring in the
+   progress colour (blue in light theme, green in dark). The ring breathes once; reduced motion keeps it still. */
+.journey-dot-current {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-journey) 25%, transparent);
+  animation: journeyArrive 0.6s var(--ease-archive) both;
+}
+@keyframes journeyArrive {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-journey) 45%, transparent); }
+  to { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-journey) 25%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-dot-current { animation: none; }
+}
+
+/* Teacher worksheet (TeacherKit): rendered into #print-root, the only thing shown while printing.
+   Plain black on white, serif, so it photocopies well. */
+#print-root { display: none; }
+@media print {
+  @page { margin: 16mm; }
+  body.printing-sheet > *:not(#print-root) { display: none !important; }
+  body.printing-sheet { background: #fff !important; }
+  body.printing-sheet #print-root {
+    display: block;
+    color: #000;
+    background: #fff;
+    font-family: var(--font-serif);
+    font-size: 11.5pt;
+    line-height: 1.45;
+  }
+  #print-root .print-title { font-size: 20pt; margin: 0 0 6pt; }
+  #print-root .print-fields { display: flex; gap: 18pt; margin: 0 0 10pt; font-family: var(--font-sans); font-size: 10pt; }
+  #print-root .print-instr { margin: 0 0 12pt; font-family: var(--font-sans); font-size: 10pt; }
+  #print-root ol { margin: 0; padding-left: 18pt; }
+  #print-root .print-questions > li { margin: 0 0 10pt; break-inside: avoid; }
+  #print-root .print-questions ul { list-style: none; margin: 3pt 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2pt 16pt; }
+  #print-root .print-key { break-before: page; }
+  #print-root .print-key h2 { font-size: 16pt; margin: 0 0 8pt; }
+}
+
+/* Quiz: a short confetti burst for a perfect round (team request). Off with reduced motion. */
+.confetti-piece {
+  position: absolute;
+  top: -14px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  animation: confettiFall 1.9s cubic-bezier(0.2, 0.6, 0.4, 1) var(--d) forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translate3d(var(--dx), 440px, 0) rotate(var(--r)); opacity: 0; }
+}
+.animate-pop { animation: pop 0.45s var(--ease-archive) both; }
+@keyframes pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece { display: none; }
+  .animate-pop { animation: none; }
+}
+
+/* Card hover: a gentle "opening" pop instead of a lift. Scaling keeps the pointer inside the card,
+   so the hover never flickers on and off at the edge (a lift moved the card away from the cursor).
+   The photo inside eases in a little further, like a print being lifted towards you. */
+.card-pop {
+  transition: transform 280ms var(--ease-archive), background-color 200ms ease, border-color 200ms ease;
+  transform-origin: center;
+}
+.card-pop:hover,
+.card-pop:focus-visible,
+.card-pop:focus-within {
+  transform: scale(1.015);
+}
+.card-pop-image {
+  transition: transform 600ms var(--ease-archive);
+}
+.card-pop:hover .card-pop-image,
+.card-pop:focus-visible .card-pop-image {
+  transform: scale(1.05);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-pop,
+  .card-pop-image { transition: none; }
+  .card-pop:hover,
+  .card-pop:focus-visible,
+  .card-pop:focus-within,
+  .card-pop:hover .card-pop-image,
+  .card-pop:focus-visible .card-pop-image { transform: none; }
 }

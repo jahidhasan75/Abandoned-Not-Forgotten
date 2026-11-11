@@ -1,34 +1,50 @@
-
 import React, { useEffect, useRef } from 'react';
-import { Compass, MapPin, ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowRight } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
-import { ASSET_IMAGES } from '../assets/images';
+import { useI18n } from '../i18n/I18nProvider';
+import { useTheme } from '../lib/theme';
+import { MISSIONS_DATA } from '../data/missionsData';
+import { CatalogueTag } from './CatalogueTag';
+import type { MissionArtifact } from '../types/mission';
 
 interface HeroProps {
   onStartExploring: () => void;
   onOpenMap: () => void;
+  onOpenMachine: (id: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+/** The two objects on the cover: one left on the Moon, one still working on Mars. */
+const MOON_ID = 'apollo15-lrv';
+const MARS_ID = 'curiosity';
+const byId = (id: string) => MISSIONS_DATA.find((m) => m.id === id) as MissionArtifact;
 
-  // Subtle interactive starfield & orbital dust particles
+export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap, onOpenMachine }) => {
+  const { t, tx } = useI18n();
+  const { theme } = useTheme();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const moon = byId(MOON_ID);
+  const mars = byId(MARS_ID);
+
+  // Animated drifting starfield — dark mode only, respects theme system.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    if (theme !== 'dark') {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
     let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let width = (canvas.width = canvas.offsetWidth);
+    let height = (canvas.height = canvas.offsetHeight);
 
     const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
     };
-
     window.addEventListener('resize', handleResize);
 
     const stars = Array.from({ length: 90 }, () => ({
@@ -41,22 +57,17 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
-
-      // Render drifting stars
       stars.forEach((star) => {
         star.y -= star.velocity;
-
         if (star.y < 0) {
           star.y = height;
           star.x = Math.random() * width;
         }
-
         ctx.fillStyle = `rgba(217, 221, 227, ${star.alpha})`;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
       });
-
       animationFrameId = requestAnimationFrame(render);
     };
 
@@ -66,148 +77,143 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap }) => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [theme]);
+
+  const open = (a: MissionArtifact) => {
+    spaceAudio.playTelemetryPing(1080, 0.07);
+    onOpenMachine(a.id);
+  };
+
+  // The demo moment: Surveyor 3, photographed by the Apollo 12 crew in 1969 and again from orbit by LRO in 2009
+  const openThenAndNow = () => {
+    spaceAudio.playTelemetryPing(1080, 0.07);
+    onOpenMachine('surveyor3');
+    window.setTimeout(() => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.getElementById('then-now')?.parentElement?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }, 350);
+  };
+
+  const plateLabel = (a: MissionArtifact) => `${t(`body.${a.destination}`)} · ${a.mission}, ${a.landingYear}`;
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex flex-col justify-between pt-28 pb-12 overflow-hidden bg-[#05070B]"
-    >
-      {/* Background Starfield Canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 pointer-events-none z-0 opacity-80"
-      />
+    <section id="hero" className="relative overflow-hidden bg-page pt-28 sm:pt-32 pb-8 lg:min-h-screen flex flex-col">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />
 
-      {/* Atmospheric Cinematic Backdrop with Image */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <img
-          src={ASSET_IMAGES.hero}
-          alt="Space archaeology landscape of planetary exploration on Mars and the Moon"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center opacity-30 scale-105 transition-transform duration-1000 ease-out"
-        />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
+        {/* Text */}
+        <div className="lg:col-span-6">
+          <p className="section-label" style={{ color: 'var(--color-fg)' }}>
+            {t('hero.kicker1')} <span className="text-fg-3">·</span> {t('hero.kicker2')}
+          </p>
 
-        {/* Layered cinematic radial scrims */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#05070B] via-[#05070B]/75 to-[#05070B]/50" />
-        <div className="absolute inset-0 space-radial-glow opacity-80" />
-      </div>
-
-      {/* Main Content Area */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto py-12">
-        <div className="max-w-4xl space-y-6">
-
-          {/* Scientific Archive Kicker */}
-          <div className="flex items-center gap-3 text-xs sm:text-sm font-hud tracking-widest text-[#62D9FF]">
-            <span className="w-2 h-2 rounded-full bg-[#62D9FF] animate-pulse" />
-            <span>NASA SPACE APPS CHALLENGE 2026</span>
-            <span className="text-white/20">|</span>
-            <span className="text-[#8D98A8]">
-              SPACE ARCHAEOLOGY EXPEDITION
-            </span>
-          </div>
-
-          {/* EXOARCHIVE Cinematic Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight uppercase leading-[0.95] font-hud text-balance">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D9DDE3] via-[#62D9FF] to-[#B85C38]">
-              EXOARCHIVE
-            </span>
+          <h1 className="mt-5 text-5xl sm:text-6xl xl:text-7xl text-fg leading-[1.02] tracking-tight">
+            {t('hero.title1')} {t('hero.title2')} {t('hero.title3')}
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-xl sm:text-2xl md:text-3xl font-light text-[#D9DDE3] tracking-wide max-w-2xl leading-snug">
-            “NASA’s machines may have stopped moving. <br className="hidden sm:inline" />
-            Their stories never did.”
+          <p className="mt-6 text-lg sm:text-xl text-fg leading-snug max-w-xl">
+            {t('hero.quote1')} {t('hero.quote2')}
           </p>
 
-          {/* Supporting Text */}
-          <p className="text-base sm:text-lg text-[#8D98A8] max-w-2xl font-light leading-relaxed">
-            Explore the hardware left behind on the Moon and Mars—and discover the science,
-            engineering, and human curiosity that made each extraterrestrial journey possible.
-          </p>
+          <p className="mt-4 text-base text-fg-2 max-w-xl">{t('hero.body')}</p>
 
-          {/* Action CTAs */}
-          <div className="pt-4 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(880, 0.08);
                 onStartExploring();
               }}
-              className="px-6 sm:px-8 py-3.5 bg-gradient-to-r from-[#B85C38] to-[#9c4c2c] hover:from-[#c9653e] hover:to-[#B85C38] text-white font-hud font-semibold text-sm tracking-wider uppercase rounded-lg shadow-lg shadow-[#B85C38]/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#62D9FF]"
+              className="btn-primary"
             >
-              <Compass className="w-4 h-4 text-[#62D9FF]" />
-              Start Exploring
+              {t('hero.cta')}
             </button>
-
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(1040, 0.06);
                 onOpenMap();
               }}
-              className="px-6 sm:px-8 py-3.5 bg-[#0B1018] hover:bg-[#111824] border border-white/20 hover:border-[#62D9FF]/50 text-white font-hud font-semibold text-sm tracking-wider uppercase rounded-lg transition-all cursor-pointer flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#62D9FF]"
+              className="btn-secondary"
             >
-              <MapPin className="w-4 h-4 text-[#F3B562]" />
-              Mission Map
+              {t('hero.map')}
             </button>
           </div>
 
-          {/* Key Quick Stats Bar */}
-          <div className="pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl text-xs sm:text-sm">
-            <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-white">
-                55+ yrs
-              </span>
-              <span className="text-[#8D98A8] text-xs font-sans">
-                Lunar Artifact Heritage
-              </span>
-            </div>
-
-            <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#B85C38]">
-                45.16 km
-              </span>
-              <span className="text-[#8D98A8] text-xs font-sans">
-                Opportunity Marathon Track
-              </span>
-            </div>
-
-            <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#62D9FF]">
-                1,300+
-              </span>
-              <span className="text-[#8D98A8] text-xs font-sans">
-                InSight Marsquakes Mapped
-              </span>
-            </div>
-
-            <div>
-              <span className="block font-mono-data text-xl sm:text-2xl font-bold text-[#F3B562]">
-                100% Active
-              </span>
-              <span className="text-[#8D98A8] text-xs font-sans">
-                Apollo Laser Reflectors
-              </span>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={openThenAndNow}
+            className="group mt-6 flex items-start gap-2 text-left text-sm text-fg-2 hover:text-fg transition-colors max-w-xl"
+          >
+            <span>
+              <span className="text-fg">{t('hero.demo.kicker')}</span> {t('hero.demo.body')}
+            </span>
+            <ArrowRight className="w-4 h-4 mt-0.5 shrink-0 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden="true" />
+          </button>
         </div>
+
+        {/* Two catalogue plates: real NASA photographs of objects in the archive */}
+        <figure className="lg:col-span-6 relative pb-24 sm:pb-20">
+          <button
+            onClick={() => open(moon)}
+            aria-label={t('hero.open', { name: moon.name })}
+            className="group relative block w-full aspect-[5/4] rounded-2xl overflow-hidden bg-ink border border-line"
+          >
+            <img
+              src={moon.image}
+              alt={tx(moon, 'imageCaption')}
+              fetchPriority="high"
+              decoding="async"
+              className="w-full h-full object-cover object-[62%_50%]"
+            />
+            <span className="absolute top-3 left-3 text-xs bg-page/90 text-fg px-2 py-1 rounded-md">
+              {plateLabel(moon)}
+            </span>
+            <span className="absolute top-3 right-3 text-xs text-fg bg-page/90 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+              {t('quiz.dossier')}
+            </span>
+          </button>
+
+          <button
+            onClick={() => open(mars)}
+            aria-label={t('hero.open', { name: mars.name })}
+            className="group absolute bottom-0 left-4 sm:-left-6 w-[38%] sm:w-[34%] aspect-[3/4] rounded-xl overflow-hidden bg-ink border-4 border-page"
+          >
+            <img
+              src={mars.image}
+              alt={tx(mars, 'imageCaption')}
+              decoding="async"
+              className="w-full h-full object-cover object-[70%_40%]"
+            />
+            <span className="absolute bottom-2 left-2 right-2 text-xs bg-page/90 text-fg px-2 py-1 rounded-md text-left leading-snug">
+              {plateLabel(mars)}
+            </span>
+          </button>
+
+          <figcaption className="absolute bottom-0 right-0 w-[56%] sm:w-[58%] text-right space-y-1">
+            <CatalogueTag artifact={moon} className="block" />
+            <span className="block text-xs text-fg-2">
+              {moon.imageNasaId} · {moon.imageCredit} — {mars.imageNasaId} · {mars.imageCredit}
+            </span>
+          </figcaption>
+        </figure>
       </div>
 
-      {/* Bottom Scroll Indicator & Tagline */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8D98A8]">
-        <div className="flex items-center gap-2 font-hud tracking-wider">
-          <span className="text-[#62D9FF]">●</span>
-          <span>
-            EVERY MACHINE LEFT A FOOTPRINT. EVERY FOOTPRINT TELLS A STORY.
-          </span>
-        </div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12">
+        <dl className="pt-6 border-t border-line grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
+          {(['stat1', 'stat2', 'stat3', 'stat4'] as const).map((k) => (
+            <div key={k} className="flex flex-col-reverse">
+              <dt className="mt-1 text-xs text-fg-2">{t(`hero.${k}`)}</dt>
+              <dd className="font-mono-data text-lg text-fg">{t(`hero.${k}.value`)}</dd>
+            </div>
+          ))}
+        </dl>
 
-        <button
-          onClick={onStartExploring}
-          className="flex items-center gap-2 text-[#D9DDE3] hover:text-[#62D9FF] transition-colors font-hud text-xs tracking-widest cursor-pointer group"
-        >
-          <span>DISCOVER THE MACHINES</span>
-          <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-1 transition-transform" />
-        </button>
+        <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-fg-2">
+          <span>{t('hero.tagline')}</span>
+          <button onClick={onStartExploring} className="flex items-center gap-2 text-fg-2 hover:text-fg transition-colors">
+            <span>{t('hero.scroll')}</span>
+            <ArrowDown className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </section>
   );

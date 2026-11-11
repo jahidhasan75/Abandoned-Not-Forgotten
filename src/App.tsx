@@ -3,77 +3,173 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Destination, MissionArtifact } from './types/mission';
 import { MISSIONS_DATA } from './data/missionsData';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PlanetSelector } from './components/PlanetSelector';
 import { ArchaeologyMap } from './components/ArchaeologyMap';
-import { Timeline3D } from './components/Timeline3D';
 import { MachineCards } from './components/MachineCards';
 import { StatusSystem } from './components/StatusSystem';
-import { OneMachineJourney } from './components/OneMachineJourney';
-import { WhatDidItTeachUs } from './components/WhatDidItTeachUs';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
-import { ScienceConstellation } from './components/ScienceConstellation';
-import { HardwareAnatomy } from './components/HardwareAnatomy';
-import { WhyLeaveItBehind } from './components/WhyLeaveItBehind';
-import { ArchaeologyArchive } from './components/ArchaeologyArchive';
-import { DidYouKnow } from './components/DidYouKnow';
-import { YoungExplorers } from './components/YoungExplorers';
+import { LiveBand } from './components/LiveBand';
+import { ImpactStrip } from './components/ImpactStrip';
+import { ChallengeFit } from './components/ChallengeFit';
+import { useI18n } from './i18n/I18nProvider';
 import { Footer } from './components/Footer';
 import { MachineDetailModal } from './components/MachineDetailModal';
 import { SoundscapeController } from './components/SoundscapeController';
 
-export default function App() {
-  const [activePlanet, setActivePlanet] = useState<Destination>('MARS');
-  const [selectedArtifact, setSelectedArtifact] = useState<MissionArtifact | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+// Sections further down the page load in their own chunks right after the first paint, so the
+// first download is smaller. Each placeholder keeps the section id, so menu links still work.
+const OneMachineJourney = lazy(() => import('./components/OneMachineJourney').then((m) => ({ default: m.OneMachineJourney })));
+const ScienceConstellation = lazy(() => import('./components/ScienceConstellation').then((m) => ({ default: m.ScienceConstellation })));
+const ArchaeologyArchive = lazy(() => import('./components/ArchaeologyArchive').then((m) => ({ default: m.ArchaeologyArchive })));
+const DataSources = lazy(() => import('./components/DataSources').then((m) => ({ default: m.DataSources })));
+const YoungExplorers = lazy(() => import('./components/YoungExplorers').then((m) => ({ default: m.YoungExplorers })));
+
+const SectionPlaceholder: React.FC<{ id: string; minHeight: number }> = ({ id, minHeight }) => (
+  <section id={id} className="relative bg-page border-t border-line" style={{ minHeight }} aria-busy="true" />
+);
+
+// Three.js is large (~500 kB), so the 3D timeline loads in its own chunk.
+const Timeline3D = lazy(() =>
+  import('./components/Timeline3D').then((m) => ({ default: m.Timeline3D }))
+);
+
+const TimelinePlaceholder = React.forwardRef<HTMLElement>((_, ref) => (
+  <section
+    ref={ref}
+    id="timeline-3d"
+    className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line"
+    aria-busy="true"
+  >
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="h-184 rounded-2xl border border-line bg-card/60" />
+    </div>
+  </section>
+));
+
+/** Three.js is only fetched once the timeline is about a screen away, so the first page load stays light. */
+const DeferredTimeline3D: React.FC<{ onOpenDetails: (a: MissionArtifact) => void }> = ({ onOpenDetails }) => {
+  const ref = useRef<HTMLElement | null>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: '800px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  if (!near) return <TimelinePlaceholder ref={ref} />;
+  return (
+    <Suspense fallback={<TimelinePlaceholder />}>
+      <Timeline3D onOpenDetails={onOpenDetails} />
+    </Suspense>
+  );
+};
+
+/**
+ * Thin fixed gradient bar tracking scroll depth. It lives in its own component and updates the DOM
+ * directly, so scrolling no longer re-renders the whole page.
+ */
+const ScrollProgressBar: React.FC = () => {
+  const barRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        const progress = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
-        setScrollProgress(progress);
-      }
+      const progress = totalHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / totalHeight)) : 0;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, []);
 
-  const handleNavigate = (sectionId: string) => {
+  return (
+    <div
+      className="theme-dark fixed top-0 left-0 right-0 h-0.5 z-[60] pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
+      <div
+        ref={barRef}
+        className="h-full origin-left bg-fg-3 will-change-transform"
+        style={{ transform: 'scaleX(0)' }}
+      />
+    </div>
+  );
+};
+
+export default function App() {
+  const { t } = useI18n();
+  const [activePlanet, setActivePlanet] = useState<Destination>('MARS');
+  const [selectedArtifact, setSelectedArtifact] = useState<MissionArtifact | null>(null);
+
+  const handleNavigate = useCallback((sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
     }
-  };
+  }, []);
 
-  const handleSelectMachineById = (id: string) => {
+  const handleSelectMachineById = useCallback((id: string) => {
     const found = MISSIONS_DATA.find((m) => m.id === id);
     if (found) {
       setSelectedArtifact(found);
     }
-  };
+  }, []);
+
+  const handleCloseModal = useCallback(() => setSelectedArtifact(null), []);
+
+  // Deep links: #machine=<id> opens that dossier (a teacher can send a class straight to one object).
+  useEffect(() => {
+    const openFromHash = () => {
+      const m = window.location.hash.match(/^#machine=([\w-]+)$/);
+      if (m) handleSelectMachineById(m[1]);
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
+  }, [handleSelectMachineById]);
+
+  // Keep the address in step with the open dossier, without adding history entries.
+  useEffect(() => {
+    const { pathname, search, hash } = window.location;
+    if (selectedArtifact) {
+      if (hash !== `#machine=${selectedArtifact.id}`) {
+        window.history.replaceState(null, '', `${pathname}${search}#machine=${selectedArtifact.id}`);
+      }
+    } else if (hash.startsWith('#machine=')) {
+      window.history.replaceState(null, '', `${pathname}${search}`);
+    }
+  }, [selectedArtifact]);
 
   return (
-    <div className="min-h-screen bg-[#05070B] text-[#F5F7FA] selection:bg-[#B85C38] selection:text-white relative">
-      {/* Thin fixed gradient progress bar tracking scroll depth (#62D9FF to #B85C38) */}
-      <div
-        className="fixed top-0 left-0 right-0 h-[2.5px] z-[100] bg-white/5 pointer-events-none overflow-hidden"
-        role="progressbar"
-        aria-valuenow={Math.round(scrollProgress)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label="Scroll depth indicator"
+    <div className="min-h-screen bg-page text-fg selection:bg-accent selection:text-ink relative">
+      <a
+        href="#explore"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[110] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-fg focus:text-page focus:text-xs"
       >
-        <div
-          className="h-full bg-gradient-to-r from-[#62D9FF] to-[#B85C38] shadow-[0_0_8px_rgba(98,217,255,0.6)] transition-[width] duration-100 ease-out will-change-[width]"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
+        {t('skip')}
+      </a>
+
+      <ScrollProgressBar />
 
       {/* Global Navbar */}
       <Navbar
@@ -88,13 +184,23 @@ export default function App() {
         <Hero
           onStartExploring={() => handleNavigate('explore')}
           onOpenMap={() => handleNavigate('archaeology-map')}
+          onOpenMachine={handleSelectMachineById}
         />
+
+        {/* Who it is for, how it is used, how it grows */}
+        <ImpactStrip />
+
+        {/* The official challenge and how each part of its brief is answered */}
+        <ChallengeFit onNavigate={handleNavigate} />
+
+        {/* Live NASA data: rovers still working, live Earth-Moon and Earth-Mars range */}
+        <LiveBand onOpenMachine={handleSelectMachineById} />
 
         {/* 2. Interactive Planet Selector ("WHERE STORIES REMAIN") */}
         <PlanetSelector
           activePlanet={activePlanet}
           onSelectPlanet={setActivePlanet}
-          onExplorePlanet={() => handleNavigate('archaeology-map')}
+          onOpenDetails={setSelectedArtifact}
         />
 
         {/* 3. Space Archaeology Surface Map */}
@@ -105,7 +211,7 @@ export default function App() {
         />
 
         {/* 4. Immersive 3D Flight Timeline Feature (Three.js) */}
-        <Timeline3D onOpenDetails={setSelectedArtifact} />
+        <DeferredTimeline3D onOpenDetails={setSelectedArtifact} />
 
         {/* 5. "Meet the Machines" Story Cards */}
         <MachineCards
@@ -117,31 +223,32 @@ export default function App() {
         <StatusSystem onSelectMachineId={handleSelectMachineById} />
 
         {/* 7. "One Machine. One Journey." Cinematic Timeline */}
-        <OneMachineJourney />
-
-        {/* 8. "What Did It Teach Us?" (Engineering, Science, Humanity) */}
-        <WhatDidItTeachUs />
+        <Suspense fallback={<SectionPlaceholder id="journey" minHeight={1300} />}>
+          <OneMachineJourney onOpenMachine={handleSelectMachineById} />
+        </Suspense>
 
         {/* 9. Before & After Draggable Comparison Slider */}
         <BeforeAfterSlider />
 
         {/* 10. Science Impact Constellation */}
-        <ScienceConstellation />
-
-        {/* 11. Hardware Anatomy Interactive Subsystems */}
-        <HardwareAnatomy />
-
-        {/* 12. Why Leave It Behind? */}
-        <WhyLeaveItBehind />
+        <Suspense fallback={<SectionPlaceholder id="science" minHeight={980} />}>
+          <ScienceConstellation onOpenMachine={handleSelectMachineById} />
+        </Suspense>
 
         {/* 13. Space Archaeology Master Archive */}
-        <ArchaeologyArchive onOpenDetails={setSelectedArtifact} />
+        <Suspense fallback={<SectionPlaceholder id="archive" minHeight={1900} />}>
+          <ArchaeologyArchive onOpenDetails={setSelectedArtifact} />
+        </Suspense>
 
-        {/* 14. Did You Know? Educational Fact Cards */}
-        <DidYouKnow />
+        {/* NASA data provenance: every dataset and what it is used for */}
+        <Suspense fallback={<SectionPlaceholder id="data-sources" minHeight={1600} />}>
+          <DataSources />
+        </Suspense>
 
         {/* 15. For Young Explorers (Quiz, Match, Build a Mission) */}
-        <YoungExplorers />
+        <Suspense fallback={<SectionPlaceholder id="explorers" minHeight={720} />}>
+          <YoungExplorers onOpenMachine={handleSelectMachineById} />
+        </Suspense>
       </main>
 
       {/* 16. Final Cinematic Section & Institutional Footer */}
@@ -153,7 +260,7 @@ export default function App() {
       {/* Full Archaeological Dossier Dialog Modal */}
       <MachineDetailModal
         artifact={selectedArtifact}
-        onClose={() => setSelectedArtifact(null)}
+        onClose={handleCloseModal}
       />
 
       {/* Mission Control Ambient Soundscape Controller */}

@@ -3,380 +3,484 @@ import * as THREE from 'three';
 import { MISSIONS_DATA } from '../data/missionsData';
 import { MissionArtifact } from '../types/mission';
 import { spaceAudio } from '../utils/audio';
-import { Play, Pause, ChevronLeft, ChevronRight, Eye, Sparkles } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+import { Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CatalogueTag } from './CatalogueTag';
+import { STATUS_COLORS } from '../data/status';
+import { easeInOutCubic, latLonToVector, nearestAngle, rotationFacing } from '../lib/globe';
+import earth2k from '../assets/textures/earth_2k.webp';
+import moon2k from '../assets/textures/moon_2k.webp';
+import mars2k from '../assets/textures/mars_2k.webp';
 
 interface Timeline3DProps {
   onOpenDetails: (artifact: MissionArtifact) => void;
 }
 
+type Body = 'EARTH' | 'MOON' | 'MARS';
+
+// Missions in landing order (static data, so sorted once)
+const sortedMissions = [...MISSIONS_DATA].sort((a, b) => a.landingYear - b.landingYear);
+const CRUISE_SECONDS = 2.5;
+
+// Same layout as the globes higher up the page; sizes and distances are for storytelling, not to scale.
+// Surfaces: Earth from NASA GIBS Blue Marble, the Moon from the LRO LROC WAC mosaic (Moon Trek),
+// Mars from the Viking MDIM 2.1 mosaic (Mars Trek).
+const BODIES: Record<Body, { radius: number; pos: THREE.Vector3; tex: string; atmosphere?: { color: number; opacity: number } }> = {
+  EARTH: { radius: 2.2, pos: new THREE.Vector3(0, 0, 0), tex: earth2k, atmosphere: { color: 0x62a8ff, opacity: 0.22 } },
+  MOON: { radius: 1.6, pos: new THREE.Vector3(16, 0.6, -4), tex: moon2k },
+  MARS: { radius: 1.8, pos: new THREE.Vector3(38, -0.4, -9), tex: mars2k, atmosphere: { color: 0xd0704a, opacity: 0.12 } },
+};
+const FLAT_MAP: Record<'MOON' | 'MARS', string> = { MOON: moon2k, MARS: mars2k };
+
 export const Timeline3D: React.FC<Timeline3DProps> = ({ onOpenDetails }) => {
+  const { t, tx } = useI18n();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [selectedMissionIndex, setSelectedMissionIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [webglFailed, setWebglFailed] = useState<boolean>(false);
+
+  // The render loop reads these refs, so the scene is built only once
   const isPlayingRef = useRef<boolean>(false);
   isPlayingRef.current = isPlaying;
+  const apiRef = useRef<{ goTo: (idx: number) => void } | null>(null);
 
-  // Sorted missions chronologically
-  const sortedMissions = [...MISSIONS_DATA].sort((a, b) => a.landingYear - b.landingYear);
   const currentMission = sortedMissions[selectedMissionIndex];
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Scene, Camera, Renderer
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05070b, 0.015);
-
-    const camera = new THREE.PerspectiveCamera(
-      55,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    );
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch {
+      setWebglFailed(true);
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // Starfield Background
-    const starsCount = 1200;
-    const starGeometry = new THREE.BufferGeometry();
-    const starPositions = new Float32Array(starsCount * 3);
-    const starColors = new Float32Array(starsCount * 3);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 600);
 
-    for (let i = 0; i < starsCount; i++) {
-      starPositions[i * 3] = (Math.random() - 0.5) * 200;
-      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 120;
-      starPositions[i * 3 + 2] = (Math.random() - 0.5) * 300;
+    // Sunlight from the upper left, with a soft fill so the night side stays readable
+    scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+    const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+    sun.position.set(-20, 12, 30);
+    scene.add(sun);
 
-      // Subtle cyan, amber, white tints
-      const tint = Math.random();
-      if (tint > 0.7) {
-        starColors[i * 3] = 0.38;
-        starColors[i * 3 + 1] = 0.85;
-        starColors[i * 3 + 2] = 1.0;
-      } else if (tint > 0.4) {
-        starColors[i * 3] = 0.95;
-        starColors[i * 3 + 1] = 0.71;
-        starColors[i * 3 + 2] = 0.38;
-      } else {
-        starColors[i * 3] = 0.85;
-        starColors[i * 3 + 1] = 0.87;
-        starColors[i * 3 + 2] = 0.89;
-      }
+    // Distant, still stars on a sphere around the scene
+    const starCount = 1600;
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      const r = 140 + Math.random() * 80;
+      const u = Math.random() * 2 - 1;
+      const a = Math.random() * Math.PI * 2;
+      const s = Math.sqrt(1 - u * u);
+      starPos.set([r * s * Math.cos(a) + 19, r * u, r * s * Math.sin(a)], i * 3);
     }
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xeef0f5, size: 0.4, transparent: true, opacity: 0.5 })));
 
-    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+    // ---------- The three worlds, with every object at its catalogued coordinates ----------
+    const loader = new THREE.TextureLoader();
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    const globes = {} as Record<Body, THREE.Group>;
+    (Object.keys(BODIES) as Body[]).forEach((key) => {
+      const cfg = BODIES[key];
+      const anchor = new THREE.Group();
+      anchor.position.copy(cfg.pos);
+      const globe = new THREE.Group();
+      globe.rotation.order = 'XYZ';
+      anchor.add(globe);
 
-    const starMaterial = new THREE.PointsMaterial({
-      size: 0.8,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.8,
-    });
-    const starField = new THREE.Points(starGeometry, starMaterial);
-    scene.add(starField);
-
-    // 3D Mission Waypoint nodes along chronological timeline corridor
-    // Node spacing along Z-axis: 0, -25, -50, -75, etc.
-    const spacing = 26;
-    const missionObjects: THREE.Group[] = [];
-
-    sortedMissions.forEach((m, idx) => {
-      const group = new THREE.Group();
-      const zPos = -idx * spacing;
-      // Slight sinusoidal wave offset along X and Y
-      const xPos = Math.sin(idx * 0.9) * 6;
-      const yPos = Math.cos(idx * 0.8) * 3;
-      group.position.set(xPos, yPos, zPos);
-
-      // Core sphere
-      const isMars = m.destination === 'MARS';
-      const color = isMars ? 0xb85c38 : 0x62d9ff;
-      const sphereGeo = new THREE.SphereGeometry(1.2, 24, 24);
-      const sphereMat = new THREE.MeshBasicMaterial({
-        color,
-        wireframe: true,
+      const material = new THREE.MeshStandardMaterial({ color: 0x222831, roughness: 1, metalness: 0 });
+      loader.load(cfg.tex, (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = maxAniso;
+        material.map = tex;
+        material.color.set(0xffffff);
+        material.needsUpdate = true;
+        requestRender();
       });
-      const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-      group.add(sphere);
+      globe.add(new THREE.Mesh(new THREE.SphereGeometry(cfg.radius, 96, 64), material));
 
-      // Inner glowing core
-      const innerGeo = new THREE.OctahedronGeometry(0.7, 0);
-      const innerMat = new THREE.MeshBasicMaterial({
-        color: isMars ? 0xff7a45 : 0xffffff,
-      });
-      const inner = new THREE.Mesh(innerGeo, innerMat);
-      group.add(inner);
+      if (cfg.atmosphere) {
+        anchor.add(
+          new THREE.Mesh(
+            new THREE.SphereGeometry(cfg.radius * 1.06, 64, 48),
+            new THREE.MeshBasicMaterial({ color: cfg.atmosphere.color, transparent: true, opacity: cfg.atmosphere.opacity, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false })
+          )
+        );
+      }
 
-      // Planetary orbital ring
-      const ringGeo = new THREE.RingGeometry(1.8, 2.0, 32);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.6,
-      });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = Math.PI / 2.3;
-      group.add(ring);
-
-      scene.add(group);
-      missionObjects.push(group);
+      if (key !== 'EARTH') {
+        MISSIONS_DATA.filter((m) => m.destination === key).forEach((m) => {
+          const dot = new THREE.Mesh(
+            new THREE.SphereGeometry(cfg.radius * 0.016, 12, 8),
+            new THREE.MeshBasicMaterial({ color: new THREE.Color(STATUS_COLORS[m.status]), transparent: true, opacity: 0.75 })
+          );
+          dot.position.copy(latLonToVector(m.coordinates.latNum, m.coordinates.lngNum, cfg.radius * 1.003));
+          globe.add(dot);
+        });
+      }
+      scene.add(anchor);
+      globes[key] = globe;
     });
 
-    // Spline curve connecting missions
-    const curvePoints = sortedMissions.map((_, idx) => {
-      const z = -idx * spacing;
-      const x = Math.sin(idx * 0.9) * 6;
-      const y = Math.cos(idx * 0.8) * 3;
-      return new THREE.Vector3(x, y, z);
-    });
+    // The pin for the mission on screen: a bright dot and a ring flat on the surface
+    const pin = new THREE.Group();
+    const pinDot = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshBasicMaterial({ color: 0xd0704a }));
+    const pinRing = new THREE.Mesh(
+      new THREE.RingGeometry(1.6, 2.3, 40),
+      new THREE.MeshBasicMaterial({ color: 0xeef0f5, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false })
+    );
+    pin.add(pinDot, pinRing);
 
-    const spline = new THREE.CatmullRomCurve3(curvePoints);
-    const tubeGeo = new THREE.TubeGeometry(spline, 120, 0.15, 8, false);
-    const tubeMat = new THREE.MeshBasicMaterial({
-      color: 0x62d9ff,
-      transparent: true,
-      opacity: 0.35,
-    });
-    const tube = new THREE.Mesh(tubeGeo, tubeMat);
-    scene.add(tube);
+    const placePin = (m: MissionArtifact) => {
+      const body = m.destination as Body;
+      const r = BODIES[body].radius;
+      const pos = latLonToVector(m.coordinates.latNum, m.coordinates.lngNum, r * 1.006);
+      pin.removeFromParent();
+      globes[body].add(pin);
+      pin.position.copy(pos);
+      // Lay the ring flat on the surface (orientation is relative to the globe, so no lookAt in world space)
+      pin.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), pos.clone().normalize());
+      pinDot.scale.setScalar(r * 0.024);
+      pinRing.scale.setScalar(r * 0.024);
+    };
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+    // ---------- Camera: frame a world, fly between worlds via Earth ----------
+    const frame = (body: Body) => {
+      const { radius, pos } = BODIES[body];
+      // Framing by stage width. Wide: the globe fills the open space between the year chips and the
+      // bottom edge, clear of the card (left) and the photo plate (right). Medium: a little further
+      // away, beside the narrower card. Phone: above the card.
+      const w = container.clientWidth;
+      const tier = w < 640 ? 'narrow' : w < 1024 ? 'medium' : 'wide';
+      const distance = { narrow: 6.2, medium: 5.4, wide: 4.75 }[tier];
+      const lookUp = { narrow: -0.7, medium: -0.25, wide: 0.32 }[tier];
+      // Medium screens have no year chips but a card on the left, so the globe sits right of centre
+      const lookSide = { narrow: 0, medium: -0.95, wide: 0 }[tier];
+      return {
+        pos: pos.clone().add(new THREE.Vector3(radius * lookSide, radius * 0.1, radius * distance)),
+        look: pos.clone().add(new THREE.Vector3(radius * lookSide, radius * lookUp, 0)),
+      };
+    };
 
-    // Initial Camera target
-    let targetCameraZ = 12;
-    let targetCameraX = 0;
-    let targetCameraY = 0;
-    camera.position.set(0, 0, targetCameraZ);
+    const targetRot = {} as Record<Body, { x: number; y: number } | null>;
+    (Object.keys(BODIES) as Body[]).forEach((k) => (targetRot[k] = null));
 
-    let animationId: number;
-    let clock = new THREE.Clock();
-    let cruiseTimer = 0;
+    let currentBody: Body = sortedMissions[0].destination as Body;
+    const startFrame = frame(currentBody);
+    camera.position.copy(startFrame.pos);
+    const lookAt = startFrame.look.clone();
 
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+    let flight: null | { p0: THREE.Vector3; p1: THREE.Vector3; p2: THREE.Vector3; l0: THREE.Vector3; l1: THREE.Vector3; l2: THREE.Vector3; t: number; duration: number } = null;
+    const bezier = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, k: number, out: THREE.Vector3) =>
+      out.set(0, 0, 0).addScaledVector(a, (1 - k) * (1 - k)).addScaledVector(b, 2 * (1 - k) * k).addScaledVector(c, k * k);
 
-      // Spin waypoint markers
-      missionObjects.forEach((obj, idx) => {
-        obj.rotation.y = elapsed * 0.8 + idx;
-        obj.rotation.x = Math.sin(elapsed * 0.5 + idx) * 0.2;
+    const goTo = (idx: number) => {
+      const m = sortedMissions[idx];
+      const body = m.destination as Body;
+      placePin(m);
+      const rot = rotationFacing(m.coordinates.latNum, m.coordinates.lngNum);
+      const g = globes[body];
+      targetRot[body] = { x: rot.x, y: nearestAngle(g.rotation.y, rot.y) };
+      if (reduceMotion) {
+        g.rotation.set(rot.x, rot.y, 0);
+        targetRot[body] = null;
+      }
+      if (body !== currentBody) {
+        const to = frame(body);
+        // Between the Moon and Mars the camera passes by Earth, where every journey began
+        const via = BODIES.EARTH.pos.clone().add(new THREE.Vector3(0, 5, 16));
+        flight = { p0: camera.position.clone(), p1: via, p2: to.pos, l0: lookAt.clone(), l1: BODIES.EARTH.pos.clone(), l2: to.look, t: 0, duration: reduceMotion ? 0 : 3.4 };
+        currentBody = body;
+      }
+      requestRender();
+    };
+    apiRef.current = { goTo };
+
+    // ---------- Render loop (only while the section is on screen) ----------
+    const timer = new THREE.Timer();
+    timer.connect(document);
+    let animationId = 0;
+    let running = false;
+    let cruise = 0;
+    const tmp = new THREE.Vector3();
+
+    const tick = (timestamp?: number) => {
+      animationId = requestAnimationFrame(tick);
+      timer.update(timestamp);
+      const dt = Math.min(timer.getDelta(), 0.1);
+      const elapsed = timer.getElapsed();
+
+      if (flight) {
+        flight.t = flight.duration === 0 ? 1 : Math.min(1, flight.t + dt / flight.duration);
+        const k = easeInOutCubic(flight.t);
+        bezier(flight.p0, flight.p1, flight.p2, k, camera.position);
+        bezier(flight.l0, flight.l1, flight.l2, k, tmp);
+        lookAt.copy(tmp);
+        if (flight.t >= 1) flight = null;
+      } else {
+        // Settle on the framing for this world (also after a resize)
+        const f = frame(currentBody);
+        const ease = reduceMotion ? 1 : 1 - Math.pow(0.05, dt);
+        camera.position.lerp(f.pos, ease);
+        lookAt.lerp(f.look, ease);
+      }
+      camera.lookAt(lookAt);
+
+      (Object.keys(globes) as Body[]).forEach((k) => {
+        const g = globes[k];
+        const target = targetRot[k];
+        if (target) {
+          const ease = reduceMotion ? 1 : 1 - Math.pow(0.03, dt);
+          g.rotation.y += (target.y - g.rotation.y) * ease;
+          g.rotation.x += (target.x - g.rotation.x) * ease;
+          if (Math.abs(target.y - g.rotation.y) < 0.0005 && Math.abs(target.x - g.rotation.x) < 0.0005) targetRot[k] = null;
+        } else if (!reduceMotion && k !== currentBody) {
+          g.rotation.y += 0.04 * dt; // worlds off screen turn slowly
+        }
       });
 
-      // Slowly rotate starfield
-      starField.rotation.y = elapsed * 0.02;
+      if (!reduceMotion) {
+        const pulse = 1 + 0.25 * Math.sin(elapsed * 3);
+        pinRing.scale.setScalar(pinDot.scale.x * pulse);
+      }
 
-      // Automatic Cruise Mode when playing
-      if (isPlayingRef.current) {
-        cruiseTimer += delta;
-        if (cruiseTimer > 4.5) {
-          cruiseTimer = 0;
+      if (isPlayingRef.current && !flight) {
+        cruise += dt;
+        if (cruise > CRUISE_SECONDS) {
+          cruise = 0;
           setSelectedMissionIndex((prev) => (prev + 1) % sortedMissions.length);
         }
-      }
-
-      // Smooth camera interpolation towards selected mission
-      const currGroup = missionObjects[selectedMissionIndex];
-      if (currGroup) {
-        targetCameraZ = currGroup.position.z + 10;
-        targetCameraX = currGroup.position.x * 0.7;
-        targetCameraY = currGroup.position.y * 0.7 + 1.2;
-      }
-
-      camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
-      camera.position.x += (targetCameraX - camera.position.x) * 0.05;
-      camera.position.y += (targetCameraY - camera.position.y) * 0.05;
-
-      if (currGroup) {
-        camera.lookAt(currGroup.position.x, currGroup.position.y, currGroup.position.z);
+      } else if (!isPlayingRef.current) {
+        cruise = 0;
       }
 
       renderer.render(scene, camera);
     };
 
-    animate();
+    const start = () => {
+      if (running) return;
+      running = true;
+      timer.reset();
+      animationId = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animationId);
+    };
+    function requestRender() {
+      if (!running) renderer.render(scene, camera);
+    }
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
+    goTo(0);
+    // Start already facing the first site
+    const first = sortedMissions[0];
+    const r0 = rotationFacing(first.coordinates.latNum, first.coordinates.lngNum);
+    globes[first.destination as Body].rotation.set(r0.x, r0.y, 0);
+    targetRot[first.destination as Body] = null;
+
+    const visibility = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), { rootMargin: '100px' });
+    visibility.observe(container);
+    const resize = new ResizeObserver(() => {
+      if (!container.clientWidth || !container.clientHeight) return;
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
-    };
-    window.addEventListener('resize', handleResize);
+      requestRender();
+    });
+    resize.observe(container);
 
     return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
-      if (container && renderer.domElement) {
-        container.removeChild(renderer.domElement);
-      }
+      stop();
+      visibility.disconnect();
+      resize.disconnect();
+      timer.dispose();
+      apiRef.current = null;
+      scene.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        mesh.geometry?.dispose();
+        const material = mesh.material as THREE.Material | THREE.Material[] | undefined;
+        const mats = Array.isArray(material) ? material : material ? [material] : [];
+        mats.forEach((mat) => {
+          (mat as THREE.MeshStandardMaterial).map?.dispose();
+          mat.dispose();
+        });
+      });
       renderer.dispose();
-      starGeometry.dispose();
-      starMaterial.dispose();
-      tubeGeo.dispose();
-      tubeMat.dispose();
+      if (renderer.domElement.parentNode === container) container.removeChild(renderer.domElement);
     };
+  }, []);
+
+  // Tell the scene whenever the mission changes (buttons, year chips, keys or cruise)
+  useEffect(() => {
+    apiRef.current?.goTo(selectedMissionIndex);
   }, [selectedMissionIndex]);
 
   const handleSelectIndex = (idx: number) => {
     spaceAudio.playTelemetryPing(900 + idx * 40, 0.05);
     setSelectedMissionIndex(idx);
   };
+  const handlePrev = () => handleSelectIndex((selectedMissionIndex - 1 + sortedMissions.length) % sortedMissions.length);
+  const handleNext = () => handleSelectIndex((selectedMissionIndex + 1) % sortedMissions.length);
 
-  const handlePrev = () => {
-    const nextIdx = (selectedMissionIndex - 1 + sortedMissions.length) % sortedMissions.length;
-    handleSelectIndex(nextIdx);
-  };
+  const m = currentMission;
+  const bodyName = t(`body.name.${m.destination}`);
+  const sitePct = { x: ((m.coordinates.lngNum + 180) / 360) * 100, y: ((90 - m.coordinates.latNum) / 180) * 100 };
 
-  const handleNext = () => {
-    const nextIdx = (selectedMissionIndex + 1) % sortedMissions.length;
-    handleSelectIndex(nextIdx);
-  };
+  /** The museum plate: the object's NASA photograph, and the same site from orbit where one exists. */
+  const plate = (
+    <figure key={m.id} className="animate-fadeIn">
+      {m.orbitalView ? (
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <img src={m.image} alt={tx(m, 'imageCaption')} className="w-full aspect-square object-cover rounded-md bg-ink" />
+            <span className="block mt-1 text-xs text-fg-2">{t('modal.thenLabel')}</span>
+          </div>
+          <div>
+            <img src={m.orbitalView.image} alt={tx(m, 'orbitalCaption')} className="w-full aspect-square object-cover rounded-md bg-ink" />
+            <span className="block mt-1 text-xs text-fg-2">{t('modal.nowLabel')}</span>
+          </div>
+        </div>
+      ) : (
+        <img src={m.image} alt={tx(m, 'imageCaption')} className="w-full aspect-[4/3] object-cover rounded-md bg-ink" />
+      )}
+      <figcaption className="mt-2 catalogue-tag text-fg-2">
+        {m.imageNasaId} · {m.imageCredit}
+        {m.orbitalView && ` · ${m.orbitalView.nasaId}`}
+      </figcaption>
+    </figure>
+  );
 
   return (
-    <section id="timeline-3d" className="relative py-24 bg-[#05070B] border-t border-white/10 overflow-hidden">
+    <section id="timeline-3d" className="relative py-12 sm:py-20 lg:py-24 bg-page border-t border-line overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-hud tracking-widest text-[#62D9FF] mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>3D CHRONOLOGICAL FLIGHT TRAJECTORY</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-hud uppercase tracking-tight text-white">
-              Spacetime Mission Flight
-            </h2>
-            <p className="mt-2 text-base text-[#8D98A8] max-w-2xl font-light">
-              Fly through the decades in 3D perspective. Track human engineering milestones from humanity’s
-              first Moon landing stages in 1967 to deep Mars interior seismology in the 2020s.
-            </p>
+            <p className="section-label">{t('timeline.kicker')}</p>
+            <h2 className="mt-2 text-2xl sm:text-3xl text-fg">{t('timeline.title')}</h2>
+            <p className="mt-3 text-base text-fg-2 max-w-2xl">{t('timeline.intro')}</p>
           </div>
 
-          {/* 3D Timeline Flight Controls */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
                 spaceAudio.playTelemetryPing(1000, 0.06);
                 setIsPlaying(!isPlaying);
               }}
-              className={`px-4 py-2 rounded-lg font-hud text-xs font-semibold tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
-                isPlaying
-                  ? 'bg-[#62D9FF] text-[#05070B] shadow-md shadow-[#62D9FF]/20'
-                  : 'bg-[#0B1018] border border-white/20 text-white hover:border-[#62D9FF]'
+              aria-pressed={isPlaying}
+              className={`px-4 py-2 rounded-lg text-sm border transition-colors flex items-center gap-2 ${
+                isPlaying ? 'bg-raised border-line-strong text-fg' : 'border-line text-fg hover:bg-raised'
               }`}
             >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isPlaying ? 'PAUSE CRUISE' : 'AUTO CRUISE'}</span>
+              {isPlaying ? <Pause className="w-4 h-4" strokeWidth={1.5} /> : <Play className="w-4 h-4" strokeWidth={1.5} />}
+              <span>{isPlaying ? t('timeline.pause') : t('timeline.play')}</span>
             </button>
-            <div className="flex items-center gap-1 bg-[#0B1018] border border-white/20 p-1 rounded-lg">
-              <button
-                onClick={handlePrev}
-                aria-label="Previous mission in 3D timeline"
-                className="p-1.5 text-[#8D98A8] hover:text-white transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
+            <div className="flex items-center gap-1 border border-line p-1 rounded-lg">
+              <button onClick={handlePrev} aria-label={t('timeline.prev')} className="p-2 rounded text-fg-2 hover:text-fg hover:bg-raised transition-colors">
+                <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
               </button>
-              <span className="text-xs font-mono-data px-2 text-[#62D9FF]">
+              <span className="text-xs font-mono-data px-2 text-fg-2">
                 {selectedMissionIndex + 1} / {sortedMissions.length}
               </span>
-              <button
-                onClick={handleNext}
-                aria-label="Next mission in 3D timeline"
-                className="p-1.5 text-[#8D98A8] hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
+              <button onClick={handleNext} aria-label={t('timeline.next')} className="p-2 rounded text-fg-2 hover:text-fg hover:bg-raised transition-colors">
+                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* 3D Canvas Stage Container */}
-        <div className="relative rounded-2xl border border-white/15 bg-[#05070B] overflow-hidden min-h-[500px] h-[580px] shadow-2xl">
-          {/* Three.js Canvas Mount */}
-          <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+        {/* The stage: real NASA globes in 3D; left and right arrow keys move between missions */}
+        <div
+          tabIndex={0}
+          role="group"
+          aria-label={t('timeline.stageAria')}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowLeft') {
+              e.preventDefault();
+              handlePrev();
+            } else if (e.key === 'ArrowRight') {
+              e.preventDefault();
+              handleNext();
+            }
+          }}
+          className="relative rounded-2xl border border-line bg-ink overflow-hidden min-h-128 h-144 outline-none focus-visible:ring-2 focus-visible:ring-fg"
+        >
+          <div ref={mountRef} className="w-full h-full" aria-hidden="true" />
 
-          {/* Top HUD Telemetry Banner */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none text-xs font-mono-data text-[#8D98A8]">
-            <div className="bg-[#05070B]/80 px-3 py-1.5 rounded border border-white/10 backdrop-blur-md flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-[#62D9FF] animate-pulse" />
-              <span className="text-white font-medium">3D SPATIAL CHRONOMETER</span>
-              <span className="hidden sm:inline text-white/30">|</span>
-              <span className="hidden sm:inline">WARP VECTOR Z: -{selectedMissionIndex * 26} m</span>
+          {/* Without WebGL: the same NASA map, flat, with the site marked */}
+          {webglFailed && (
+            <div className="absolute inset-0 flex items-center justify-center p-6">
+              <div className="relative w-full max-w-2xl aspect-[2/1] rounded-lg overflow-hidden">
+                <img src={FLAT_MAP[m.destination]} alt="" className="w-full h-full object-cover" />
+                <span
+                  className="absolute w-3.5 h-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent border-2 border-fg"
+                  style={{ left: `${sitePct.x}%`, top: `${sitePct.y}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+              <p className="absolute bottom-2 left-0 right-0 text-center text-xs font-mono-data text-fg-2">{t('timeline.noWebgl')}</p>
             </div>
-            <div className="bg-[#05070B]/80 px-3 py-1.5 rounded border border-white/10 backdrop-blur-md">
-              <span className="text-[#F3B562] font-semibold">{currentMission.landingYear} CE</span>
+          )}
+
+          {/* Where we are: year, object, and an honest scale note */}
+          <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center gap-2 pointer-events-none text-xs text-fg-2" aria-live="polite">
+            <div className="bg-page/85 px-2 py-1 rounded flex items-center gap-2 max-w-full">
+              <span className="font-mono-data text-fg">{m.landingYear}</span>
+              <span className="truncate">
+                {m.name} · {bodyName}
+              </span>
             </div>
+            <span className="bg-page/85 px-2 py-1 rounded">{t('timeline.notToScale')}</span>
           </div>
 
-          {/* Active Mission HUD Floating Overlay Card */}
-          <div className="absolute bottom-6 left-6 right-6 md:left-6 md:right-auto md:max-w-md z-20 bg-[#0B1018]/90 border border-white/20 p-5 rounded-xl backdrop-blur-md shadow-2xl">
-            <div className="flex items-center justify-between gap-4 pb-2 border-b border-white/10">
-              <span className="text-xs font-mono-data text-[#62D9FF]">
-                {currentMission.artifactId}
-              </span>
-              <span
-                className={`text-[10px] font-hud px-2 py-0.5 rounded font-bold uppercase ${
-                  currentMission.destination === 'MARS'
-                    ? 'bg-[#B85C38]/20 text-[#B85C38] border border-[#B85C38]/40'
-                    : 'bg-[#D9DDE3]/20 text-[#D9DDE3] border border-white/20'
-                }`}
-              >
-                {currentMission.destination}
-              </span>
+          {/* The mission card */}
+          <div className="absolute bottom-3 left-3 right-3 md:right-auto md:max-w-xs lg:max-w-sm z-20 bg-card/95 border border-line p-3 sm:p-4 rounded-xl">
+            <div className="flex items-start gap-3">
+              <img src={m.image} alt="" className="lg:hidden w-12 h-12 rounded-md object-cover bg-ink shrink-0" />
+              <div className="min-w-0">
+                <h3 className="font-serif text-lg sm:text-xl text-fg leading-tight">{m.name}</h3>
+                <p className="text-xs text-fg-2 mt-0.5">
+                  {m.mission} · {bodyName}
+                </p>
+              </div>
             </div>
-
-            <div className="mt-3">
-              <h3 className="text-xl font-bold font-hud text-white leading-tight">
-                {currentMission.name}
-              </h3>
-              <p className="text-xs text-[#8D98A8] mt-0.5">
-                {currentMission.mission} · Landing: {currentMission.landingYear}
-              </p>
-            </div>
-
-            <p className="text-xs text-[#D9DDE3] line-clamp-2 mt-3 font-light leading-relaxed">
-              {currentMission.story}
-            </p>
-
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-              <span className="text-[11px] font-mono-data text-[#8D98A8]">
-                Coords: {currentMission.coordinates.lat}, {currentMission.coordinates.lng}
-              </span>
-              <button
-                onClick={() => onOpenDetails(currentMission)}
-                className="inline-flex items-center gap-1.5 text-xs font-hud font-semibold text-[#62D9FF] hover:text-white transition-colors cursor-pointer"
-              >
-                <Eye className="w-3.5 h-3.5" />
-                <span>Inspect Dossier</span>
-              </button>
-            </div>
+            <CatalogueTag artifact={m} className="mt-1.5" />
+            <p className="hidden sm:block text-sm text-fg-2 mt-2 leading-snug">{tx(m, 'hook')}</p>
+            <button onClick={() => onOpenDetails(m)} className="btn-secondary mt-2.5 px-3 py-1.5 text-sm">
+              {t('timeline.inspect')}
+            </button>
           </div>
 
-          {/* Horizontal Scrubber / Timeline Bar at Bottom Right on Desktop */}
-          <div className="hidden lg:flex absolute bottom-6 right-6 z-20 bg-[#05070B]/85 border border-white/15 p-2 rounded-xl backdrop-blur-md items-center gap-2">
-            {sortedMissions.map((m, idx) => (
-              <button
-                key={m.id}
-                onClick={() => handleSelectIndex(idx)}
-                title={`${m.landingYear}: ${m.name}`}
-                className={`px-2.5 py-1.5 rounded text-xs font-mono-data transition-all cursor-pointer ${
-                  selectedMissionIndex === idx
-                    ? 'bg-white text-black font-bold shadow-md'
-                    : 'text-[#8D98A8] hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {m.landingYear}
-              </button>
-            ))}
+          {/* The photo plate (large screens) */}
+          <div className="hidden lg:block absolute bottom-3 right-3 w-64 z-20 bg-card/95 border border-line p-3 rounded-xl">{plate}</div>
+
+          {/* Year chips */}
+          <div className="hidden lg:flex absolute top-16 right-4 left-4 justify-center z-20 pointer-events-none">
+            <div className="pointer-events-auto bg-page/90 border border-line p-1 rounded-xl flex flex-wrap justify-center items-center gap-1">
+              {sortedMissions.map((mm, idx) => (
+                <button
+                  key={mm.id}
+                  onClick={() => handleSelectIndex(idx)}
+                  title={`${mm.landingYear}: ${mm.name}`}
+                  aria-label={`${mm.landingYear}: ${mm.name}`}
+                  aria-current={selectedMissionIndex === idx ? 'step' : undefined}
+                  className={`px-2 py-1 rounded text-xs font-mono-data transition-colors ${
+                    selectedMissionIndex === idx ? 'bg-raised text-accent' : 'text-fg-2 hover:text-fg hover:bg-raised'
+                  }`}
+                >
+                  {mm.landingYear}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

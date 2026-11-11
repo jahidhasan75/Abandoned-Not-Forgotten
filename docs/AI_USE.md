@@ -1,0 +1,88 @@
+# Use of AI (Super Intelligence, SI) in this project
+
+Keep this file current as you build. Match the wording to the official Project Submission Guide
+(published 13 November 2026). The 2026 Space Apps FAQ uses the term "Super Intelligence (SI)" in place
+of "Artificial Intelligence (AI)", and each submission must describe how SI tools were used; this file
+is that description.
+
+## Tools
+- Google AI Studio (Gemini): initial scaffold of the app. **TODO (team): confirm what it generated and
+  which prompts were used.**
+- Claude Code (Claude Opus 5.5): codebase review, README and build guide, performance and
+  accessibility fixes, image compression, live NASA data layer.
+
+## What the AI did
+- 6 Nov 2026: reviewed the code, wrote `README.md` and `docs/BUILD_GUIDE.md`.
+- 6 Nov 2026: Phase 0/1 polish: Timeline3D rewrite (scene built once, lazy-loaded), scroll reveal
+  animations, responsive navbar with active-section highlight, accessible modal and slider, audio
+  context fix, WebP image compression.
+
+- 7 Nov 2026: visual redesign so the site stops looking AI-generated, following the unslop method
+  (https://github.com/heydamir/unslop, by Damir Sokolovsky, CC BY 4.0): one neutral palette and one
+  accent, Newsreader/Inter/JetBrains Mono, sentence-case UI copy in English and Bangla, the catalogue
+  tag signature, quieter 3D timeline. No facts, data or sources were changed. Audit and before/after
+  screenshots: `docs/unslop/`.
+
+- 7 Nov 2026: renamed the project EXOARCHIVE and added the team's logo to the header with an Apollo 11
+  Earthrise photo strip (AS11-44-6550); sliding menu underline and a section "arrival" rule; a
+  dark/light theme toggle; fonts changed to Public Sans, IBM Plex Mono and Noto Serif Bengali; photos
+  (PIA14011, PIA00407) on the live Moon and Mars tiles; fixed the sound system (levels were near silent
+  and the drones were below what small speakers can play); a 50-question quiz drawn from the archive's
+  own facts, 5 per round with no repeats for 5 rounds. The quiz questions were written by the AI from
+  `src/data/missionsData.ts`. **TODO (team): read all 50 questions once before submission.**
+- 7 Nov 2026: hero redesigned as a split page with two archive photos (Apollo 15 rover, Curiosity)
+  that follows the light/dark theme; header background changed to the Hubble Ultra Deep Field; live
+  tiles aligned; removed the light progress-bar track that showed as a white line in light theme.
+- 7 Nov 2026: merged the 50-question quiz into Young Explorers as its Mission quiz tab (one section
+  instead of two; the separate Quiz section and its menu link are gone); header background replaced
+  with a crop of the team's Earth-limb artwork, and the footer notice now says it is artwork.
+- 7 Nov 2026: slimmer header; live tiles open details (rover dossiers, a Moon/Mars dialog that explains
+  how distance, signal time and speed are worked out); catalogue cards lift on hover and show a new
+  `hook` line per artifact. The 20 hooks (English and Bangla) were written by the AI only from facts
+  already in each dossier. **TODO (team): read the 20 hooks once, especially the Bangla.** Status list
+  uses the team's violet palette; the journey timeline gets a scroll progress light (blue light theme,
+  green dark theme), both at the team's request.
+- 7 Nov 2026: "One machine, one journey" moved to `src/data/journeys.ts`, translated into Bangla and
+  extended with InSight and Ingenuity, written by the AI only from those objects' dossier entries; each
+  journey now lists that object's sources. Claims not in the dossier (Pathfinder's bounce count and
+  impact speed) were dropped. Page trimmed (catalogue and data sources show a first set, then "Show
+  all"; Three.js loads late). **TODO (team): read the Bangla journey text once.**
+- 7 Nov 2026: Young Explorers fully translated, with a new For teachers tab (lesson plan, learning goals,
+  printable worksheet drawn from the quiz bank); dossier deep links and Copy link; constellation extended
+  to 17 machines and 9 themes with Bangla text; Data Sources descriptions in Bangla; overstated lines
+  softened in English and Bangla ("first time in human history", "skeptical world", exclamation marks);
+  a hero link to the Surveyor 3 then-and-now dossier; lower sections split into their own chunks. The
+  lesson plan and all new Bangla text were written by the AI. **TODO (team): a teacher should read the
+  lesson plan.** The Surveyor 3 distance was later fixed to about 180 m (NSSDCA 1967-035A).
+- 7 Nov 2026: archive table shortened with "Show all"; quiz answers shown in bold green/red with a
+  confetti burst for a perfect round; Young Explorers keeps quiz progress across tab switches.
+- 7 Nov 2026: quiz copy no longer explains the no-repeat rule; Match the machine now draws 4 of 15 pairs
+  per round (written by the AI from the dossiers, en + bn) without repeating recent pairs, and celebrates a
+  finished round. **TODO (team): read the 15 match pairs once.**
+- 7 Nov 2026: a "Our challenge" section names the official challenge and maps each part of its brief
+  (paraphrased by the AI from the challenge page) to the section that answers it; the footer links the
+  challenge, and docs/SUBMISSION.md now carries the challenge name.
+- 7 Nov 2026: two new Young Explorers activities. "Where did it land?" places 5 objects per round on the
+  NASA Moon/Mars basemaps and scores the guess by great-circle distance (tested functions in
+  `src/lib/compute.ts`). "Send a signal" times a message at the speed of light with today's JPL Horizons
+  distance and says what the machine would do next (reply, laser echo, or silence). Text written by the
+  AI from the dossiers.
+- 7 Nov 2026: the 3D timeline rebuilt on the real NASA globes (same Trek/GIBS textures as the globe
+  section): each mission turns its world to the catalogued landing site with a pin, Moon ↔ Mars flights pass
+  Earth, and a photo plate shows the NASA photograph (and the LRO orbital view where one exists). Surveyor 3
+  distance corrected to about 180 m from NSSDCA 1967-035A.
+- 8 Nov 2026: NASA videos found by the AI in the NASA Image and Video Library API and checked against
+  each video's description (10 dossiers; none forced where no video fits); timeline card smaller, globe
+  centred, 2.5 s per stop; card hover changed to a gentle scale. A teammate's hero colour change was kept
+  and made theme-aware (`var(--color-fg)`), since fixed black disappeared in the dark theme.
+- 8 Nov 2026: dossier photo now turns into its NASA video on click (no photo shown twice); rover tiles ask
+  the feeds for the newest navigation-camera frame when the latest sol has only close-up or calibration
+  frames, and fall back to the archive photo if an image fails; timeline globe enlarged with framing per
+  screen width.
+
+## What the AI did not do
+- **TODO (team):** the concept, the choice of artifacts and the storytelling are the team's own work;
+  describe your own contributions here.
+
+## Prompts
+- **TODO (team):** list key prompts, or link to `docs/prompts_used.md`.

@@ -1,251 +1,288 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MissionArtifact } from '../types/mission';
 import { spaceAudio } from '../utils/audio';
-import { X, Calendar, MapPin, Gauge, Compass, Lightbulb, Quote, ShieldAlert } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+import { DossierLive } from './DossierLive';
+import { X, ExternalLink, Link2, Check } from 'lucide-react';
+import { CatalogueTag } from './CatalogueTag';
+import { DossierMedia } from './DossierMedia';
+import { STATUS_COLORS } from '../data/status';
 
 interface MachineDetailModalProps {
   artifact: MissionArtifact | null;
   onClose: () => void;
 }
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({ artifact, onClose }) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (artifact) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
+  const { t, tx, txScience, lang } = useI18n();
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => setCopied(false), [artifact]);
+
+  // Copy this dossier's own address (#machine=<id>) so it can be shared with a class.
+  const copyLink = async () => {
+    if (!artifact) return;
+    spaceAudio.playTelemetryPing(1040, 0.05);
+    const url = `${window.location.origin}${window.location.pathname}${window.location.search}#machine=${artifact.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Older browsers or blocked clipboard: select the text through a temporary field
+      const field = document.createElement('textarea');
+      field.value = url;
+      document.body.appendChild(field);
+      field.select();
+      document.execCommand('copy');
+      field.remove();
     }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  };
+
+  useEffect(() => {
+    if (!artifact) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    // Move focus into the dialog and scroll it back to the top for each new artifact
+    const dialog = dialogRef.current;
+    if (dialog) {
+      dialog.scrollTop = 0;
+      dialog.focus({ preventScroll: true });
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      // Keep Tab focus inside the dialog
+      if (e.key === 'Tab' && dialog) {
+        const items = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE));
+        if (items.length === 0) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus?.({ preventScroll: true });
     };
   }, [artifact, onClose]);
 
   if (!artifact) return null;
 
+  const sectionHeading = 'text-sm text-fg-2 mb-3';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md animate-fadeIn">
-      {/* Modal Container */}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-ink/85 animate-backdropIn"
+      onMouseDown={(e) => {
+        // Close when the dark backdrop (not the dialog) is clicked
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] bg-[#0B1018] border border-white/20 rounded-2xl shadow-2xl overflow-y-auto flex flex-col focus:outline-none"
+        ref={dialogRef}
+        tabIndex={-1}
+        className="relative w-full max-w-4xl max-h-[90vh] bg-card border border-line rounded-2xl overflow-y-auto overscroll-contain flex flex-col focus:outline-none animate-modalIn"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        {/* Top Sticky Header */}
-        <div className="sticky top-0 z-30 bg-[#0B1018]/95 backdrop-blur-md px-6 py-4 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-mono-data text-[#62D9FF] tracking-wider uppercase">
-              {artifact.artifactId}
-            </span>
-            <span className="text-white/20">|</span>
-            <span
-              className={`text-xs font-hud font-bold uppercase tracking-wider ${
-                artifact.destination === 'MARS' ? 'text-[#B85C38]' : 'text-[#D9DDE3]'
-              }`}
+        {/* Sticky bar: where you are, and a way out */}
+        <div className="sticky top-0 z-30 bg-card px-6 py-3 border-b border-line flex items-center justify-between gap-4">
+          <span className="text-sm text-fg-2 truncate">
+            {t('modal.sector', { body: t(`body.name.${artifact.destination}`) })} · {t(`category.${artifact.category}`)}
+          </span>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={copyLink}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-fg-2 hover:text-fg hover:bg-raised transition-colors"
             >
-              {artifact.destination} SECTOR
-            </span>
-          </div>
-
-          <button
-            onClick={() => {
-              spaceAudio.playTelemetryPing(700, 0.04);
-              onClose();
-            }}
-            aria-label="Close artifact dossier"
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#8D98A8] hover:text-white transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Modal Hero Image */}
-        <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-[#07090e] shrink-0">
-          <img
-            src={artifact.image}
-            alt={artifact.name}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1018] via-transparent to-black/30" />
-          <div className="absolute bottom-3 left-6 right-6 flex items-center justify-between text-[11px] font-mono-data text-[#8D98A8]">
-            <span className="bg-[#05070B]/85 px-2.5 py-1 rounded backdrop-blur-sm border border-white/10 text-white">
-              {artifact.imageCaption}
-            </span>
-            <span className="hidden sm:inline bg-[#05070B]/85 px-2.5 py-1 rounded backdrop-blur-sm border border-white/10">
-              DEMO ARCHAEOLOGICAL RECONSTRUCTION
-            </span>
+              {copied ? (
+                <Check className="w-4 h-4 text-accent" strokeWidth={1.5} aria-hidden="true" />
+              ) : (
+                <Link2 className="w-4 h-4" strokeWidth={1.5} aria-hidden="true" />
+              )}
+              <span aria-live="polite">{copied ? t('modal.copied') : t('modal.copyLink')}</span>
+            </button>
+            <button
+              onClick={() => {
+                spaceAudio.playTelemetryPing(700, 0.04);
+                onClose();
+              }}
+              aria-label={t('modal.close')}
+              className="p-2 rounded-lg text-fg-2 hover:text-fg hover:bg-raised transition-colors"
+            >
+              <X className="w-5 h-5" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
 
-        {/* Modal Content Body */}
-        <div className="p-6 sm:p-8 space-y-8">
-          {/* Main Title & Role */}
-          <div>
-            <div className="flex items-center gap-2 text-xs font-mono-data text-[#8D98A8] mb-1">
-              <span>{artifact.mission}</span>
-              <span aria-hidden="true">·</span>
-              <span>{artifact.category}</span>
-              <span aria-hidden="true">·</span>
-              <span className="text-[#F3B562] font-semibold">{artifact.status}</span>
-            </div>
-            <h2 id="modal-title" className="text-2xl sm:text-4xl font-bold font-hud text-white">
+        <div className="px-6 sm:px-10 pt-8 pb-10">
+          {/* Title, then the catalogue tag: the object label */}
+          <header>
+            <h2 id="modal-title" className="text-3xl sm:text-4xl text-fg leading-tight">
               {artifact.name}
             </h2>
-            <p className="text-sm text-[#D9DDE3] mt-1 font-light italic">
-              “{artifact.role}”
+            <CatalogueTag artifact={artifact} className="mt-3" />
+            <p className="mt-3 text-base text-fg-2">
+              {artifact.mission} · {tx(artifact, 'role')}
             </p>
-          </div>
-
-          {/* Quick Metrics Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-white/5 border border-white/10 text-xs font-mono-data">
-            <div>
-              <span className="text-[#8D98A8] block text-[10px] uppercase">Landing Year</span>
-              <span className="text-white font-bold text-sm flex items-center gap-1 mt-0.5">
-                <Calendar className="w-3.5 h-3.5 text-[#62D9FF]" />
-                {artifact.landingYear} CE
+            <p className="mt-2 flex items-start gap-2 text-sm text-fg">
+              <span className="mt-1.5 w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[artifact.status] }} aria-hidden="true" />
+              <span>
+                {t(`status.${artifact.status}`)}
+                <span className="text-fg-2"> · {tx(artifact, 'statusDescription')}</span>
               </span>
-            </div>
-            <div>
-              <span className="text-[#8D98A8] block text-[10px] uppercase">Days Active</span>
-              <span className="text-white font-bold text-sm flex items-center gap-1 mt-0.5">
-                <Gauge className="w-3.5 h-3.5 text-[#F3B562]" />
-                {artifact.daysActive} {typeof artifact.daysActive === 'number' ? 'Sols / Days' : ''}
-              </span>
-            </div>
-            <div>
-              <span className="text-[#8D98A8] block text-[10px] uppercase">Location</span>
-              <span className="text-white font-bold text-sm flex items-center gap-1 mt-0.5 truncate">
-                <MapPin className="w-3.5 h-3.5 text-[#B85C38]" />
-                {artifact.locationName.split('(')[0]}
-              </span>
-            </div>
-            <div>
-              <span className="text-[#8D98A8] block text-[10px] uppercase">Coordinates</span>
-              <span className="text-[#62D9FF] font-bold text-sm block mt-0.5">
-                {artifact.coordinates.lat}, {artifact.coordinates.lng}
-              </span>
-            </div>
-          </div>
-
-          {/* Historical Narrative */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-hud font-bold uppercase tracking-wider text-white flex items-center gap-2">
-              <Compass className="w-4 h-4 text-[#62D9FF]" />
-              <span>Mission Narrative & Archaeology</span>
-            </h3>
-            <p className="text-sm text-[#D9DDE3] leading-relaxed font-light">
-              {artifact.story}
             </p>
-          </div>
+          </header>
 
-          {/* Historical Quote if available */}
-          {artifact.historicalQuote && (
-            <div className="p-4 rounded-xl bg-[#62D9FF]/10 border border-[#62D9FF]/30 space-y-2">
-              <div className="flex items-start gap-2">
-                <Quote className="w-5 h-5 text-[#62D9FF] shrink-0 mt-0.5" />
-                <p className="text-sm text-white italic font-light">
-                  “{artifact.historicalQuote.text}”
-                </p>
-              </div>
-              <p className="text-[11px] font-mono-data text-[#8D98A8] text-right">
-                — {artifact.historicalQuote.author}
+          {/* The visual centre: the NASA photo (and the site from orbit); a NASA video plays in its place */}
+          <DossierMedia artifact={artifact} />
+
+          {/* Story beside the key facts */}
+          <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <h3 className={sectionHeading}>{t('modal.narrative')}</h3>
+              <p className="text-base text-fg leading-relaxed">{tx(artifact, 'story')}</p>
+              <p className="mt-3 catalogue-tag">
+                {t('modal.timeline', { left: artifact.leftBehind, last: artifact.lastContact ?? t('modal.stillActive') })}
               </p>
             </div>
+            <dl className="space-y-4 text-sm md:border-l md:border-line md:pl-6">
+              <div>
+                <dt className="text-xs text-fg-2">{t('modal.landingYear')}</dt>
+                <dd className="mt-1 font-mono-data text-fg">{artifact.landingYear}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-fg-2">{t('modal.daysActive')}</dt>
+                <dd className="mt-1 font-mono-data text-fg">
+                  {artifact.daysActive} {typeof artifact.daysActive === 'number' ? t('modal.daysUnit') : ''}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-fg-2">{t('modal.location')}</dt>
+                <dd className="mt-1 text-fg">{tx(artifact, 'locationName').split('(')[0]}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-fg-2">{t('modal.coordinates')}</dt>
+                <dd className="mt-1 font-mono-data text-fg">
+                  {artifact.coordinates.lat}, {artifact.coordinates.lng}
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          {/* Live: elapsed days (computed), today's signal travel time (JPL Horizons), latest rover image */}
+          <div className="mt-10">
+            <DossierLive artifact={artifact} />
+          </div>
+
+          {artifact.historicalQuote && (
+            <blockquote className="mt-10 border-l-2 border-line-strong pl-5">
+              <p className="font-serif text-xl text-fg leading-snug">“{artifact.historicalQuote.text}”</p>
+              <footer className="mt-2 text-sm text-fg-2">{artifact.historicalQuote.author}</footer>
+            </blockquote>
           )}
 
-          {/* Science Made Possible */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-hud font-bold uppercase tracking-wider text-[#62D9FF] flex items-center gap-2">
-              <Lightbulb className="w-4 h-4" />
-              <span>Science Made Possible</span>
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {artifact.scienceContribution.map((sc, i) => (
-                <div
-                  key={i}
-                  className="p-3.5 rounded-lg bg-white/5 border border-white/10 text-xs text-[#D9DDE3] flex items-start gap-2"
-                >
-                  <span className="text-[#62D9FF] font-bold">›</span>
-                  <span>{sc}</span>
-                </div>
+          <section className="mt-10">
+            <h3 className={sectionHeading}>{t('modal.science')}</h3>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm text-fg list-disc pl-4 marker:text-fg-3">
+              {txScience(artifact).map((sc, i) => (
+                <li key={i}>{sc}</li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
 
-          {/* Subsystems Dissection */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-hud font-bold uppercase tracking-wider text-white">
-              Subsystems & Engineering Innovations
-            </h3>
-            <div className="space-y-3">
+          <section className="mt-10">
+            <h3 className={sectionHeading}>{t('modal.subsystems')}</h3>
+            {lang === 'bn' && <p className="text-xs text-fg-2 mb-3">{t('lang.partialNote')}</p>}
+            <ol className="divide-y divide-line border-y border-line">
               {artifact.subsystems.map((sub, i) => (
-                <div
-                  key={i}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs space-y-1"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-hud font-bold text-white text-sm">
-                      {sub.name}
-                    </span>
-                    <span className="text-[10px] font-mono-data text-[#62D9FF]">
-                      SUBSYSTEM 0{i + 1}
-                    </span>
+                <li key={i} className="py-4 grid grid-cols-[40px_1fr] gap-x-4">
+                  <span className="font-mono-data text-xs text-fg-3 pt-1">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="text-sm">
+                    <p className="text-fg font-medium">{sub.name}</p>
+                    <p className="mt-1 text-fg-2">{sub.description}</p>
+                    <p className="mt-1 text-fg-2">
+                      <span className="text-fg">{t('modal.significance')}:</span> {sub.significance}
+                    </p>
                   </div>
-                  <p className="text-[#8D98A8]">{sub.description}</p>
-                  <p className="text-[#D9DDE3] pt-1">
-                    <strong className="text-[#F3B562]">Significance:</strong> {sub.significance}
-                  </p>
-                </div>
+                </li>
               ))}
-            </div>
-          </div>
+            </ol>
+          </section>
 
-          {/* Why Left Behind */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-hud font-bold uppercase tracking-wider text-[#F3B562]">
-              <ShieldAlert className="w-4 h-4" />
-              <span>Why Was This Hardware Left Behind?</span>
-            </div>
-            <p className="text-xs text-[#8D98A8] leading-relaxed">
-              {artifact.whyLeftBehind}
-            </p>
-          </div>
+          <section className="mt-10">
+            <h3 className={sectionHeading}>{t('modal.whyLeft')}</h3>
+            <p className="text-base text-fg leading-relaxed">{tx(artifact, 'whyLeftBehind')}</p>
+          </section>
 
-          {/* Fun Facts */}
           {artifact.funFacts.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="text-xs font-hud font-bold uppercase tracking-wider text-[#8D98A8]">
-                Expedition Notes & Trivia
-              </h3>
-              <ul className="space-y-2 text-xs text-[#D9DDE3]">
+            <section className="mt-10">
+              <h3 className={sectionHeading}>{t('modal.trivia')}</h3>
+              <ul className="space-y-2 text-sm text-fg-2 list-disc pl-4 marker:text-fg-3">
                 {artifact.funFacts.map((fact, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-[#F3B562] mt-0.5">●</span>
-                    <span>{fact}</span>
-                  </li>
+                  <li key={idx}>{fact}</li>
                 ))}
               </ul>
-            </div>
+            </section>
           )}
+
+          {/* Sources: every dossier links to where its facts and photo come from */}
+          <section className="mt-10 pt-6 border-t border-line">
+            <h3 className={sectionHeading}>{t('modal.sources')}</h3>
+            <ul className="space-y-2 text-sm">
+              {artifact.sources.map((src) => (
+                <li key={src.url}>
+                  <a
+                    href={src.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-fg-2 hover:text-fg underline decoration-line-strong underline-offset-4 hover:decoration-fg transition-colors"
+                  >
+                    <span>{src.label}</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span className="sr-only">{t('modal.newTab')}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 catalogue-tag">
+              {t('modal.credit', { credit: artifact.imageCredit, id: artifact.imageNasaId, nssdc: artifact.nssdcId })}
+            </p>
+          </section>
         </div>
 
-        {/* Modal Bottom Sticky Close Bar */}
-        <div className="sticky bottom-0 z-30 bg-[#0B1018]/95 backdrop-blur-md px-6 py-4 border-t border-white/10 flex items-center justify-between text-xs">
-          <span className="text-[#8D98A8] font-mono-data">
-            PRESS ESCAPE TO CLOSE
+        <div className="sticky bottom-0 z-30 bg-card px-6 py-3 border-t border-line flex items-center justify-between text-xs">
+          <span className="text-fg-2">
+            <span className="hidden sm:inline">{t('modal.escHint')}</span>
           </span>
           <button
             onClick={() => {
               spaceAudio.playTelemetryPing(700, 0.04);
               onClose();
             }}
-            className="px-6 py-2 rounded-lg bg-white text-black font-hud font-semibold uppercase text-xs tracking-wider hover:bg-white/90 cursor-pointer"
+            className="btn-primary py-2"
           >
-            Close Dossier
+            {t('modal.closeBtn')}
           </button>
         </div>
       </div>

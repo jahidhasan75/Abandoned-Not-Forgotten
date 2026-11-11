@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { spaceAudio, SoundscapeType, SoundscapeState } from '../utils/audio';
-import { Radio, Volume2, VolumeX, Sliders, ChevronDown, ChevronUp, Sparkles, Wind, Disc } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+import { Volume2, VolumeX, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SoundscapeControllerProps {
   activePlanet: 'MOON' | 'MARS';
@@ -11,10 +12,11 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
   activePlanet,
   onSyncPlanet,
 }) => {
+  const { t } = useI18n();
   const [audioState, setAudioState] = useState<SoundscapeState>({
     isPlaying: false,
     environment: 'MARTIAN',
-    volume: 0.4,
+    volume: 0.6,
   });
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -44,25 +46,35 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const drawFlatline = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(238, 240, 245, 0.16)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+    };
+
+    // While muted, draw one idle line and stop: no animation loop, no AudioContext.
+    const initialAnalyser = spaceAudio.peekAnalyser();
+    if (!audioState.isPlaying || !initialAnalyser) {
+      drawFlatline();
+      return;
+    }
+
+    const dataArray = new Uint8Array(initialAnalyser.frequencyBinCount);
+
     const renderWaveform = () => {
       animId = requestAnimationFrame(renderWaveform);
-      const analyser = spaceAudio.getAnalyser();
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (!analyser || !audioState.isPlaying) {
-        // Flatline idle line
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height / 2);
-        ctx.lineTo(canvas.width, canvas.height / 2);
-        ctx.stroke();
+      const analyser = spaceAudio.peekAnalyser();
+      if (!analyser) {
+        drawFlatline();
         return;
       }
 
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const bufferLength = dataArray.length;
       analyser.getByteFrequencyData(dataArray);
 
       const barWidth = (canvas.width / bufferLength) * 1.5;
@@ -71,11 +83,8 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * canvas.height * 0.85;
 
-        // Lunar = cyan/silver, Mars = orange/amber
-        ctx.fillStyle =
-          audioState.environment === 'LUNAR'
-            ? `rgba(98, 217, 255, ${0.4 + (dataArray[i] / 255) * 0.6})`
-            : `rgba(184, 92, 56, ${0.4 + (dataArray[i] / 255) * 0.6})`;
+        // Bars only draw while sound plays, so they take the accent; the idle line stays neutral
+        ctx.fillStyle = `rgba(208, 112, 74, ${0.45 + (dataArray[i] / 255) * 0.55})`;
 
         ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
         x += barWidth;
@@ -109,39 +118,36 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
 
   return (
     <aside
-      aria-label="Mission Control Soundscape"
-      className="fixed bottom-6 right-6 z-40 select-none"
+      aria-label={t('audio.title')}
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 select-none"
     >
-      <div className="bg-[#0B1018]/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden w-[310px] sm:w-[350px]">
-        {/* Compact Header Bar */}
-        <div className="p-3.5 flex items-center justify-between border-b border-white/10 bg-[#05070B]/50">
-          <div className="flex items-center gap-2.5">
+      <div
+        className={`bg-card border border-line rounded-2xl overflow-hidden ${
+          isExpanded ? 'w-76 sm:w-80' : 'w-auto'
+        }`}
+      >
+        {/* Compact Header Bar (on phones it collapses to a small pill) */}
+        <div
+          className={`p-2 flex items-center justify-between gap-2 ${isExpanded ? 'border-b border-line' : ''}`}
+        >
+          <div className="flex items-center gap-2">
             <button
               onClick={toggleSoundscape}
-              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                audioState.isPlaying
-                  ? audioState.environment === 'LUNAR'
-                    ? 'bg-[#62D9FF]/20 text-[#62D9FF] border border-[#62D9FF]/40'
-                    : 'bg-[#B85C38]/20 text-[#B85C38] border border-[#B85C38]/40'
-                  : 'bg-white/5 text-[#8D98A8] border border-white/10 hover:text-white'
+              aria-pressed={audioState.isPlaying}
+              className={`p-2 rounded-lg transition-colors ${
+                audioState.isPlaying ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg hover:bg-raised'
               }`}
               title={audioState.isPlaying ? 'Mute ambient soundscape' : 'Enable ambient soundscape'}
               aria-label={audioState.isPlaying ? 'Mute ambient soundscape' : 'Enable ambient soundscape'}
             >
-              {audioState.isPlaying ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {audioState.isPlaying ? <Volume2 className="w-4 h-4" strokeWidth={1.5} /> : <VolumeX className="w-4 h-4" strokeWidth={1.5} />}
             </button>
 
-            <div>
-              <div className="flex items-center gap-1.5 text-[10px] font-hud font-bold tracking-wider text-white">
-                <Radio className={`w-3 h-3 ${audioState.isPlaying ? 'text-[#62D9FF] animate-pulse' : 'text-[#8D98A8]'}`} />
-                <span>MISSION CONTROL AUDIO</span>
-              </div>
-              <div className="text-[11px] font-mono-data text-[#8D98A8] flex items-center gap-1.5">
-                <span className={audioState.isPlaying ? 'text-white' : 'text-[#8D98A8]'}>
-                  {audioState.isPlaying ? audioState.environment : 'OFFLINE'}
-                </span>
-                <span>·</span>
-                <span>{Math.round(audioState.volume * 100)}% VOL</span>
+            <div className={isExpanded ? 'block' : 'hidden sm:block'}>
+              <div className="text-xs text-fg whitespace-nowrap">{t('audio.title')}</div>
+              <div className="text-xs text-fg-2 whitespace-nowrap">
+                {audioState.isPlaying ? (audioState.environment === 'LUNAR' ? 'Moon' : 'Mars') : t('audio.offline')}
+                <span className="font-mono-data"> · {Math.round(audioState.volume * 100)}%</span>
               </div>
             </div>
           </div>
@@ -152,64 +158,60 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
               ref={canvasRef}
               width={70}
               height={22}
-              className="rounded bg-black/40 border border-white/10"
+              className="rounded bg-ink"
+              aria-hidden="true"
             />
 
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              aria-label={isExpanded ? 'Collapse Mission Control Soundscape' : 'Expand Mission Control Soundscape'}
-              className="p-1.5 rounded text-[#8D98A8] hover:text-white transition-colors cursor-pointer"
+              aria-label={isExpanded ? 'Collapse sound controls' : 'Expand sound controls'}
+              aria-expanded={isExpanded}
+              className="p-2 rounded-lg text-fg-2 hover:text-fg hover:bg-raised transition-colors"
             >
-              {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+              {isExpanded ? <ChevronDown className="w-4 h-4" strokeWidth={1.5} /> : <ChevronUp className="w-4 h-4" strokeWidth={1.5} />}
             </button>
           </div>
         </div>
 
         {/* Expanded Controls Drawer */}
         {isExpanded && (
-          <div className="p-4 space-y-4 animate-fadeIn text-xs">
+          <div className="p-4 space-y-4 text-xs">
             {/* Environment Toggle Segmented Control */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-hud uppercase tracking-widest text-[#8D98A8] block">
-                Planetary Acoustic Environment
-              </label>
-              <div className="grid grid-cols-2 gap-2 p-1 bg-[#05070B] border border-white/15 rounded-xl">
+              <p className="text-xs text-fg-2">Sound of</p>
+              <div className="grid grid-cols-2 gap-1 p-1 border border-line rounded-xl" role="group" aria-label="Sound environment">
                 <button
                   onClick={() => handleSelectEnvironment('LUNAR')}
-                  className={`py-2 px-3 rounded-lg font-hud text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    audioState.environment === 'LUNAR'
-                      ? 'bg-[#D9DDE3] text-[#05070B] shadow-md font-bold'
-                      : 'text-[#8D98A8] hover:text-white'
+                  aria-pressed={audioState.environment === 'LUNAR'}
+                  className={`py-2 px-3 rounded-lg text-xs transition-colors ${
+                    audioState.environment === 'LUNAR' ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
                   }`}
                 >
-                  <Disc className="w-3.5 h-3.5" />
-                  <span>Moon (Vacuum)</span>
+                  Moon (vacuum)
                 </button>
                 <button
                   onClick={() => handleSelectEnvironment('MARTIAN')}
-                  className={`py-2 px-3 rounded-lg font-hud text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    audioState.environment === 'MARTIAN'
-                      ? 'bg-[#B85C38] text-white shadow-md font-bold'
-                      : 'text-[#8D98A8] hover:text-white'
+                  aria-pressed={audioState.environment === 'MARTIAN'}
+                  className={`py-2 px-3 rounded-lg text-xs transition-colors ${
+                    audioState.environment === 'MARTIAN' ? 'bg-raised text-fg' : 'text-fg-2 hover:text-fg'
                   }`}
                 >
-                  <Wind className="w-3.5 h-3.5" />
-                  <span>Mars (Wind)</span>
+                  Mars (wind)
                 </button>
               </div>
             </div>
 
             {/* Environmental Profile Description */}
-            <div className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-[11px] text-[#8D98A8] leading-relaxed">
+            <div className="text-xs text-fg-2 leading-relaxed">
               {audioState.environment === 'LUNAR' ? (
                 <span>
-                  <strong className="text-white block font-hud mb-0.5">LUNAR ENVIRONMENT:</strong>
+                  <span className="text-fg block mb-0.5">The Moon</span>
                   Deep 48 Hz seismic harmonic hum simulating Apollo ALSEP lunar ringing and vacuum cosmic
                   ray electrostatic resonance.
                 </span>
               ) : (
                 <span>
-                  <strong className="text-white block font-hud mb-0.5">MARTIAN ENVIRONMENT:</strong>
+                  <span className="text-fg block mb-0.5">Mars</span>
                   Low-pressure atmospheric wind filter swept across 140 Hz (modeled from InSight’s SEIS
                   microphone) and 60 Hz chassis rumble.
                 </span>
@@ -218,12 +220,9 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
 
             {/* Volume Slider Rail */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[11px] font-mono-data">
-                <span className="text-[#8D98A8] flex items-center gap-1">
-                  <Sliders className="w-3 h-3 text-[#62D9FF]" />
-                  <span>Soundscape Master Gain</span>
-                </span>
-                <span className="text-white">{Math.round(audioState.volume * 100)}%</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-fg-2">Volume</span>
+                <span className="text-fg font-mono-data">{Math.round(audioState.volume * 100)}%</span>
               </div>
               <input
                 type="range"
@@ -232,26 +231,25 @@ export const SoundscapeController: React.FC<SoundscapeControllerProps> = ({
                 step="0.02"
                 value={audioState.volume}
                 onChange={handleVolumeChange}
-                aria-label="Soundscape Volume"
-                className="w-full h-1.5 bg-[#05070B] rounded-lg appearance-none cursor-pointer accent-[#62D9FF]"
+                aria-label="Volume"
+                className="w-full cursor-pointer accent-accent"
               />
             </div>
 
             {/* Mission Control Sound Effect Triggers */}
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+            <div className="pt-2 border-t border-line flex items-center justify-between gap-2">
               <button
                 onClick={handleQuindarBeep}
-                className="flex-1 py-1.5 px-3 bg-white/5 hover:bg-white/15 border border-white/15 rounded-lg font-hud text-[11px] text-white flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                className="flex-1 py-2 px-3 border border-line rounded-lg text-xs text-fg hover:bg-raised transition-colors"
               >
-                <Sparkles className="w-3 h-3 text-[#F3B562]" />
-                <span>Quindar Beep (2.5 kHz)</span>
+                Quindar tone <span className="font-mono-data text-fg-2">2.5 kHz</span>
               </button>
 
               <button
                 onClick={() => spaceAudio.playTelemetryPing(1400, 0.06)}
-                className="py-1.5 px-3 bg-white/5 hover:bg-white/15 border border-white/15 rounded-lg font-hud text-[11px] text-[#62D9FF] hover:text-white transition-colors cursor-pointer"
+                className="py-2 px-3 border border-line rounded-lg text-xs text-fg hover:bg-raised transition-colors"
               >
-                Radio Ping
+                Radio ping
               </button>
             </div>
           </div>
