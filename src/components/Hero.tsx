@@ -25,27 +25,58 @@ export const Hero: React.FC<HeroProps> = ({ onStartExploring, onOpenMap, onOpenM
   const moon = byId(MOON_ID);
   const mars = byId(MARS_ID);
 
-  // Dark theme only: a still, sparse starfield behind the page. Drawn once per resize.
+  // Animated drifting starfield — dark mode only, respects theme system.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    const draw = () => {
-      const width = (canvas.width = canvas.offsetWidth);
-      const height = (canvas.height = canvas.offsetHeight);
-      ctx.clearRect(0, 0, width, height);
-      if (theme !== 'dark') return;
-      for (let i = 0; i < 90; i++) {
-        ctx.fillStyle = `rgba(238, 240, 245, ${Math.random() * 0.3 + 0.08})`;
-        ctx.beginPath();
-        ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 0.9 + 0.3, 0, Math.PI * 2);
-        ctx.fill();
-      }
+
+    if (theme !== 'dark') {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    let animationFrameId: number;
+    let width = (canvas.width = canvas.offsetWidth);
+    let height = (canvas.height = canvas.offsetHeight);
+
+    const handleResize = () => {
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
     };
-    draw();
-    window.addEventListener('resize', draw);
-    return () => window.removeEventListener('resize', draw);
+    window.addEventListener('resize', handleResize);
+
+    const stars = Array.from({ length: 90 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      size: Math.random() * 1.5 + 0.4,
+      alpha: Math.random() * 0.8 + 0.2,
+      velocity: Math.random() * 0.2 + 0.05,
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+      stars.forEach((star) => {
+        star.y -= star.velocity;
+        if (star.y < 0) {
+          star.y = height;
+          star.x = Math.random() * width;
+        }
+        ctx.fillStyle = `rgba(217, 221, 227, ${star.alpha})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [theme]);
 
   const open = (a: MissionArtifact) => {
