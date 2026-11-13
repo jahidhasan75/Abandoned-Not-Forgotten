@@ -6,6 +6,17 @@ An interactive space-archaeology museum for the **NASA Space Apps Challenge 2026
 machines humanity left on the Moon and Mars: where each one rests, what it discovered, why it was left behind,
 and what it still teaches us.
 
+## Team
+
+**Space Odysseys**, NASA Space Apps Challenge 2026 (Mymensingh, Bangladesh).
+
+| Member | Role | Contribution |
+|---|---|---|
+| Jahid Hasan | Team Owner & Lead Developer | Team leadership, project development, technical coordination |
+| Mahima Khan Jhilik | Research & Content Analyst | Research, data analysis, content development |
+| Md Parvej | Frontend & Backend Developer | Frontend development, backend development, integration |
+| Syed Fahim Muddasir | Video & Media Editor | Video editing, media production, visual storytelling |
+
 > Status (7 Nov 2026, v0.8.0): 20 catalogued objects (landers, rovers, entry hardware, an impact site, an aircraft) on real NASA basemaps. Includes 3D Earth, Moon
 > and Mars globes built from NASA Trek and GIBS mosaics, a year-filtered map, and a citation trail
 > (NSSDCA, PDS, NTRS, NASA Image Library) for every object, an English/Bangla toggle, and live NASA
